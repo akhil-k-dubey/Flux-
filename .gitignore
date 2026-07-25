@@ -1,0 +1,13 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment / IDE files
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Agent internal files
+.agents/

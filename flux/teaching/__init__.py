@@ -1,0 +1,3 @@
+"""
+flux.teaching subpackage.
+"""

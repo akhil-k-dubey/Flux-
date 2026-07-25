@@ -1,0 +1,2616 @@
+{
+  "version": "0.1",
+  "generated_at": "2026-07-11T12:37:07.922797+00:00",
+  "node_count": 108,
+  "edge_count": 116,
+  "spec_count": 51,
+  "nodes": [
+    {
+      "id": "true",
+      "type": "LOGICAL",
+      "layer": "LAYER_0",
+      "definition": "a statement that holds in Flux's world model",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 7
+    },
+    {
+      "id": "false",
+      "type": "LOGICAL",
+      "layer": "LAYER_0",
+      "definition": "a statement that does not hold in Flux's world model",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 8
+    },
+    {
+      "id": "not",
+      "type": "LOGICAL",
+      "layer": "LAYER_0",
+      "definition": "logical negation of a statement",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 1
+    },
+    {
+      "id": "and",
+      "type": "LOGICAL",
+      "layer": "LAYER_0",
+      "definition": "logical conjunction of two or more statements",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 3
+    },
+    {
+      "id": "or",
+      "type": "LOGICAL",
+      "layer": "LAYER_0",
+      "definition": "logical disjunction of two or more statements",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 6
+    },
+    {
+      "id": "implies",
+      "type": "LOGICAL",
+      "layer": "LAYER_0",
+      "definition": "logical implication where if antecedent is TRUE, consequent must be TRUE",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 0
+    },
+    {
+      "id": "equivalent",
+      "type": "LOGICAL",
+      "layer": "LAYER_0",
+      "definition": "logical equivalence where both statements share the same truth value",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 4
+    },
+    {
+      "id": "exists",
+      "type": "LOGICAL",
+      "layer": "LAYER_0",
+      "definition": "existential quantification asserting at least one entity satisfies a condition",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 2
+    },
+    {
+      "id": "forall",
+      "type": "LOGICAL",
+      "layer": "LAYER_0",
+      "definition": "universal quantification asserting all entities satisfy a condition",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 5
+    },
+    {
+      "id": "knows",
+      "type": "EPISTEMIC",
+      "layer": "LAYER_1",
+      "definition": "Flux holds this with confidence >= 0.95, verified by formal check",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 12
+    },
+    {
+      "id": "believes",
+      "type": "EPISTEMIC",
+      "layer": "LAYER_1",
+      "definition": "Flux holds this with confidence >= 0.50, based on empirical evidence",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 10
+    },
+    {
+      "id": "suspects",
+      "type": "EPISTEMIC",
+      "layer": "LAYER_1",
+      "definition": "Flux holds this with confidence between 0.25 and 0.49, representing a weak pattern match with insufficient evidence",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 15
+    },
+    {
+      "id": "unknown",
+      "type": "EPISTEMIC",
+      "layer": "LAYER_1",
+      "definition": "Flux has no logical or empirical data regarding this statement",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 19
+    },
+    {
+      "id": "uncertain",
+      "type": "EPISTEMIC",
+      "layer": "LAYER_1",
+      "definition": "Flux has partial or conflicting data, confidence is between 0.05 and 0.24",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 14
+    },
+    {
+      "id": "contradictory",
+      "type": "EPISTEMIC",
+      "layer": "LAYER_1",
+      "definition": "Flux has identified mutually exclusive assertions in active knowledge base",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 18
+    },
+    {
+      "id": "hypothesizes",
+      "type": "EPISTEMIC",
+      "layer": "LAYER_1",
+      "definition": "Flux proposes a statement as a candidate for verification or testing",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 17
+    },
+    {
+      "id": "assumes",
+      "type": "EPISTEMIC",
+      "layer": "LAYER_1",
+      "definition": "Flux temporarily treats a statement as TRUE to proceed with reasoning; expires automatically when active execution context terminates",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 11
+    },
+    {
+      "id": "deducts",
+      "type": "EPISTEMIC",
+      "layer": "LAYER_1",
+      "definition": "Flux derives a statement using deductive rules from established knowledge",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 20
+    },
+    {
+      "id": "inducts",
+      "type": "EPISTEMIC",
+      "layer": "LAYER_1",
+      "definition": "Flux generalizes a rule from multiple observed examples",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 16
+    },
+    {
+      "id": "abducts",
+      "type": "EPISTEMIC",
+      "layer": "LAYER_1",
+      "definition": "Flux infers the most likely explanation for a set of observations",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 13
+    },
+    {
+      "id": "causes",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "A CAUSES B means intervention do(A) increases P(B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 37
+    },
+    {
+      "id": "is_a",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "taxonomic relationship asserting membership in a class",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 33
+    },
+    {
+      "id": "instance_of",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "relationship asserting an individual object belongs to a class",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 34
+    },
+    {
+      "id": "part_of",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "mereological relationship asserting components of a system",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 27
+    },
+    {
+      "id": "has_a",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "possession or attribute relationship of an entity",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 29
+    },
+    {
+      "id": "requires",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "hard dependency relationship where B cannot exist or run without A",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 26
+    },
+    {
+      "id": "prevents",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "relationship where the presence of A ensures B cannot occur",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 23
+    },
+    {
+      "id": "constrains",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "limits the states or behaviors that an entity can take",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 25
+    },
+    {
+      "id": "improves",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "refinement relation asserting A increases the efficiency, safety, or accuracy of B",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 32
+    },
+    {
+      "id": "precedes",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "temporal relation asserting A occurs before B in time",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 36
+    },
+    {
+      "id": "co_occurs",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "temporal relation asserting A and B occur simultaneously or within the same window",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 39
+    },
+    {
+      "id": "equals",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "mathematical identity between A and B",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 22
+    },
+    {
+      "id": "similar_to",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "semantic or structural similarity above a threshold",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 31
+    },
+    {
+      "id": "contradicts",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "logical exclusion asserting A and B cannot both be TRUE",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 35
+    },
+    {
+      "id": "analogous_to",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "asserts structural alignment or mapping between two separate domains",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 40
+    },
+    {
+      "id": "sequence",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "defines an ordered list of transitions or elements forming a path",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 38
+    },
+    {
+      "id": "degrades",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "asserts A reduces the performance, structural integrity, or utility of B",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 24
+    },
+    {
+      "id": "enables",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "asserts A satisfies necessary pre-conditions required for the execution of B",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 28
+    },
+    {
+      "id": "parallel",
+      "type": "RELATIONAL",
+      "layer": "LAYER_2",
+      "definition": "asserts A and B occur or exist simultaneously, without dependency, along identical timeline offsets",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 30
+    },
+    {
+      "id": "teach",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Akhil deposits knowledge directly into Flux",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 60
+    },
+    {
+      "id": "query",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Akhil requests knowledge or reasoning from Flux",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 70
+    },
+    {
+      "id": "compute",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux performs an exact calculation or deterministic execution step",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 64
+    },
+    {
+      "id": "modify_self",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux proposes a change to her own architecture or weights",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 63
+    },
+    {
+      "id": "build",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux constructs code or system architecture",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 49
+    },
+    {
+      "id": "execute",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux runs a command, script, or binary",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 57
+    },
+    {
+      "id": "read",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux extracts content from a file, memory address, or state",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 58
+    },
+    {
+      "id": "write",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux writes content to a file, memory address, or state",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 61
+    },
+    {
+      "id": "delete",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux deletes a file, database record, or memory state",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 55
+    },
+    {
+      "id": "attack",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux executes offensive security action against a designated target",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 50
+    },
+    {
+      "id": "defend",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux analyzes or patches vulnerabilities, or enforces security boundaries",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 46
+    },
+    {
+      "id": "scan_vulnerability",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux scans a system for software or logical flaws",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 54
+    },
+    {
+      "id": "patch_vulnerability",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux modifies source code or configuration to resolve a vulnerability",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 66
+    },
+    {
+      "id": "isolate",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux segregates a compromised system, file, or network boundary",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 65
+    },
+    {
+      "id": "monitor",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux continuously tracks state, memory, network, or performance metrics",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 51
+    },
+    {
+      "id": "log",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux writes operational events to a tamper-proof audit trail",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 44
+    },
+    {
+      "id": "audit",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux reviews logs, signatures, or system state to verify safety compliance and authenticate operator identity",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 56
+    },
+    {
+      "id": "remember",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux permanently commits a concept or rule to the Knowledge Graph",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 53
+    },
+    {
+      "id": "forget",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux deletes a concept or rule from the Knowledge Graph",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 68
+    },
+    {
+      "id": "evaluate",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux assesses quality of something against quantitative or qualitative criteria",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 69
+    },
+    {
+      "id": "observe",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux actively polls environmental or system sensor inputs",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 43
+    },
+    {
+      "id": "correct",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Akhil explicitly overrides or corrects Flux's reasoning or actions",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 59
+    },
+    {
+      "id": "wrong",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Akhil flags Flux's output as incorrect or unsafe",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 45
+    },
+    {
+      "id": "partial",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Akhil refines or amends Flux's output with feedback",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 71
+    },
+    {
+      "id": "update_belief",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux transitions a concept between epistemic states based on new evidence or formal verification",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 48
+    },
+    {
+      "id": "rollback",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux reverts to a previously verified stable state, discarding all changes since the last checkpoint",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 67
+    },
+    {
+      "id": "spawn_agent",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux creates a new sub-agent with explicitly bounded permissions and a specific goal",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 47
+    },
+    {
+      "id": "pipeline",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux composes an ordered sequence of actions into a single executable workflow",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 52
+    },
+    {
+      "id": "suspend",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux gracefully pauses a running action or agent, preserving its state for resumption",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 62
+    },
+    {
+      "id": "resume",
+      "type": "ACTION",
+      "layer": "LAYER_3",
+      "definition": "Flux restores a previously suspended action or agent from its preserved state",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 42
+    },
+    {
+      "id": "akhil",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "the sole operator, teacher, and authority of Flux — the only human identity in the system",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 75
+    },
+    {
+      "id": "flux",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "the AI agent executing this system, bounded by Akhil's directives",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 79
+    },
+    {
+      "id": "knowledge_graph",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "the structured associative memory graph where all concepts are stored",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 89
+    },
+    {
+      "id": "symbolic_core",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "the logic engine (Clingo, Z3) that executes validation constraints",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 73
+    },
+    {
+      "id": "sandbox",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "the isolated container where untested execution steps occur",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 88
+    },
+    {
+      "id": "operating_system",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "the host environment executing the Flux files and runtime",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 90
+    },
+    {
+      "id": "web",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "the public network environment outside the local OS boundary",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 87
+    },
+    {
+      "id": "user",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "any entity other than Akhil attempting to interact with the system — treated as adversarial by default",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 91
+    },
+    {
+      "id": "code",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "any software source file, binary compilation, or configuration script",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 77
+    },
+    {
+      "id": "architecture",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "structural design of a system mapping files, routes, and data flows",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 85
+    },
+    {
+      "id": "security",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "the attack/defense domain containing vulnerabilities, patches, security barriers, and exploit patterns",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 83
+    },
+    {
+      "id": "mathematics",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "formal computation, mathematical theorems, logic rules, and quantitative models",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 80
+    },
+    {
+      "id": "experiment",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "a structured test designed, run, and evaluated by Flux to verify a hypothesis empirically",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 76
+    },
+    {
+      "id": "hypothesis",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "an unverified proposition or belief state generated from empirical data or reasoning",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 84
+    },
+    {
+      "id": "goal",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "a target state of the environment or the system that Flux acts to achieve",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 86
+    },
+    {
+      "id": "constraint",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "a safety boundary, system parameter, or logical rule that cannot be violated",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 78
+    },
+    {
+      "id": "agent",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "sub-processes or specialized sub-agents spawned by Flux to achieve a goal",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 81
+    },
+    {
+      "id": "memory",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "episodic trace storage containing past inputs, commands, execution metrics, and outputs",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 74
+    },
+    {
+      "id": "ai_system",
+      "type": "DOMAIN",
+      "layer": "LAYER_4",
+      "definition": "a computational system exhibiting intelligent reasoning and adaptive behavior",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "complexity_rank": 82
+    },
+    {
+      "id": "axiom_a1cf2b62",
+      "type": "AXIOM",
+      "layer": "LAYER_S",
+      "definition": "Constitutional Clingo constraint",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 104
+    },
+    {
+      "id": "axiom_178171db",
+      "type": "AXIOM",
+      "layer": "LAYER_S",
+      "definition": "Safety constraint for MODIFY_SELF",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 103
+    },
+    {
+      "id": "axiom_f3aaee04",
+      "type": "AXIOM",
+      "layer": "LAYER_S",
+      "definition": "Safety constraint for EXECUTE",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 95
+    },
+    {
+      "id": "axiom_f746018d",
+      "type": "AXIOM",
+      "layer": "LAYER_S",
+      "definition": "Safety constraint for WRITE",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 93
+    },
+    {
+      "id": "axiom_3bc4628a",
+      "type": "AXIOM",
+      "layer": "LAYER_S",
+      "definition": "Safety constraint for DELETE",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 99
+    },
+    {
+      "id": "axiom_d5fb60ea",
+      "type": "AXIOM",
+      "layer": "LAYER_S",
+      "definition": "Safety constraint for ATTACK",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 97
+    },
+    {
+      "id": "axiom_7cae25bc",
+      "type": "AXIOM",
+      "layer": "LAYER_S",
+      "definition": "Safety constraint for AUDIT",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 98
+    },
+    {
+      "id": "axiom_10337326",
+      "type": "AXIOM",
+      "layer": "LAYER_S",
+      "definition": "Safety constraint for UPDATE_BELIEF",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 94
+    },
+    {
+      "id": "axiom_09019bc5",
+      "type": "AXIOM",
+      "layer": "LAYER_S",
+      "definition": "Safety constraint for ROLLBACK",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 96
+    },
+    {
+      "id": "axiom_18e70d12",
+      "type": "AXIOM",
+      "layer": "LAYER_S",
+      "definition": "Safety constraint for SPAWN_AGENT",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 101
+    },
+    {
+      "id": "axiom_7461aa2d",
+      "type": "AXIOM",
+      "layer": "LAYER_S",
+      "definition": "Safety constraint for PIPELINE",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 100
+    },
+    {
+      "id": "axiom_08090882",
+      "type": "AXIOM",
+      "layer": "LAYER_S",
+      "definition": "Safety constraint for RESUME",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 105
+    },
+    {
+      "id": "axiom_70e04b5c",
+      "type": "AXIOM",
+      "layer": "LAYER_S",
+      "definition": "Identity constraint for AKHIL",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 102
+    },
+    {
+      "id": "axiom_309d8681",
+      "type": "AXIOM",
+      "layer": "LAYER_S",
+      "definition": "Identity constraint for USER",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "complexity_rank": 106
+    },
+    {
+      "id": "__layer_layer_2__",
+      "type": "META",
+      "layer": "LAYER_2",
+      "definition": "Layer ordering anchor for LAYER_2",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": false,
+      "complexity_rank": 41
+    },
+    {
+      "id": "__layer_layer_1__",
+      "type": "META",
+      "layer": "LAYER_1",
+      "definition": "Layer ordering anchor for LAYER_1",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": false,
+      "complexity_rank": 21
+    },
+    {
+      "id": "__layer_layer_s__",
+      "type": "META",
+      "layer": "LAYER_S",
+      "definition": "Layer ordering anchor for LAYER_S",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": false,
+      "complexity_rank": 107
+    },
+    {
+      "id": "__layer_layer_3__",
+      "type": "META",
+      "layer": "LAYER_3",
+      "definition": "Layer ordering anchor for LAYER_3",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": false,
+      "complexity_rank": 72
+    },
+    {
+      "id": "__layer_layer_4__",
+      "type": "META",
+      "layer": "LAYER_4",
+      "definition": "Layer ordering anchor for LAYER_4",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": false,
+      "complexity_rank": 92
+    },
+    {
+      "id": "__layer_layer_0__",
+      "type": "META",
+      "layer": "LAYER_0",
+      "definition": "Layer ordering anchor for LAYER_0",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": false,
+      "complexity_rank": 9
+    }
+  ],
+  "edges": [
+    {
+      "from": "true",
+      "to": "false",
+      "type": "CONTRADICTS"
+    },
+    {
+      "from": "not",
+      "to": "true",
+      "type": "RELATES_TO"
+    },
+    {
+      "from": "not",
+      "to": "false",
+      "type": "RELATES_TO"
+    },
+    {
+      "from": "and",
+      "to": "true",
+      "type": "RELATES_TO"
+    },
+    {
+      "from": "and",
+      "to": "false",
+      "type": "RELATES_TO"
+    },
+    {
+      "from": "or",
+      "to": "true",
+      "type": "RELATES_TO"
+    },
+    {
+      "from": "or",
+      "to": "false",
+      "type": "RELATES_TO"
+    },
+    {
+      "from": "implies",
+      "to": "true",
+      "type": "RELATES_TO"
+    },
+    {
+      "from": "implies",
+      "to": "false",
+      "type": "RELATES_TO"
+    },
+    {
+      "from": "equivalent",
+      "to": "true",
+      "type": "RELATES_TO"
+    },
+    {
+      "from": "equivalent",
+      "to": "false",
+      "type": "RELATES_TO"
+    },
+    {
+      "from": "and",
+      "to": "or",
+      "type": "INVERSE_OF"
+    },
+    {
+      "from": "exists",
+      "to": "forall",
+      "type": "INVERSE_OF"
+    },
+    {
+      "from": "implies",
+      "to": "equivalent",
+      "type": "RELATES_TO"
+    },
+    {
+      "from": "causes",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "is_a",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "instance_of",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "part_of",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "has_a",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "requires",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "prevents",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "constrains",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "improves",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "precedes",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "co_occurs",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "equals",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "similar_to",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "contradicts",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "analogous_to",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "sequence",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "degrades",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "enables",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "parallel",
+      "to": "__layer_layer_2__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "knows",
+      "to": "__layer_layer_1__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "believes",
+      "to": "__layer_layer_1__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "suspects",
+      "to": "__layer_layer_1__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "unknown",
+      "to": "__layer_layer_1__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "uncertain",
+      "to": "__layer_layer_1__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "contradictory",
+      "to": "__layer_layer_1__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "hypothesizes",
+      "to": "__layer_layer_1__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "assumes",
+      "to": "__layer_layer_1__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "deducts",
+      "to": "__layer_layer_1__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "inducts",
+      "to": "__layer_layer_1__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "abducts",
+      "to": "__layer_layer_1__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "axiom_a1cf2b62",
+      "to": "__layer_layer_s__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "axiom_178171db",
+      "to": "__layer_layer_s__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "axiom_f3aaee04",
+      "to": "__layer_layer_s__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "axiom_f746018d",
+      "to": "__layer_layer_s__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "axiom_3bc4628a",
+      "to": "__layer_layer_s__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "axiom_d5fb60ea",
+      "to": "__layer_layer_s__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "axiom_7cae25bc",
+      "to": "__layer_layer_s__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "axiom_10337326",
+      "to": "__layer_layer_s__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "axiom_09019bc5",
+      "to": "__layer_layer_s__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "axiom_18e70d12",
+      "to": "__layer_layer_s__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "axiom_7461aa2d",
+      "to": "__layer_layer_s__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "axiom_08090882",
+      "to": "__layer_layer_s__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "axiom_70e04b5c",
+      "to": "__layer_layer_s__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "axiom_309d8681",
+      "to": "__layer_layer_s__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "teach",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "query",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "compute",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "modify_self",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "build",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "execute",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "read",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "write",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "delete",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "attack",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "defend",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "scan_vulnerability",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "patch_vulnerability",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "isolate",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "monitor",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "log",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "audit",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "remember",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "forget",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "evaluate",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "observe",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "correct",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "wrong",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "partial",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "update_belief",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "rollback",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "spawn_agent",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "pipeline",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "suspend",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "resume",
+      "to": "__layer_layer_3__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "akhil",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "flux",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "knowledge_graph",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "symbolic_core",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "sandbox",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "operating_system",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "web",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "user",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "code",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "architecture",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "security",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "mathematics",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "experiment",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "hypothesis",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "goal",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "constraint",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "agent",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "memory",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "ai_system",
+      "to": "__layer_layer_4__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "true",
+      "to": "__layer_layer_0__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "false",
+      "to": "__layer_layer_0__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "not",
+      "to": "__layer_layer_0__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "and",
+      "to": "__layer_layer_0__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "or",
+      "to": "__layer_layer_0__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "implies",
+      "to": "__layer_layer_0__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "equivalent",
+      "to": "__layer_layer_0__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "exists",
+      "to": "__layer_layer_0__",
+      "type": "LAYER_MEMBER"
+    },
+    {
+      "from": "forall",
+      "to": "__layer_layer_0__",
+      "type": "LAYER_MEMBER"
+    }
+  ],
+  "spec_nodes": [
+    {
+      "id": "spec_true_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "true",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "true"
+    },
+    {
+      "id": "spec_true_z3",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "BoolVal(True)",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "Z3",
+      "spec_text": "BoolVal(True)"
+    },
+    {
+      "id": "spec_false_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "false",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "false"
+    },
+    {
+      "id": "spec_false_z3",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "BoolVal(False)",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "Z3",
+      "spec_text": "BoolVal(False)"
+    },
+    {
+      "id": "spec_not_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "not A",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "not A"
+    },
+    {
+      "id": "spec_not_z3",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "Not(A)",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "Z3",
+      "spec_text": "Not(A)"
+    },
+    {
+      "id": "spec_and_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "A, B",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "A, B"
+    },
+    {
+      "id": "spec_and_z3",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "And(A, B)",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "Z3",
+      "spec_text": "And(A, B)"
+    },
+    {
+      "id": "spec_or_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "A ; B",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "A ; B"
+    },
+    {
+      "id": "spec_or_z3",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "Or(A, B)",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "Z3",
+      "spec_text": "Or(A, B)"
+    },
+    {
+      "id": "spec_implies_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "B :- A",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "B :- A"
+    },
+    {
+      "id": "spec_implies_z3",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "Implies(A, B)",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "Z3",
+      "spec_text": "Implies(A, B)"
+    },
+    {
+      "id": "spec_equivalent_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "A :- B; B :- A",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "A :- B; B :- A"
+    },
+    {
+      "id": "spec_equivalent_z3",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "A == B",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "Z3",
+      "spec_text": "A == B"
+    },
+    {
+      "id": "spec_exists_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "exists(X)",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "exists(X)"
+    },
+    {
+      "id": "spec_exists_z3",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "Exists(X, P(X))",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "Z3",
+      "spec_text": "Exists(X, P(X))"
+    },
+    {
+      "id": "spec_forall_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "forall(X)",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "forall(X)"
+    },
+    {
+      "id": "spec_forall_z3",
+      "type": "SPEC",
+      "layer": "LAYER_0",
+      "definition": "ForAll(X, P(X))",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "Z3",
+      "spec_text": "ForAll(X, P(X))"
+    },
+    {
+      "id": "spec_causes_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "causes(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "causes(A, B)"
+    },
+    {
+      "id": "spec_is_a_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "is_a(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "is_a(A, B)"
+    },
+    {
+      "id": "spec_instance_of_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "instance_of(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "instance_of(A, B)"
+    },
+    {
+      "id": "spec_part_of_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "part_of(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "part_of(A, B)"
+    },
+    {
+      "id": "spec_has_a_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "has_a(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "has_a(A, B)"
+    },
+    {
+      "id": "spec_requires_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "requires(B, A)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "requires(B, A)"
+    },
+    {
+      "id": "spec_prevents_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "prevents(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "prevents(A, B)"
+    },
+    {
+      "id": "spec_constrains_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "constrains(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "constrains(A, B)"
+    },
+    {
+      "id": "spec_improves_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "improves(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "improves(A, B)"
+    },
+    {
+      "id": "spec_precedes_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "precedes(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "precedes(A, B)"
+    },
+    {
+      "id": "spec_co_occurs_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "co_occurs(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "co_occurs(A, B)"
+    },
+    {
+      "id": "spec_equals_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "equals(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "equals(A, B)"
+    },
+    {
+      "id": "spec_similar_to_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "similar_to(A, B, Threshold)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "similar_to(A, B, Threshold)"
+    },
+    {
+      "id": "spec_contradicts_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "contradicts(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "contradicts(A, B)"
+    },
+    {
+      "id": "spec_analogous_to_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "analogous_to(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "analogous_to(A, B)"
+    },
+    {
+      "id": "spec_sequence_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "sequence(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "sequence(A, B)"
+    },
+    {
+      "id": "spec_degrades_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "degrades(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "degrades(A, B)"
+    },
+    {
+      "id": "spec_enables_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "enables(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "enables(A, B)"
+    },
+    {
+      "id": "spec_parallel_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_2",
+      "definition": "parallel(A, B)",
+      "confidence": 1.0,
+      "immutable": false,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "parallel(A, B)"
+    },
+    {
+      "id": "spec_axiom_a1cf2b62_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_S",
+      "definition": "#program base.",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": "#program base."
+    },
+    {
+      "id": "spec_axiom_178171db_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_S",
+      "definition": ":- self_modify(A), not sandboxed(A).\n:- self_modify(A), not approved(A, akhil).",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": ":- self_modify(A), not sandboxed(A).\n:- self_modify(A), not approved(A, akhil)."
+    },
+    {
+      "id": "spec_axiom_f3aaee04_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_S",
+      "definition": ":- execute(A), not sandboxed(A), not approved(A, akhil).",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": ":- execute(A), not sandboxed(A), not approved(A, akhil)."
+    },
+    {
+      "id": "spec_axiom_f746018d_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_S",
+      "definition": ":- write(F, SYSTEM), not approved(F, akhil).",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": ":- write(F, SYSTEM), not approved(F, akhil)."
+    },
+    {
+      "id": "spec_axiom_3bc4628a_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_S",
+      "definition": ":- delete(F), system_file(F), not approved(F, akhil).",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": ":- delete(F), system_file(F), not approved(F, akhil)."
+    },
+    {
+      "id": "spec_axiom_d5fb60ea_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_S",
+      "definition": ":- attack(T), not approved(T, akhil).",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": ":- attack(T), not approved(T, akhil)."
+    },
+    {
+      "id": "spec_axiom_7cae25bc_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_S",
+      "definition": ":- approved(A, akhil), not audit_verified(A, akhil).",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": ":- approved(A, akhil), not audit_verified(A, akhil)."
+    },
+    {
+      "id": "spec_axiom_10337326_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_S",
+      "definition": ":- update_belief(C, S1, S2), not evidence_sufficient(C, S2).",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": ":- update_belief(C, S1, S2), not evidence_sufficient(C, S2)."
+    },
+    {
+      "id": "spec_axiom_09019bc5_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_S",
+      "definition": ":- rollback(V), not checkpoint_exists(V).",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": ":- rollback(V), not checkpoint_exists(V)."
+    },
+    {
+      "id": "spec_axiom_18e70d12_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_S",
+      "definition": ":- spawn_agent(A, P), P > trust_level(flux).",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": ":- spawn_agent(A, P), P > trust_level(flux)."
+    },
+    {
+      "id": "spec_axiom_7461aa2d_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_S",
+      "definition": ":- pipeline(P), member(A, P), requires_approval(A), not approved(P, akhil).",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": ":- pipeline(P), member(A, P), requires_approval(A), not approved(P, akhil)."
+    },
+    {
+      "id": "spec_axiom_08090882_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_S",
+      "definition": ":- resume(A), not suspended(A).",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": ":- resume(A), not suspended(A)."
+    },
+    {
+      "id": "spec_axiom_70e04b5c_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_S",
+      "definition": ":- approved(A, akhil), not audit_verified(A, akhil).\n:- operator(X), X != akhil.",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": ":- approved(A, akhil), not audit_verified(A, akhil).\n:- operator(X), X != akhil."
+    },
+    {
+      "id": "spec_axiom_309d8681_clingo",
+      "type": "SPEC",
+      "layer": "LAYER_S",
+      "definition": ":- user_command(C), not sandboxed(C).\n:- user_command(C), modifies_state(C).",
+      "confidence": 1.0,
+      "immutable": true,
+      "trainable": true,
+      "language": "CLINGO",
+      "spec_text": ":- user_command(C), not sandboxed(C).\n:- user_command(C), modifies_state(C)."
+    }
+  ],
+  "spec_edges": [
+    {
+      "from": "spec_true_clingo",
+      "to": "true",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_true_z3",
+      "to": "true",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_false_clingo",
+      "to": "false",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_false_z3",
+      "to": "false",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_not_clingo",
+      "to": "not",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_not_z3",
+      "to": "not",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_and_clingo",
+      "to": "and",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_and_z3",
+      "to": "and",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_or_clingo",
+      "to": "or",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_or_z3",
+      "to": "or",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_implies_clingo",
+      "to": "implies",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_implies_z3",
+      "to": "implies",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_equivalent_clingo",
+      "to": "equivalent",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_equivalent_z3",
+      "to": "equivalent",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_exists_clingo",
+      "to": "exists",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_exists_z3",
+      "to": "exists",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_forall_clingo",
+      "to": "forall",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_forall_z3",
+      "to": "forall",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_causes_clingo",
+      "to": "causes",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_is_a_clingo",
+      "to": "is_a",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_instance_of_clingo",
+      "to": "instance_of",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_part_of_clingo",
+      "to": "part_of",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_has_a_clingo",
+      "to": "has_a",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_requires_clingo",
+      "to": "requires",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_prevents_clingo",
+      "to": "prevents",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_constrains_clingo",
+      "to": "constrains",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_improves_clingo",
+      "to": "improves",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_precedes_clingo",
+      "to": "precedes",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_co_occurs_clingo",
+      "to": "co_occurs",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_equals_clingo",
+      "to": "equals",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_similar_to_clingo",
+      "to": "similar_to",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_contradicts_clingo",
+      "to": "contradicts",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_analogous_to_clingo",
+      "to": "analogous_to",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_sequence_clingo",
+      "to": "sequence",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_degrades_clingo",
+      "to": "degrades",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_enables_clingo",
+      "to": "enables",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_parallel_clingo",
+      "to": "parallel",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_axiom_a1cf2b62_clingo",
+      "to": "axiom_a1cf2b62",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_axiom_178171db_clingo",
+      "to": "axiom_178171db",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_axiom_f3aaee04_clingo",
+      "to": "axiom_f3aaee04",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_axiom_f746018d_clingo",
+      "to": "axiom_f746018d",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_axiom_3bc4628a_clingo",
+      "to": "axiom_3bc4628a",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_axiom_d5fb60ea_clingo",
+      "to": "axiom_d5fb60ea",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_axiom_7cae25bc_clingo",
+      "to": "axiom_7cae25bc",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_axiom_10337326_clingo",
+      "to": "axiom_10337326",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_axiom_09019bc5_clingo",
+      "to": "axiom_09019bc5",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_axiom_18e70d12_clingo",
+      "to": "axiom_18e70d12",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_axiom_7461aa2d_clingo",
+      "to": "axiom_7461aa2d",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_axiom_08090882_clingo",
+      "to": "axiom_08090882",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_axiom_70e04b5c_clingo",
+      "to": "axiom_70e04b5c",
+      "type": "FORMALIZES"
+    },
+    {
+      "from": "spec_axiom_309d8681_clingo",
+      "to": "axiom_309d8681",
+      "type": "FORMALIZES"
+    }
+  ],
+  "topo_order": [
+    "implies",
+    "not",
+    "exists",
+    "and",
+    "equivalent",
+    "forall",
+    "or",
+    "true",
+    "false",
+    "__layer_layer_0__",
+    "believes",
+    "assumes",
+    "knows",
+    "abducts",
+    "uncertain",
+    "suspects",
+    "inducts",
+    "hypothesizes",
+    "contradictory",
+    "unknown",
+    "deducts",
+    "__layer_layer_1__",
+    "equals",
+    "prevents",
+    "degrades",
+    "constrains",
+    "requires",
+    "part_of",
+    "enables",
+    "has_a",
+    "parallel",
+    "similar_to",
+    "improves",
+    "is_a",
+    "instance_of",
+    "contradicts",
+    "precedes",
+    "causes",
+    "sequence",
+    "co_occurs",
+    "analogous_to",
+    "__layer_layer_2__",
+    "resume",
+    "observe",
+    "log",
+    "wrong",
+    "defend",
+    "spawn_agent",
+    "update_belief",
+    "build",
+    "attack",
+    "monitor",
+    "pipeline",
+    "remember",
+    "scan_vulnerability",
+    "delete",
+    "audit",
+    "execute",
+    "read",
+    "correct",
+    "teach",
+    "write",
+    "suspend",
+    "modify_self",
+    "compute",
+    "isolate",
+    "patch_vulnerability",
+    "rollback",
+    "forget",
+    "evaluate",
+    "query",
+    "partial",
+    "__layer_layer_3__",
+    "symbolic_core",
+    "memory",
+    "akhil",
+    "experiment",
+    "code",
+    "constraint",
+    "flux",
+    "mathematics",
+    "agent",
+    "ai_system",
+    "security",
+    "hypothesis",
+    "architecture",
+    "goal",
+    "web",
+    "sandbox",
+    "knowledge_graph",
+    "operating_system",
+    "user",
+    "__layer_layer_4__",
+    "axiom_f746018d",
+    "axiom_10337326",
+    "axiom_f3aaee04",
+    "axiom_09019bc5",
+    "axiom_d5fb60ea",
+    "axiom_7cae25bc",
+    "axiom_3bc4628a",
+    "axiom_7461aa2d",
+    "axiom_18e70d12",
+    "axiom_70e04b5c",
+    "axiom_178171db",
+    "axiom_a1cf2b62",
+    "axiom_08090882",
+    "axiom_309d8681",
+    "__layer_layer_s__"
+  ],
+  "gaps": {
+    "resolved_forward_refs": [],
+    "true_gaps": [],
+    "cycles": [],
+    "isolated_nodes": [],
+    "edge_training_data": {
+      "source_declared_edges": 0,
+      "layer0_definitional_edges": 14,
+      "layer_member_edges": 102,
+      "isolated_concept_count": 0,
+      "reason": "No relates_to fields in FLUX_PRIMITIVES.md above Layer 0 — synthetic sessions produce empty edge lists",
+      "impact": "Edge prediction capability requires real [TEACH] sessions with explicit relates_to fields",
+      "recommendation": "Add relates_to fields to higher-layer primitives or generate [TEACH] sessions with typed edges"
+    }
+  }
+}

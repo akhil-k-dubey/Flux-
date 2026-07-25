@@ -1,0 +1,96 @@
+{
+  "version": "0.1",
+  "generated_at": "2026-07-18T05:33:04.452836+00:00",
+  "pipeline_status": "VALID",
+  "data_paths": {
+    "kg_seed": "logs\\flux_kg_seed.json",
+    "sessions": "logs\\flux_sessions.jsonl",
+    "commits": "logs\\flux_kg_commits.jsonl",
+    "spec_targets": "logs\\flux_spec_targets.jsonl",
+    "vocab": "logs\\flux_vocab.json"
+  },
+  "statistics": {
+    "kg_nodes": 108,
+    "kg_edges": 116,
+    "kg_spec_nodes": 51,
+    "sessions": 313,
+    "commits": 313,
+    "spec_targets": 51,
+    "commit_conf_dist": {
+      "0.0": 9,
+      "0.2": 3,
+      "0.35": 3,
+      "0.5": 3,
+      "0.6": 3,
+      "0.7": 4,
+      "0.75": 3,
+      "0.8": 4,
+      "0.85": 7,
+      "0.9": 7,
+      "0.95": 102,
+      "1.0": 165
+    }
+  },
+  "vocab": {
+    "vocab_size": 152,
+    "vocab_hash": "caede33c7559d1eed8e083fcf67c1011",
+    "vocab_drifted": true,
+    "drift_note": "Vocab changed 4a3d599b -> caede33c. Embedding layer must be reinitialized before fine-tuning."
+  },
+  "curriculum": {
+    "NEGATIVE": {
+      "count": 9,
+      "rank_range": [
+        9998,
+        9998
+      ]
+    },
+    "REAL": {
+      "count": 202,
+      "rank_range": [
+        9999,
+        9999
+      ]
+    },
+    "SYNTHETIC": {
+      "count": 102,
+      "rank_range": [
+        0,
+        106
+      ]
+    }
+  },
+  "spec_languages": {
+    "present": {
+      "CLINGO": 42,
+      "Z3": 9
+    },
+    "missing": [
+      "LEAN4"
+    ]
+  },
+  "gaps": {
+    "edge_training_data": {
+      "source_declared_edges": 0,
+      "layer0_definitional_edges": 14,
+      "layer_member_edges": 102,
+      "isolated_concept_count": 0,
+      "reason": "No relates_to fields in FLUX_PRIMITIVES.md above Layer 0 — synthetic sessions produce empty edge lists",
+      "impact": "Edge prediction capability requires real [TEACH] sessions with explicit relates_to fields",
+      "recommendation": "Add relates_to fields to higher-layer primitives or generate [TEACH] sessions with typed edges"
+    },
+    "missing_spec_languages": {
+      "missing": [
+        "LEAN4"
+      ],
+      "reason": "No lean4_map fields in FLUX_PRIMITIVES.md",
+      "impact": "Flux cannot learn Lean4 spec generation from primitive data",
+      "recommendation": "Add lean4_map: fields to Layer 0 primitives in FLUX_PRIMITIVES.md"
+    }
+  },
+  "validation": {
+    "passed": true,
+    "errors": [],
+    "checked_at": "2026-07-18T05:33:04.452836+00:00"
+  }
+}
