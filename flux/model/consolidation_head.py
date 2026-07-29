@@ -50,13 +50,21 @@ class ConsolidationHead(nn.Module):
             # internally with better numerical stability than BCELoss(Sigmoid(x)).
             # At inference: apply torch.sigmoid() to get probability.
         )
-        # Small initial weights on the output projection.
-        # Default Kaiming init (weights ~ ±0.35) lets the head immediately
-        # amplify hidden state variation — but the bias still learns fast.
-        # gain=0.1 (weights ~ ±0.035) makes the head start near-constant,
-        # so it must earn weight magnitude from real gradient signal.
-        # Works with tier_weight rebalancing; ineffective without it.
-        nn.init.xavier_uniform_(self.net[-1].weight, gain=0.1)
+        # Root cause of all three training collapses: the proj2 bias learns
+        # logit(0.948) ≈ 2.9 within 2-3 epochs on this 85%-high-conf dataset.
+        # Once the bias is large enough, gradients through the weight become
+        # negligible relative to the bias gradient. The head stops using the
+        # hidden state entirely and just predicts the dataset mean.
+        #
+        # Fix:
+        #   gain=0.01  — weights start tiny, must earn magnitude from real signal
+        #   zeros bias — bias must also earn its offset, cannot coast to 2.9 for free
+        #
+        # Combined with the 10× slower learning rate + weight_decay=0.5 on this
+        # bias in the trainer optimizer, the head is forced to use hidden state
+        # direction before it is allowed to rely on the bias shortcut.
+        nn.init.xavier_uniform_(self.net[-1].weight, gain=0.01)
+        nn.init.zeros_(self.net[-1].bias)
 
     def forward(self, final_state: torch.Tensor) -> torch.Tensor:
         """

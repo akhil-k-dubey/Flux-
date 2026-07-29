@@ -26,6 +26,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 from flux.model.liquid_transformer import LiquidTransformer
 from flux.model.consolidation_head   import ConsolidationHead
 from flux.model.spec_head            import SpecHead, LANG_TO_IDX
+from flux.model.field_encoder        import parse_field_spans
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -42,7 +43,7 @@ CKPT_DIR      = Path("checkpoints")
 # ---------------------------------------------------------------------------
 PHASE1_EPOCHS   = 100
 PHASE2_EPOCHS   = 100
-LR              = 1e-3
+LR              = 3e-4   # lowered from 1e-3: field-level 7 steps vs 800 char steps
 LR_MIN          = 1e-5
 WEIGHT_DECAY    = 0.01
 PATIENCE        = 20
@@ -53,11 +54,17 @@ SPEC_W_END      = 0.5
 EMBED_DIM       = 32
 HIDDEN_DIM      = 128
 DROPOUT         = 0.1
-GRAD_CLIP       = 1.0    # max gradient norm — prevents RK4 ODE explosion early in training
-SOLVER          = "rk4"  # rk4 for training — Euler caused mode collapse (insufficient
-                         # gradient signal per step for W_combined to learn content-based
-                         # representations). rk4's 4 evals/step = 4x more gradient paths.
+GRAD_CLIP       = 0.5     # tighter clip for same reason — fewer steps, larger grads
+SOLVER          = "euler"  # euler for training speed — 1 ode_fn call per char vs 4 for rk4.
+                           # rk4 is used at inference (liquid_transformer.from_checkpoint).
 SEED            = 42
+
+# EWC (Elastic Weight Consolidation)
+# Applied during self-training (RSM-triggered retraining) to prevent
+# catastrophic forgetting when auto-proposed concepts enter the training set.
+# λ=0.4: calibrated for 303-node KG with 313 training sessions.
+EWC_LAMBDA      = 0.4
+EWC_STATE_PATH  = CKPT_DIR / "flux_ewc_state.pt"
 
 # ---------------------------------------------------------------------------
 # Loss singletons — instantiated once, reused across all sessions and epochs.
@@ -82,6 +89,16 @@ def _decode(b64: str) -> torch.Tensor:
     return torch.tensor(list(arr), dtype=torch.long)
 
 
+def _decode_text(char_seq: torch.Tensor, i2c: dict[int, str]) -> str:
+    """
+    Reconstruct the original TEACH-block text from a char-index LongTensor.
+
+    Unknown indices (UNK=0, any out-of-vocab index) map to '\x00' so that
+    text length == len(char_seq) and field-span positions stay valid.
+    """
+    return "".join(i2c.get(int(idx), "\x00") for idx in char_seq.tolist())
+
+
 def _parse_node_id(session_id: str) -> str:
     """syn_entropy_abc123 → entropy | real_entropy_abc123 → entropy."""
     parts = session_id.split("_")
@@ -94,11 +111,19 @@ def load_data() -> list[dict]:
 
     Each record:
       session_id, source, complexity_rank, weight,
-      char_seq   — (seq_len,) LongTensor
+      char_seq    — (seq_len,) LongTensor
+      field_spans — {field_name: (start_idx, end_idx)} pre-parsed field positions
       conf_target — float [0,1]   ← commit_confidence
       lang_idx    — int  0-3      ← LANG_TO_IDX (NONE if no spec target)
       spec_conf   — float [0,1]   ← 1.0 if verified spec, 0.0 if NONE
+
+    field_spans is computed once here (cheap Python string ops) so the
+    forward pass only needs to slice pre-known positions, not re-parse.
     """
+    # Build index-to-character map from vocabulary
+    vocab = json.loads(VOCAB_PATH.read_text(encoding="utf-8"))
+    i2c: dict[int, str] = {v: k for k, v in vocab["char_to_idx"].items()}
+
     # Index commits by session_id
     commits = {
         r["session_id"]: r["ground_truth_commit"]["commit_confidence"]
@@ -127,12 +152,18 @@ def load_data() -> list[dict]:
             lang_idx  = LANG_TO_IDX["NONE"]   # 0
             spec_conf = 0.0
 
+        char_seq = _decode(sess["char_sequence_b64"])
+        # Decode once to text so we can find field boundaries cheaply
+        text        = _decode_text(char_seq, i2c)
+        field_spans = parse_field_spans(text)
+
         records.append({
             "session_id":      sid,
             "source":          sess["source"],
             "complexity_rank": sess["complexity_rank"],
             "weight":          float(sess.get("weight", 1.0)),
-            "char_seq":        _decode(sess["char_sequence_b64"]),
+            "char_seq":        char_seq,
+            "field_spans":     field_spans,
             "conf_target":     conf_target,
             "lang_idx":        lang_idx,
             "spec_conf":       spec_conf,
@@ -287,6 +318,7 @@ def check_hidden_diversity(
     with torch.no_grad():
         for tier_name, r in samples.items():
             h, _ = model(r["char_seq"].to(device), device,
+                         field_spans=r.get("field_spans"),
                          solver=SOLVER, return_history=False)
             states[tier_name] = h
     if was_training:
@@ -299,7 +331,7 @@ def check_hidden_diversity(
             sim = F.cosine_similarity(
                 states[t1].unsqueeze(0), states[t2].unsqueeze(0)
             ).item()
-            flag = "  ✓" if sim < 0.90 else "  ⚠ still similar"
+            flag = "  [OK]" if sim < 0.90 else "  [!!] still similar"
             print(f"    {t1:10s} vs {t2:10s}:  {sim:+.4f}{flag}")
     print("  Target: < 0.90 for at least one pair.")
 
@@ -316,28 +348,23 @@ def session_loss(
     device:    torch.device,
     spec_weight: float = 0.0,
     solver: str = SOLVER,
+    ewc_state: tuple | None = None,
 ) -> torch.Tensor:
     """
     Compute weighted loss for one session.
 
-    Effective weight = source_weight × tier_weight
-      source_weight: REAL=1.0, SYNTHETIC=0.8, NEGATIVE=1.0 (from session file)
-      tier_weight:   inverse-frequency per confidence tier (attached in load_data)
-                     zero/low sessions are upweighted ~18× vs taught sessions
-                     so each tier contributes equally to the total loss.
-
-    Phase 1 (spec_weight=0.0): only BCE on confidence.
-    Phase 2 (spec_weight>0.0): BCE(conf) + spec_weight×(CE(lang) + BCE(spec_conf))
-      Spec loss only applied when the session has a real spec target (lang != NONE).
-
-    Uses module-level _BCE and _CE singletons — not instantiated per call.
+    ewc_state: optional (fisher_model, fisher_cons, optimal_model, optimal_cons)
+    tuple from load_ewc_state(). When provided, adds EWC penalty to the task
+    loss to prevent catastrophic forgetting during self-training.
     """
     char_seq = record["char_seq"].to(device)
     # Multiplicative weight: source imbalance × confidence tier imbalance
     w = record["weight"] * record.get("tier_weight", 1.0)
 
-    # Forward
-    final_state, _ = model(char_seq, device, solver=solver)
+    # Forward — field-level path (field_spans pre-computed at load time)
+    final_state, _ = model(char_seq, device,
+                           field_spans=record.get("field_spans"),
+                           solver=solver)
     conf_pred      = cons_head(final_state)
 
     conf_target = torch.tensor(record["conf_target"], dtype=torch.float32, device=device)
@@ -352,7 +379,157 @@ def session_loss(
                   + _BCE(spec_conf_pred, spec_conf_target)
         loss = loss + spec_weight * w * spec_loss
 
+    # EWC penalty — only applied during self-training (ewc_state is not None).
+    # L_EWC = (λ/2) × Σ F_i × (θ_i − θ*_i)²
+    if ewc_state is not None:
+        fm, fc, om, oc = ewc_state
+        loss = loss + ewc_penalty(model, cons_head, fm, fc, om, oc)
+
     return loss
+
+
+# ---------------------------------------------------------------------------
+# EWC: Fisher information + penalty
+# ---------------------------------------------------------------------------
+
+def compute_ewc_fisher(
+    model:     LiquidTransformer,
+    cons_head: ConsolidationHead,
+    records:   list[dict],
+    device:    torch.device,
+) -> tuple[dict[str, torch.Tensor], dict[str, torch.Tensor],
+           dict[str, torch.Tensor], dict[str, torch.Tensor]]:
+    """
+    Compute the empirical Fisher information matrix after Phase 1 training.
+
+    Uses squared gradient of BCE loss (empirical Fisher) — cheaper than
+    the diagonal of the Hessian and sufficient for our dataset size.
+
+    Returns:
+        fisher_model, fisher_cons   — per-param Fisher diagonal
+        optimal_model, optimal_cons — parameter snapshots at convergence
+
+    Call once after Phase 1 best weights are restored.
+    Save to EWC_STATE_PATH for use in future self-training.
+    """
+    print("  [EWC] Computing Fisher information matrix...", flush=True)
+    model.eval()
+    cons_head.eval()
+
+    fisher_model = {n: torch.zeros_like(p) for n, p in model.named_parameters()}
+    fisher_cons  = {n: torch.zeros_like(p) for n, p in cons_head.named_parameters()}
+
+    n_processed = 0
+    for record in records:
+        char_seq    = record["char_seq"].to(device)
+        field_spans = record.get("field_spans")
+
+        model.zero_grad()
+        cons_head.zero_grad()
+
+        final_state, _ = model(char_seq, device, field_spans=field_spans, solver=SOLVER)
+        conf_pred      = cons_head(final_state)
+
+        # Empirical Fisher: use actual conf_target as label
+        conf_target = torch.tensor(
+            record["conf_target"], dtype=torch.float32, device=device
+        )
+        loss = _BCE(conf_pred, conf_target)
+        loss.backward()
+
+        for n, p in model.named_parameters():
+            if p.grad is not None:
+                fisher_model[n] += p.grad.detach().pow(2)
+        for n, p in cons_head.named_parameters():
+            if p.grad is not None:
+                fisher_cons[n] += p.grad.detach().pow(2)
+        n_processed += 1
+
+    if n_processed > 0:
+        for n in fisher_model:
+            fisher_model[n] /= n_processed
+        for n in fisher_cons:
+            fisher_cons[n] /= n_processed
+
+    optimal_model = {n: p.detach().clone() for n, p in model.named_parameters()}
+    optimal_cons  = {n: p.detach().clone() for n, p in cons_head.named_parameters()}
+
+    print(f"  [EWC] Fisher computed over {n_processed} sessions.", flush=True)
+    return fisher_model, fisher_cons, optimal_model, optimal_cons
+
+
+def ewc_penalty(
+    model:         LiquidTransformer,
+    cons_head:     ConsolidationHead,
+    fisher_model:  dict[str, torch.Tensor],
+    fisher_cons:   dict[str, torch.Tensor],
+    optimal_model: dict[str, torch.Tensor],
+    optimal_cons:  dict[str, torch.Tensor],
+    lambda_ewc:    float = EWC_LAMBDA,
+) -> torch.Tensor:
+    """
+    L_EWC = (λ/2) × Σ F_i × (θ_i − θ*_i)²
+
+    Added to task loss during self-training. Penalises deviation from
+    Phase 1 optimal parameters in proportion to their importance (Fisher).
+    """
+    _device = next(model.parameters()).device
+    penalty = torch.tensor(0.0, device=_device)
+
+    for (n, p), f, opt in zip(
+        model.named_parameters(),
+        fisher_model.values(),
+        optimal_model.values(),
+    ):
+        penalty = penalty + (f.to(_device) * (p - opt.to(_device)).pow(2)).sum()
+
+    for (n, p), f, opt in zip(
+        cons_head.named_parameters(),
+        fisher_cons.values(),
+        optimal_cons.values(),
+    ):
+        penalty = penalty + (f.to(_device) * (p - opt.to(_device)).pow(2)).sum()
+
+    return (lambda_ewc / 2.0) * penalty
+
+
+def save_ewc_state(
+    fisher_model:  dict[str, torch.Tensor],
+    fisher_cons:   dict[str, torch.Tensor],
+    optimal_model: dict[str, torch.Tensor],
+    optimal_cons:  dict[str, torch.Tensor],
+    path: Path = EWC_STATE_PATH,
+) -> None:
+    """Save Fisher + optimal params to disk for use in future self-training."""
+    CKPT_DIR.mkdir(exist_ok=True)
+    torch.save({
+        "fisher_model":  fisher_model,
+        "fisher_cons":   fisher_cons,
+        "optimal_model": optimal_model,
+        "optimal_cons":  optimal_cons,
+        "ewc_lambda":    EWC_LAMBDA,
+    }, path)
+    print(f"  [EWC] State saved to {path}", flush=True)
+
+
+def load_ewc_state(
+    path: Path = EWC_STATE_PATH,
+    device: torch.device | None = None,
+) -> tuple[dict, dict, dict, dict] | None:
+    """
+    Load Fisher + optimal params from disk.
+    Returns None if file doesn't exist (training without EWC is valid for
+    Phase 1/2 — EWC only activates for self-training).
+    """
+    if not path.exists():
+        return None
+    ckpt = torch.load(path, map_location=device or "cpu", weights_only=False)
+    return (
+        ckpt["fisher_model"],
+        ckpt["fisher_cons"],
+        ckpt["optimal_model"],
+        ckpt["optimal_cons"],
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -365,14 +542,14 @@ def run_epoch(
     optimizer=None, scheduler=None,
     spec_weight: float = 0.0, epoch_seed: int = 0,
     all_params: list | None = None,
+    ewc_state: tuple | None = None,
 ) -> float:
     """
     One full pass. If optimizer is None: eval mode (no gradient, no update).
     Returns mean loss.
 
-    all_params — flat list of trainable parameters for gradient norm clipping.
-    Clipping at GRAD_CLIP=1.0 prevents RK4 ODE gradient explosion early in
-    training when tau is near-zero and the chain rule depth is large.
+    ewc_state — passed through to session_loss() to add EWC penalty during
+    self-training. None for normal Phase 1/2 training.
     """
     is_train = optimizer is not None
     model.train(is_train)
@@ -385,7 +562,10 @@ def run_epoch(
     ctx = torch.enable_grad() if is_train else torch.no_grad()
     with ctx:
         for record in ordered:
-            loss = session_loss(model, cons_head, spec_head, record, device, spec_weight)
+            loss = session_loss(
+                model, cons_head, spec_head, record, device,
+                spec_weight, ewc_state=ewc_state,
+            )
 
             if is_train:
                 optimizer.zero_grad()
@@ -488,11 +668,27 @@ def train_phase(
     Phase 1: spec_weight_start = spec_weight_end = 0.0
     Phase 2: spec_weight_start = 0.1, spec_weight_end = 0.5
     """
-    all_params     = list(model.parameters()) + list(cons_head.parameters())
+    # Two param groups: the consolidation head's final bias gets 10× slower
+    # LR and strong weight_decay=0.5 to prevent it from racing to logit(0.948)≈2.9
+    # before the hidden state weights have learned anything useful.
+    # all_params is kept for gradient clipping in run_epoch.
+    _head_named = list(cons_head.named_parameters())
+    _bias_params  = [p for n, p in _head_named if n == "net.3.bias"]
+    _other_params = (
+        list(model.parameters())
+        + [p for n, p in _head_named if n != "net.3.bias"]
+    )
     if phase == 2:
-        all_params += list(spec_head.parameters())
+        _other_params += list(spec_head.parameters())
 
-    optimizer  = AdamW(all_params, lr=LR, weight_decay=WEIGHT_DECAY)
+    optimizer = AdamW(
+        [
+            {"params": _other_params, "lr": LR,       "weight_decay": WEIGHT_DECAY},
+            {"params": _bias_params,  "lr": LR * 0.1, "weight_decay": 0.5},
+        ],
+        betas=(0.9, 0.999), eps=1e-8,
+    )
+    all_params = _other_params + _bias_params   # for gradient clipping in run_epoch
     scheduler  = CosineAnnealingLR(optimizer, T_max=max_epochs, eta_min=LR_MIN)
     early_stop = EarlyStopping()
 
@@ -528,10 +724,32 @@ def train_phase(
             "spec_head":          {k: v.detach() for k, v in spec_head.state_dict().items()},
         }
 
+        # Confidence distribution diagnostic — sample 20 train sessions,
+        # run through model + head under no_grad, check predicted conf spread.
+        # std > 0.10 → head is differentiating sessions (healthy).
+        # std < 0.05 → head is ignoring hidden state (bias collapse).
+        _sample = random.sample(train_records, min(20, len(train_records)))
+        model.eval(); cons_head.eval()
+        with torch.no_grad():
+            _pred_confs = [
+                torch.sigmoid(cons_head(
+                    model(r["char_seq"].to(device), device,
+                          field_spans=r.get("field_spans"))[0]
+                )).item()
+                for r in _sample
+            ]
+        model.train(); cons_head.train()
+        _ct = torch.tensor(_pred_confs)
+        _conf_diag = (
+            f"conf: min={min(_pred_confs):.3f}  max={max(_pred_confs):.3f}  "
+            f"mean={_ct.mean():.3f}  std={_ct.std():.3f}"
+        )
+
         print(f"  ep {epoch:4d}/{max_epochs}  "
               f"train={train_loss:.4f}  val={val_loss:.4f}  "
               f"spec_w={spec_w:.3f}  lr={scheduler.get_last_lr()[0]:.2e}  "
               f"({elapsed:.1f}s)")
+        print(f"  {_conf_diag}")
 
         if early_stop.step(val_loss, state):
             print(f"  Early stop at epoch {epoch} (patience={PATIENCE})")
@@ -596,8 +814,18 @@ def main(run_phase: int | None = None):
         if tier in tier_counts:
             print(f"  {tier:12s}: n={tier_counts[tier]:4d}  tier_w={sample_weights[tier]:.3f}")
 
+    # Compute per-character frequency across all records for FieldEncoder weighting.
+    # Rare content chars (concept names, definition words) get higher weight;
+    # common structural chars (space, colon, newline) get lower weight.
+    char_freq = torch.zeros(vocab_size, dtype=torch.float32)
+    for r in records:
+        for idx in r["char_seq"].tolist():
+            char_freq[idx] += 1
+    char_freq = char_freq / (char_freq.sum() + 1e-8)
+
     # Build model
-    model     = LiquidTransformer(vocab_size=vocab_size, embed_dim=EMBED_DIM,
+    model     = LiquidTransformer(vocab_size=vocab_size, char_freq=char_freq,
+                                  embed_dim=EMBED_DIM,
                                   hidden_dim=HIDDEN_DIM, dropout=DROPOUT).to(device)
     cons_head = ConsolidationHead(hidden_dim=HIDDEN_DIM, dropout=DROPOUT).to(device)
     spec_head = SpecHead(hidden_dim=HIDDEN_DIM, dropout=DROPOUT).to(device)
@@ -619,6 +847,12 @@ def main(run_phase: int | None = None):
         # Confirm hidden state diversity after Phase 1 — proof the LTC is
         # encoding session content, not collapsing to a constant vector.
         check_hidden_diversity(model, train_records, device)
+
+        # Compute and save EWC Fisher information.
+        # Best weights are already restored by train_phase().
+        # This is the reference point for future self-training cycles.
+        fm, fc, om, oc = compute_ewc_fisher(model, cons_head, train_records, device)
+        save_ewc_state(fm, fc, om, oc)
 
     # Phase 2 — load best Phase 1 weights first
     if run_phase in (None, 2):

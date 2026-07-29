@@ -1,71 +1,84 @@
 """
 flux/model/liquid_transformer.py
 
-Drives the character-level LTC processing loop for a single session.
+Drives the field-level LTC processing loop for a single session.
 
 Architecture:
   - FluxEmbedding:   char index → 32-dim vector → LayerNorm
-  - Cell 1 (LiquidCell): processes embedding (input_dim=32)
-      char-level abstraction — field boundaries, vocabulary patterns
+  - FieldEncoder:    char_seq + field_spans → (N_FIELDS, 32)
+                     frequency-weighted mean per semantic field
+  - Cell 1 (LiquidCell): processes field embedding (input_dim=32)
+      field-level abstraction — concept, definition, relations
   - Cell 2 (LiquidCell): processes Cell 1's hidden state (input_dim=128)
-      field-level abstraction — session coherence, structure quality
+      session-level abstraction — coherence, quality, confidence
 
-N=2 stacked cells justified by domain breadth (313 sessions across
-thermodynamics, QM, neuroscience, philosophy, ML) — single cell mixes
-character-level and session-level dynamics in the same 128 dims.
+Why field-level (not character-level):
+  Character-level averaging over 800 chars from a 152-token vocabulary
+  converges to the same hidden-state direction for ALL sessions.
+  Measured: cosine(h_zero, h_taught) = 0.99999 after 8 epochs.
+  Root cause: structural characters ([TEACH], labels, colons, newlines)
+  dominate the average — content is drowned out.
 
-Forward pass:
-  char_indices → embedding → Cell 1 → Cell 2 → (final_state, histories)
-  dt = 1.0 / seq_len  — normalised, total integration time = 1.0
-  final_state = Cell 2 x[T]  — used by consolidation_head and spec_head
+  Field-level processing gives the LTC 7 semantically distinct input steps.
+  "concept: entropy" and "concept: quantum_mechanics" produce genuinely
+  different weighted-mean embeddings → different LTC trajectories → the
+  consolidation head can now discriminate.
+
+Forward pass (field-level):
+  char_seq + field_spans → all_emb → FieldEncoder → 7 field embeddings
+  → Cell 1 (7 steps) → Cell 2 (7 steps) → final_state
+  dt = 1 / N_FIELDS  (fixed, independent of session length)
 
 Parameter count:
-  Embedding:  vocab_size × 32 + 32 (LayerNorm)
-  Cell 1:     41,344   (input_dim=32)
-  Cell 2:     65,920   (input_dim=128)
-  Total cells: 107,264
+  Embedding:     152 × 32 + 32 (LayerNorm) = 4,896
+  FieldEncoder:  7 × 32 null_fields        = 224      (+ char_freq buffer)
+  Cell 1:        41,344  (input_dim=32)
+  Cell 2:        65,920  (input_dim=128)
+  Total:         112,384
 """
 
 from __future__ import annotations
 import torch
 import torch.nn as nn
 
-from flux.model.embedding import FluxEmbedding
-from flux.model.liquid_cell import LiquidCell
+from flux.model.embedding    import FluxEmbedding
+from flux.model.liquid_cell  import LiquidCell
+from flux.model.field_encoder import FieldEncoder, N_FIELDS
 
 
 class LiquidTransformer(nn.Module):
     """
-    Full character-level LTC pipeline for one session.
+    Field-level LTC pipeline for one session.
 
     Inputs:
-      char_indices — (seq_len,) int tensor of vocab indices (no padding)
+      char_indices — (seq_len,) int tensor of vocab indices
       device       — torch.device for tensor creation
+      field_spans  — {field_name: (start_idx, end_idx)} pre-parsed at load time
 
     Outputs:
       final_state  — (hidden_dim,)  Cell 2's final hidden state x[T]
-      histories    — list of 2 tensors, each (seq_len, hidden_dim)
-                     histories[0] = Cell 1 states, histories[1] = Cell 2 states
-                     Retained for tau diagnostics and future attention.
+      histories    — list of 2 tensors, each (N_FIELDS, hidden_dim), or None
     """
 
     def __init__(
         self,
         vocab_size:  int,
-        embed_dim:   int = 32,
-        hidden_dim:  int = 128,
+        char_freq:   torch.Tensor,   # (vocab_size,) normalised freq — for FieldEncoder
+        embed_dim:   int   = 32,
+        hidden_dim:  int   = 128,
         dropout:     float = 0.1,
     ):
         super().__init__()
         self.hidden_dim = hidden_dim
 
-        self.embedding = FluxEmbedding(vocab_size, embed_dim)
+        self.embedding  = FluxEmbedding(vocab_size, embed_dim)
+        self.field_enc  = FieldEncoder(char_freq, embed_dim)
 
-        # Cell 1: embedding → hidden  (input_dim = embed_dim)
-        # Cell 2: hidden   → hidden   (input_dim = hidden_dim — Cell 1's output)
+        # Cell 1: field embedding → hidden  (input_dim = embed_dim)
+        # Cell 2: hidden          → hidden  (input_dim = hidden_dim)
         self.cells = nn.ModuleList([
-            LiquidCell(hidden_dim, embed_dim,   dropout),
-            LiquidCell(hidden_dim, hidden_dim,  dropout),
+            LiquidCell(hidden_dim, embed_dim,  dropout),
+            LiquidCell(hidden_dim, hidden_dim, dropout),
         ])
 
     # ------------------------------------------------------------------
@@ -75,30 +88,39 @@ class LiquidTransformer(nn.Module):
     def forward(
         self,
         char_indices: torch.Tensor,
-        device: torch.device,
-        return_history: bool = False,
-        solver: str = "euler",
+        device:       torch.device,
+        field_spans:  dict[str, tuple[int, int]] | None = None,
+        return_history: bool  = False,
+        solver:         str   = "euler",
     ) -> tuple[torch.Tensor, list[torch.Tensor] | None]:
         """
-        Process one full session character by character.
+        Process one session through the field-level LTC.
 
-        solver="euler"  (training default): 1 ODE eval per character, 4× faster.
-        solver="rk4"   (inference):         4 ODE evals per character, more accurate.
+        field_spans must be provided for all training/eval calls.
+        If None (legacy / testing), falls back to character-level loop.
 
-        Pre-embeds all characters at once (1 batch call) instead of 800 individual
-        embedding lookups, eliminating seq_len extra Python dispatches.
+        solver="euler"  (training default): 1 ODE eval per step.
+        solver="rk4"    (inference):        4 ODE evals per step.
         """
-        seq_len = len(char_indices)
-        dt = 1.0 / seq_len
+        # Embed entire character sequence in one batch call
+        all_emb = self.embedding(char_indices)   # (seq_len, embed_dim)
+
+        if field_spans is not None:
+            # ── Field-level path (primary) ─────────────────────────────
+            inputs  = self.field_enc(char_indices, all_emb, field_spans)
+            n_steps = N_FIELDS
+        else:
+            # ── Character-level fallback (legacy / testing only) ───────
+            inputs  = all_emb
+            n_steps = len(char_indices)
+
+        dt = 1.0 / n_steps
 
         states = [cell.init_hidden(device) for cell in self.cells]
 
-        # Embed entire sequence in one batch call
-        all_emb = self.embedding(char_indices)   # (seq_len, embed_dim)
-
         if return_history:
-            h0 = torch.zeros(seq_len, self.hidden_dim, device=device)
-            h1 = torch.zeros(seq_len, self.hidden_dim, device=device)
+            h0 = torch.zeros(n_steps, self.hidden_dim, device=device)
+            h1 = torch.zeros(n_steps, self.hidden_dim, device=device)
         else:
             h0 = h1 = None
 
@@ -109,13 +131,13 @@ class LiquidTransformer(nn.Module):
             step0 = self.cells[0].euler_step
             step1 = self.cells[1].euler_step
 
-        for t in range(seq_len):
-            I = all_emb[t]                        # (embed_dim,)
-            states[0] = step0(states[0], I,         dt)
-            states[1] = step1(states[1], states[0], dt)
+        for t in range(n_steps):
+            I = inputs[t]                         # (embed_dim,)
+            states[0] = step0(states[0], I,          dt)
+            states[1] = step1(states[1], states[0],  dt)
             if return_history:
-                h0[t] = states[0]  # type: ignore[index]
-                h1[t] = states[1]  # type: ignore[index]
+                h0[t] = states[0]   # type: ignore[index]
+                h1[t] = states[1]   # type: ignore[index]
 
         final_state = states[1]
         histories   = [h0, h1] if return_history else None
@@ -126,14 +148,29 @@ class LiquidTransformer(nn.Module):
     # ------------------------------------------------------------------
 
     @classmethod
-    def from_checkpoint(cls, checkpoint_path: str, device: torch.device) -> "LiquidTransformer":
+    def from_checkpoint(
+        cls,
+        checkpoint_path: str,
+        device: torch.device,
+    ) -> "LiquidTransformer":
+        """
+        Load model from a Phase 1/2 checkpoint.
+
+        char_freq is stored as a buffer inside FieldEncoder and is restored
+        automatically by load_state_dict — no need to pass it separately.
+        A dummy tensor of the correct shape is used to construct the model
+        before the state_dict is loaded.
+        """
         import json
         from pathlib import Path
-        ckpt = torch.load(checkpoint_path, map_location=device)
+
+        ckpt  = torch.load(checkpoint_path, map_location=device, weights_only=False)
         vocab = json.loads(
             (Path(checkpoint_path).parent / "flux_vocab.json").read_text(encoding="utf-8")
         )
-        model = cls(vocab_size=vocab["vocab_size"])
+        vocab_size  = vocab["vocab_size"]
+        dummy_freq  = torch.ones(vocab_size)   # overwritten by load_state_dict
+        model = cls(vocab_size=vocab_size, char_freq=dummy_freq)
         model.load_state_dict(ckpt["liquid_transformer"])
         model.to(device)
         model.eval()

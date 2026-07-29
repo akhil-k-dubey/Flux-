@@ -92,5 +92,88 @@
     "passed": true,
     "errors": [],
     "checked_at": "2026-07-18T05:33:04.452836+00:00"
+  },
+  "synonym_gaps": {
+    "quantum mechanics": {
+      "count": 3,
+      "first_seen": "2026-07-28T06:35:01Z",
+      "normalized": "quantum_mechanics",
+      "resolved_to": "quantum_decoherence",
+      "resolved": true
+    },
+    "boltzmann": {
+      "count": 3,
+      "first_seen": "2026-07-28T06:35:02Z",
+      "normalized": "boltzmann",
+      "resolved_to": "stefan_boltzmann_law",
+      "resolved": true
+    },
+    "hamiltonian": {
+      "count": 6,
+      "first_seen": "2026-07-28T06:35:02Z",
+      "normalized": "hamiltonian",
+      "resolved_to": "phase_transition",
+      "resolved": true
+    },
+    "it": {
+      "count": 1,
+      "first_seen": "2026-07-28T06:35:02Z",
+      "normalized": "it",
+      "resolved_to": "write",
+      "resolved": true
+    },
+    "wave function collapse and how does it connect to decoherence": {
+      "count": 1,
+      "first_seen": "2026-07-28T06:39:22Z",
+      "normalized": "wave_function_collapse_and_how_it_connect_decoherence",
+      "resolved_to": "wave_function_collapse",
+      "resolved": false
+    },
+    "yourself": {
+      "count": 1,
+      "first_seen": "2026-07-29T04:13:54Z",
+      "normalized": "yourself",
+      "resolved_to": "modify_self",
+      "resolved": false
+    },
+    "microscopic state": {
+      "count": 1,
+      "first_seen": "2026-07-29T04:16:22Z",
+      "normalized": "microscopic_state",
+      "resolved_to": "lumen_session_state",
+      "resolved": false
+    },
+    "fsm": {
+      "count": 1,
+      "first_seen": "2026-07-29T04:17:05Z",
+      "normalized": "fsm",
+      "resolved_to": "lumen_fsm",
+      "resolved": false
+    },
+    "hamilton operator": {
+      "count": 1,
+      "first_seen": "2026-07-29T04:19:05Z",
+      "normalized": "hamilton_operator",
+      "resolved_to": "or",
+      "resolved": false
+    },
+    "quantum consiousness": {
+      "count": 1,
+      "first_seen": "2026-07-29T04:20:45Z",
+      "normalized": "quantum_consiousness",
+      "resolved_to": "quantum_consciousness",
+      "resolved": false
+    },
+    "relationship between quantum conciousness and microtubules": {
+      "count": 1,
+      "first_seen": "2026-07-29T04:22:44Z",
+      "normalized": "relationship_between_quantum_conciousness_and_microtubules",
+      "resolved_to": "and",
+      "resolved": false
+    }
+  },
+  "gap_query_counts": {
+    "hamiltonian": 8,
+    "wave_function_collapse_and_how_it_connect_decoherence": 2
   }
 }
