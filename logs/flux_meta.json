@@ -95,21 +95,21 @@
   },
   "synonym_gaps": {
     "quantum mechanics": {
-      "count": 3,
+      "count": 11,
       "first_seen": "2026-07-28T06:35:01Z",
       "normalized": "quantum_mechanics",
       "resolved_to": "quantum_decoherence",
       "resolved": true
     },
     "boltzmann": {
-      "count": 3,
+      "count": 16,
       "first_seen": "2026-07-28T06:35:02Z",
       "normalized": "boltzmann",
       "resolved_to": "stefan_boltzmann_law",
       "resolved": true
     },
     "hamiltonian": {
-      "count": 6,
+      "count": 10,
       "first_seen": "2026-07-28T06:35:02Z",
       "normalized": "hamiltonian",
       "resolved_to": "phase_transition",
@@ -137,7 +137,7 @@
       "resolved": false
     },
     "microscopic state": {
-      "count": 1,
+      "count": 3,
       "first_seen": "2026-07-29T04:16:22Z",
       "normalized": "microscopic_state",
       "resolved_to": "lumen_session_state",
@@ -170,10 +170,201 @@
       "normalized": "relationship_between_quantum_conciousness_and_microtubules",
       "resolved_to": "and",
       "resolved": false
+    },
+    "relationship between quantum consciousness and microtubules": {
+      "count": 2,
+      "first_seen": "2026-07-30T07:46:06Z",
+      "normalized": "relationship_between_quantum_consciousness_and_microtubules",
+      "resolved_to": "quantum_consciousness",
+      "resolved": false
+    },
+    "energy": {
+      "count": 1,
+      "first_seen": "2026-07-30T18:02:13Z",
+      "normalized": "energy",
+      "resolved_to": "internal_energy",
+      "resolved": false
+    },
+    "hamiltonian operator": {
+      "count": 1,
+      "first_seen": "2026-07-30T18:03:10Z",
+      "normalized": "hamiltonian_operator",
+      "resolved_to": "or",
+      "resolved": false
+    },
+    "your capability": {
+      "count": 1,
+      "first_seen": "2026-07-30T18:04:45Z",
+      "normalized": "capability",
+      "resolved_to": "scan_vulnerability",
+      "resolved": false
+    },
+    "total enthalpy": {
+      "count": 1,
+      "first_seen": "2026-07-30T18:08:13Z",
+      "normalized": "total_enthalpy",
+      "resolved_to": "enthalpy",
+      "resolved": false
+    },
+    "teach blocks": {
+      "count": 1,
+      "first_seen": "2026-07-30T18:10:34Z",
+      "normalized": "teach_blocks",
+      "resolved_to": "teach",
+      "resolved": false
+    },
+    "reachable": {
+      "count": 1,
+      "first_seen": "2026-07-30T18:11:08Z",
+      "normalized": "reachable",
+      "resolved_to": "enables",
+      "resolved": false
+    },
+    "grammer": {
+      "count": 1,
+      "first_seen": "2026-07-30T18:16:48Z",
+      "normalized": "grammer",
+      "resolved_to": "remember",
+      "resolved": false
+    },
+    "logical contradiction": {
+      "count": 1,
+      "first_seen": "2026-07-30T18:18:58Z",
+      "normalized": "logical_contradiction",
+      "resolved_to": "log",
+      "resolved": false
+    },
+    "formal proof": {
+      "count": 1,
+      "first_seen": "2026-07-30T18:19:44Z",
+      "normalized": "formal_proof",
+      "resolved_to": "or",
+      "resolved": false
+    },
+    "thermodynamics and how does it relate to boltzmann": {
+      "count": 1,
+      "first_seen": "2026-08-05T19:04:21Z",
+      "normalized": "thermodynamics_and_how_it_relate_boltzmann",
+      "resolved_to": "and",
+      "resolved": false
+    },
+    "thermodynamics": {
+      "count": 10,
+      "first_seen": "2026-08-05T19:04:21Z",
+      "normalized": "thermodynamics",
+      "resolved_to": "first_law_thermodynamics",
+      "resolved": false
+    },
+    "your gaps": {
+      "count": 1,
+      "first_seen": "2026-08-05T19:04:21Z",
+      "normalized": "gaps",
+      "resolved_to": "false",
+      "resolved": false
+    },
+    "dark energy": {
+      "count": 3,
+      "first_seen": "2026-08-05T19:04:21Z",
+      "normalized": "dark_energy",
+      "resolved_to": "internal_energy",
+      "resolved": false
+    },
+    "quantum_gravity": {
+      "count": 3,
+      "first_seen": "2026-08-05T19:04:21Z",
+      "normalized": "quantum_gravity",
+      "resolved_to": "quantum_spin",
+      "resolved": false
+    },
+    "relationship between entropy and boltzmann": {
+      "count": 1,
+      "first_seen": "2026-08-05T19:04:21Z",
+      "normalized": "relationship_between_entropy_and_boltzmann",
+      "resolved_to": "entropy",
+      "resolved": false
+    },
+    "how does entropy connect to thermodynamics": {
+      "count": 2,
+      "first_seen": "2026-08-05T19:05:30Z",
+      "normalized": "how_entropy_connect_thermodynamics",
+      "resolved_to": "entropy",
+      "resolved": false
+    },
+    "entropy connect to thermodynamics": {
+      "count": 1,
+      "first_seen": "2026-08-05T19:06:33Z",
+      "normalized": "entropy_connect_thermodynamics",
+      "resolved_to": "entropy",
+      "resolved": false
+    },
+    "similar to": {
+      "count": 1,
+      "first_seen": "2026-08-06T17:44:38Z",
+      "normalized": "similar",
+      "resolved_to": "similar_to",
+      "resolved": false
+    },
+    "analogous to": {
+      "count": 1,
+      "first_seen": "2026-08-06T17:44:38Z",
+      "normalized": "analogous",
+      "resolved_to": "analogous_to",
+      "resolved": false
+    },
+    "flux i was wondering about the relationships that exists between the gibbs free energy and entropy": {
+      "count": 1,
+      "first_seen": "2026-08-07T13:50:10Z",
+      "normalized": "flux_i_wondering_relationships_that_exists_between_gibbs_free_energy_and_entropy",
+      "resolved_to": "gibbs_free_energy",
+      "resolved": false
+    },
+    "i think there might be something connecting dark energy and quantum field theory but i am not sure": {
+      "count": 1,
+      "first_seen": "2026-08-07T13:50:10Z",
+      "normalized": "i_think_there_might_something_connecting_dark_energy_and_quantum_field_theory_but_i_am_not_sure",
+      "resolved_to": "quantum_field_theory",
+      "resolved": false
+    },
+    "the thing about thermodynamics is how does it connect with statistical mechanics": {
+      "count": 1,
+      "first_seen": "2026-08-07T13:50:10Z",
+      "normalized": "thing_thermodynamics_how_it_connect_with_statistical_mechanics",
+      "resolved_to": "lagrangian_mechanics",
+      "resolved": false
+    },
+    "hmm so gibbs free energy... and entropy... are these related somehow": {
+      "count": 2,
+      "first_seen": "2026-08-07T13:50:10Z",
+      "normalized": "hmm_so_gibbs_free_energy_and_entropy_these_related_somehow",
+      "resolved_to": "gibbs_free_energy",
+      "resolved": false
+    },
+    "the relationship if any between gibbs free energy and entropy": {
+      "count": 1,
+      "first_seen": "2026-08-07T13:50:10Z",
+      "normalized": "relationship_if_any_between_gibbs_free_energy_and_entropy",
+      "resolved_to": "gibbs_free_energy",
+      "resolved": false
+    },
+    "the energy that determines if a reaction is spontaneous": {
+      "count": 1,
+      "first_seen": "2026-08-07T14:53:00Z",
+      "normalized": "energy_that_determines_if_reaction_spontaneous",
+      "resolved_to": "free_energy_principle",
+      "resolved": false
+    },
+    "thermodynamics connects to statistical mechanics": {
+      "count": 1,
+      "first_seen": "2026-08-07T15:00:37Z",
+      "normalized": "thermodynamics_connects_statistical_mechanics",
+      "resolved_to": "lagrangian_mechanics",
+      "resolved": false
     }
   },
   "gap_query_counts": {
     "hamiltonian": 8,
-    "wave_function_collapse_and_how_it_connect_decoherence": 2
+    "wave_function_collapse_and_how_it_connect_decoherence": 2,
+    "quantum_consciousness": 1,
+    "microcanonical_ensemble": 1
   }
 }

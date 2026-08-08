@@ -181,6 +181,9 @@ class QueryEngine:
             overlap  = len(target_tokens & cid_tokens)
             s       += overlap * 1.5
 
+            # Fix 4: domain-mismatch penalty — demote cross-domain false positives
+            s *= _domain_penalty_factor(cid, target_tokens)
+
             if s > 0.5:
                 scores[cid] = s
 
@@ -205,6 +208,37 @@ class QueryEngine:
                 f.write(json.dumps(record, ensure_ascii=False) + "\n")
         except OSError as exc:
             log.warning("Failed to write interaction log: %s", exc)
+
+
+# ── Domain-mismatch penalty (Fix 4) ──────────────────────────────────────────────
+# If a candidate KG ID belongs to a system-internal domain (e.g. lumen_, flux_session)
+# but the query has no tokens that signal that domain, penalise heavily.
+# This stops lexical overlap alone (shared word "state") from promoting an
+# unrelated system node (lumen_session_state) over genuinely unknown concepts.
+
+# Map: domain_prefix → set of domain-signal tokens that must appear in the query
+_DOMAIN_PREFIX_SIGNALS: dict[str, frozenset[str]] = {
+    "lumen_":         frozenset({"lumen", "session", "context", "ui"}),
+    "flux_session":   frozenset({"flux", "session"}),
+    "flux_teaching":  frozenset({"flux", "teach", "teaching"}),
+    "flux_vocab":     frozenset({"flux", "vocab", "vocabulary", "drift"}),
+    "flux_layer":     frozenset({"flux", "layer"}),
+    "flux_review":    frozenset({"flux", "review", "queue"}),
+}
+
+_DOMAIN_PENALTY: float = 0.4   # multiply score by this when domain is mismatched
+
+
+def _domain_penalty_factor(cid: str, query_tokens: set[str]) -> float:
+    """Return 1.0 (no penalty) or _DOMAIN_PENALTY if domain is mismatched."""
+    cid_lower = cid.lower()
+    for prefix, signals in _DOMAIN_PREFIX_SIGNALS.items():
+        if cid_lower.startswith(prefix):
+            # If query contains at least one domain-signal token, no penalty
+            if signals & query_tokens:
+                return 1.0
+            return _DOMAIN_PENALTY
+    return 1.0
 
 
 # ── String similarity helpers ──────────────────────────────────────────────────

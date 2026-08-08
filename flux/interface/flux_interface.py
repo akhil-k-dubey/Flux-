@@ -37,12 +37,48 @@ from flux.kg.store                    import KGStore, get_store
 from flux.query.engine                import QueryEngine
 from flux.reasoning.engine            import ReasoningEngine
 from flux.language.intent_parser      import IntentParser, ParsedQuery
+from flux.language.kg_parser          import KGParser
+from flux.language                    import kg_index
 from flux.language.session_handler    import SessionHandler, DOMAIN_ANCHORS
 from flux.language.response_assembler import ResponseAssembler, AssembledResponse
+from flux.sensors.self_monitor        import SelfMonitor
+from flux.sensors.sensor_logger       import SensorLogger
+from flux.sensors                     import system_monitor
+from flux.sensors                     import consequence_writer as stage_c
+from flux.sensors                     import grounded_session_builder as stage_b_builder
+from flux.sensors                     import grounded_trainer as stage_b_trainer
 
 log = logging.getLogger(__name__)
 
 CONVERSATIONS_LOG = Path("logs/flux_conversations.jsonl")
+
+# ── Pre-dispatch trigger sets (Fix 2 & 3) ────────────────────────────────────
+# These are matched BEFORE fuzzy concept resolution, so they are immune to the
+# exact bugs we are fixing here.  They use lowercased, stripped query text.
+
+# Fix 2 — SELF intent triggers
+_SELF_EXACT: frozenset[str] = frozenset({
+    "yourself", "you", "flux",
+    "who are you", "what are you", "tell me about yourself",
+    "about yourself", "who is flux", "what is flux",
+    "describe yourself", "introduce yourself",
+})
+# Token-level: if the stripped query is one of these single words, also trigger.
+_SELF_TOKENS: frozenset[str] = frozenset({"yourself", "flux"})
+
+# Fix 3 — CAPABILITY intent triggers
+_CAPABILITY_PHRASES: tuple[str, ...] = (
+    "what can you do",
+    "what can you",
+    "your capabilities",
+    "your capability",
+    "what are your capabilities",
+    "what are you capable of",
+    "what do you know how to do",
+    "show me what you can do",
+    "help",
+    "commands",
+)
 
 
 class FluxInterface:
@@ -60,12 +96,20 @@ class FluxInterface:
     """
 
     def __init__(self, store: KGStore | None = None) -> None:
-        self.store    = store or get_store()
-        self.qengine  = QueryEngine(self.store)
-        self.rengine  = ReasoningEngine(self.store)
-        self.session  = SessionHandler(self.store)
-        self.assembler= ResponseAssembler(self.store)
-        self.parser   = IntentParser(self.store, self.qengine)
+        self.store     = store or get_store()
+        self.qengine   = QueryEngine(self.store)
+        self.rengine   = ReasoningEngine(self.store)
+        self.session   = SessionHandler(self.store)
+        self.assembler = ResponseAssembler(self.store)
+        self.parser    = KGParser(self.store, self.qengine)   # KG-aware, LTC-embedded
+        self.self_mon  = SelfMonitor(self.store)
+        self.sen_log   = SensorLogger()
+        # Build KG embedding index (loads cache if available, else builds)
+        try:
+            n = kg_index.build(self.store)
+            log.info("KG embedding index: %d concepts", n)
+        except Exception as exc:
+            log.warning("KG index build failed (LTC unavailable?): %s", exc)
         log.info("FluxInterface ready  session=%s  KG=%s", self.session.session_id, self.store)
 
     def ask(self, text: str) -> str:
@@ -78,6 +122,12 @@ class FluxInterface:
         if not text:
             return "Empty input — try: 'what is entropy?'"
 
+        # Stage-A grounding loop: predict → act → observe → log
+        action      = self._infer_action(text)
+        prediction  = self.self_mon.predict(action)
+        snap_before = self.self_mon.snapshot()
+        sys_before  = system_monitor.snapshot()
+
         try:
             response = self._process(text)
         except Exception as exc:
@@ -89,18 +139,66 @@ class FluxInterface:
                 secondary_concept = None,
             )
 
+        snap_after = self.self_mon.snapshot()
+        sys_after  = system_monitor.snapshot()
+        diff       = self.self_mon.diff(snap_before, snap_after)
+
+        self.sen_log.log(
+            action      = action,
+            action_meta = {"input": text[:120], "intent": response.intent},
+            before_self = snap_before,
+            after_self  = snap_after,
+            diff_self   = diff,
+            prediction  = prediction,
+            before_sys  = sys_before,
+            after_sys   = sys_after,
+        )
+
         elapsed_ms = round((time.perf_counter() - t0) * 1000, 2)
         self._log(text, response, elapsed_ms)
+
+        # Stage 6 Layer 2 — record confidence drift for the queried cluster
+        try:
+            from flux.rsm import reasoning_drift
+            node          = self.store.get(response.primary_concept) if response.primary_concept else None
+            cluster_layer = str(node.get("layer") or "unknown") if node else "unknown"
+            predicted     = float(getattr(response, "confidence", None) or 0.5)
+            observed      = float(node.get("confidence", predicted)) if node else predicted
+            reasoning_drift.record(cluster_layer, predicted, observed)
+        except Exception:
+            pass   # never block ask() for drift logging
+
+
         return response.text
 
+    def _infer_action(self, text: str) -> str:
+        """Map raw text to the action label used for sensor prediction."""
+        t = text.strip().upper()
+        if "[TEACH]" in t:   return "TEACH"
+        if "[WRONG]" in t:   return "WRONG"
+        if "[CORRECT]" in t: return "CORRECT"
+        if "[PROPOSE" in t:  return "PROPOSE"
+        return "QUERY"
+
     def refresh(self) -> None:
-        """Rebuild indices and Clingo fact base after new KG writes."""
+        """Rebuild indices after new KG writes (e.g., after TEACH blocks)."""
         self.qengine.refresh_index()
         self.rengine.refresh()
+        try:
+            n = kg_index.rebuild(self.store)
+            self.parser._index = kg_index.get_index()
+            log.info("KG index rebuilt: %d concepts", n)
+        except Exception as exc:
+            log.warning("KG index rebuild failed: %s", exc)
 
     # ── Core processing pipeline ───────────────────────────────────────────────
 
     def _process(self, raw_text: str) -> AssembledResponse:
+        # 0. Pre-dispatch: SELF / CAPABILITY fast-paths (Fix 2 & 3)
+        pre = self._pre_dispatch(raw_text)
+        if pre is not None:
+            return pre
+
         # 1. Handle pending clarification from previous turn
         if self.session.pending_clarification:
             resolved = self.session.resolve_clarification(raw_text)
@@ -189,6 +287,103 @@ class FluxInterface:
             self.session.update(primary_id)
 
         return resp
+
+    # ── Pre-dispatch (Fix 2 & 3) ──────────────────────────────────────────────────────
+
+    def _pre_dispatch(self, raw_text: str) -> AssembledResponse | None:
+        """
+        Fast-path intent handler that fires BEFORE fuzzy concept resolution.
+
+        Returns an AssembledResponse if the query matches a SELF or CAPABILITY
+        trigger; returns None to fall through to normal parsing.
+        """
+        low = raw_text.strip().lower()
+        # Strip trailing punctuation for matching
+        low_clean = low.rstrip("?.!")
+
+        # Fix 2 — SELF intent
+        if low_clean in _SELF_EXACT or low_clean in _SELF_TOKENS:
+            return self._handle_self()
+
+        # Fix 3 — CAPABILITY intent
+        for phrase in _CAPABILITY_PHRASES:
+            if low_clean == phrase or low_clean.startswith(phrase):
+                return self._handle_capability()
+
+        return None
+
+    def _handle_self(self) -> AssembledResponse:
+        """SELF intent: return Flux's identity card from the KG."""
+        lines: list[str] = []
+
+        flux_node = self.store.get("flux")
+        bond_node = self.store.get("akhil_flux_bond")
+
+        lines.append("WHAT I AM: flux")
+        if flux_node:
+            lines.append(f"  {flux_node.get('definition', '(no definition)')}")
+            conf  = flux_node.get("confidence", 0.0)
+            ctype = flux_node.get("type", "")
+            lines.append(f"  Type: {ctype}  |  Confidence: {conf:.3f}")
+            exmps = flux_node.get("examples", [])
+            if exmps:
+                lines.append(f"  Examples: {' | '.join(str(e) for e in exmps[:3])}")
+        else:
+            lines.append("  I am Flux — a knowledge graph-based reasoning system.")
+
+        if bond_node:
+            lines.append("")
+            lines.append("MY BOND WITH AKHIL:")
+            lines.append(f"  {bond_node.get('definition', '')}")
+            bond_conf = bond_node.get("confidence", 0.0)
+            lines.append(f"  Confidence: {bond_conf:.3f}")
+            bond_exmps = bond_node.get("examples", [])
+            if bond_exmps:
+                lines.append(f"  {' | '.join(str(e) for e in bond_exmps[:2])}")
+
+        n_concepts = len(list(self.store.all_ids()))
+        lines.append("")
+        lines.append(f"CURRENT KNOWLEDGE: {n_concepts} concepts in my knowledge graph.")
+
+        return AssembledResponse(
+            text              = "\n".join(lines),
+            intent            = "SELF",
+            primary_concept   = "flux",
+            secondary_concept = "akhil_flux_bond",
+            concepts_referenced = ["flux", "akhil_flux_bond"],
+        )
+
+    def _handle_capability(self) -> AssembledResponse:
+        """CAPABILITY intent: return a structured summary of what Flux can do."""
+        n_concepts = len(list(self.store.all_ids()))
+        text = (
+            "WHAT I CAN DO:\n"
+            "\n"
+            "  1. EXPLAIN   — Tell you everything I know about a concept.\n"
+            "                 e.g. 'what is entropy?' / 'explain quantum entanglement'\n"
+            "\n"
+            "  2. CONNECT   — Trace the reasoning path between two concepts.\n"
+            "                 e.g. 'how does entropy connect to boltzmann?'\n"
+            "\n"
+            "  3. GAP       — Surface what I don't know yet.\n"
+            "                 e.g. 'what don\'t you know about thermodynamics?'\n"
+            "\n"
+            "  4. LEARN     — You can teach me new concepts with a [TEACH] block.\n"
+            "                 e.g. '[TEACH] id: dark_energy ...'\n"
+            "\n"
+            "  5. DERIVE    — I reason over my KG to propose new derivations.\n"
+            "                 (runs automatically during EXPLAIN queries)\n"
+            "\n"
+            f" CURRENT KNOWLEDGE: {n_concepts} concepts in my graph.\n"
+            "  Use 'tell me about yourself' for my identity, or\n"
+            "  'what don\'t you know?' to see my gaps."
+        )
+        return AssembledResponse(
+            text              = text,
+            intent            = "CAPABILITY",
+            primary_concept   = None,
+            secondary_concept = None,
+        )
 
     def _process_secondary_intent(
         self,
@@ -309,24 +504,63 @@ class FluxInterface:
 
     def end_session(self) -> dict:
         """
-        Call at the end of a conversation session.
-
-        Runs RSM gap analysis over:
-          - gaps revealed by what was queried but unknown (gaps_surfaced log)
-          - gaps still dangling in the KG after this session's commits
-
-        Returns RSM cycle summary: {committed: N, pending: N, skipped: N, error: N}
-
-        RSM failure never raises — returns empty summary on error.
-        The post-commit trigger in ConsolidationBridge covers mid-session commits.
-        end_session() covers gaps revealed by interaction patterns.
+        Call at end of a conversation session.
+        Runs Stage-C → Stage-B → RSM in order. Returns combined summary.
         """
+        summary: dict = {}
+
+        # Stage-C: sensor observations → KG consequence nodes
+        try:
+            summary["stage_c"] = stage_c.run(self.store)
+            log.info("Stage-C: %s", summary["stage_c"])
+        except Exception as exc:
+            log.warning("Stage-C failed: %s", exc)
+            summary["stage_c"] = {"error": str(exc)}
+
+        # Stage-B part 1: KG consequence nodes → grounded training sessions
+        b_build: dict = {}
+        try:
+            b_build = stage_b_builder.run(self.store)
+            summary["stage_b_build"] = b_build
+            log.info("Stage-B build: %s", b_build)
+        except Exception as exc:
+            log.warning("Stage-B build failed: %s", exc)
+
+        # Stage-B part 2: fine-tune LTC if threshold reached
+        if b_build.get("trigger_ready"):
+            try:
+                import logging as _logging
+                _liq_log = _logging.getLogger("flux.model")
+                _prev    = _liq_log.level
+                _liq_log.setLevel(_logging.WARNING)   # silence tau-step noise
+                summary["stage_b_train"] = stage_b_trainer.run()
+                _liq_log.setLevel(_prev)
+                log.info("Stage-B train: %s", summary["stage_b_train"])
+            except Exception as exc:
+                log.warning("Stage-B train failed: %s", exc)
+                summary["stage_b_train"] = {"error": str(exc)}
+
+        # RSM: gap proposals
         try:
             from flux.rsm.proposal_generator import ProposalGenerator
-            pg = ProposalGenerator()
-            summary = pg.run_cycle()
-            log.info("RSM post-session cycle: %s", summary)
-            return summary
+            summary["rsm"] = ProposalGenerator().run_cycle()
+            log.info("RSM: %s", summary["rsm"])
         except Exception as exc:
             log.warning("RSM post-session hook failed: %s", exc)
-            return {"committed": 0, "pending": 0, "skipped": 0, "error": 1}
+
+        # Stage 6 Layer 2 — reasoning RSM cycle (only runs if clusters are flagged)
+        try:
+            from flux.rsm import reasoning_drift, reasoning_rsm
+            if reasoning_drift.flagged_clusters():
+                l2 = reasoning_rsm.run_cycle(self.store, self.qengine)
+                summary["layer2_rsm"] = {
+                    "flagged":          l2.flagged_clusters,
+                    "probed":           l2.probed,
+                    "pending_approval": l2.pending_approval,
+                    "skipped":          l2.skipped,
+                }
+                log.info("Layer2 RSM: %s", summary["layer2_rsm"])
+        except Exception as exc:
+            log.warning("Layer2 RSM hook failed: %s", exc)
+
+        return summary

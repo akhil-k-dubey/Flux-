@@ -73,11 +73,10 @@ class LiquidCell(nn.Module):
         #             alpha = 1 - dt/tau ≈ 1 — hidden state stops updating
         #             (mode collapse: constant output regardless of input)
 
-        # Tau clamp diagnostics: log clamp_frac every 100 calls for first 1000
+        # Tau clamp diagnostics: set FLUX_TAU_DIAG=1 to enable (silent by default)
         if self.training and self._step_count < 1000:
-            if self._step_count % 100 == 0:
+            if self._step_count % 100 == 0 and __import__("os").environ.get("FLUX_TAU_DIAG"):
                 clamp_frac = (tau_raw > 10.0).float().mean().item()
-                # C1 = Cell 1 (in=160), C2 = Cell 2 (in=256)
                 cell = "C1" if self.W_combined.in_features == 160 else "C2"
                 print(
                     f"    [tau {cell} step={self._step_count:3d}]  "
