@@ -1,0 +1,12 @@
+# FLUX Project Requirements
+# Python Version Requirement: Python >= 3.10 (Tested on Python 3.11 - 3.13)
+
+# Deep Learning Framework
+torch>=2.0.0
+
+# Automated Reasoning & Logic Solvers
+z3-solver>=4.12.0
+clingo>=5.6.0
+
+# Scientific Computing & Utilities
+numpy>=1.24.0
