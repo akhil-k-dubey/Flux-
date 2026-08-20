@@ -68,6 +68,9 @@ class KGIndex:
         self._n_docs: int = 0
         # Tier 4: LSA embeddings (built from same TF-IDF, zero extra training)
         self._lsa_data: dict | None = None
+        # Tier 5: DualEncoderIndex — lazy-loaded on first uncertain query
+        self._dual_enc  = None   # DualEncoderIndex | None
+        self._dual_tried: bool = False   # don't retry if load failed
 
     # ── Build / Load ─────────────────────────────────────────────────────────
 
@@ -158,6 +161,18 @@ class KGIndex:
                 else:
                     # Introduce LSA-only candidates at reduced weight
                     scores[cid] = s * _LSA_WEIGHT
+
+        # Tier 5 — DualEncoder semantic search (trained NodeEncoder, 128-dim)
+        # Only fires when Tiers 1-4 left scores uncertain (max < 0.40).
+        # Higher precision than LSA for paraphrased or descriptive queries.
+        max_t1234 = max(scores.values()) if scores else 0.0
+        if max_t1234 < 0.40:
+            t5 = self._tier5_dual_encoder(span)
+            for cid, s in t5:
+                if cid in scores:
+                    scores[cid] = scores[cid] * 0.60 + s * 0.40
+                else:
+                    scores[cid] = s * 0.55
 
         if not scores:
             return []
@@ -344,7 +359,43 @@ class KGIndex:
                 results.append((ids[idx], s))
         return results
 
+    def _load_dual_enc(self) -> None:
+        """Lazy-load DualEncoderIndex on first uncertain query. One-time attempt."""
+        if self._dual_tried:
+            return
+        self._dual_tried = True
+        try:
+            from flux.language.dual_encoder.dual_encoder_index import DualEncoderIndex
+            idx = DualEncoderIndex()
+            if idx.load():
+                self._dual_enc = idx
+                log.info("KGIndex: Tier 5 DualEncoder loaded (%d nodes)", len(idx._ids))
+            else:
+                log.debug("KGIndex: DualEncoder cache not found — Tier 5 disabled")
+        except Exception as exc:
+            log.debug("KGIndex: DualEncoder unavailable (%s) — Tier 5 disabled", exc)
 
+    def _tier5_dual_encoder(self, span: str) -> list[tuple[str, float]]:
+        """
+        DualEncoder semantic similarity (Tier 5).
+
+        Uses the trained KGNodeEncoder to embed the query and find nearest
+        KG node definitions. Only activated when Tiers 1–4 failed to reach
+        score 0.40 — meaning exact/token/TF-IDF/LSA all uncertain.
+
+        Typical triggers:
+          - Paraphrased queries: "what increases with disorder?" → entropy
+          - Descriptive queries: "the process that makes heat flow"  → thermodynamics
+          - Cross-lingual synonyms not in TF-IDF vocabulary
+        """
+        self._load_dual_enc()
+        if self._dual_enc is None:
+            return []
+        try:
+            return self._dual_enc.query_one(span, top_k=5)
+        except Exception as exc:
+            log.debug("Tier5 DualEncoder query failed: %s", exc)
+            return []
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -360,10 +411,10 @@ def _tokenise(text: str) -> list[str]:
 def _concepts_connected(store, a: str, b: str) -> bool:
     try:
         edges = store._edges_from.get(a, [])
-        if any(e.get("target") == b for e in edges):
+        if any(e.get("to") == b for e in edges):
             return True
         edges = store._edges_from.get(b, [])
-        return any(e.get("target") == a for e in edges)
+        return any(e.get("to") == a for e in edges)
     except Exception:
         return False
 

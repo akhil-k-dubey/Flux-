@@ -262,9 +262,9 @@ def _concepts_connected(store, a: str, b: str) -> bool:
     """Check if two KG concepts share any edge (either direction)."""
     try:
         edges = store._edges_from.get(a, [])
-        if any(e.get("target") == b for e in edges):
+        if any(e.get("to") == b for e in edges):
             return True
         edges = store._edges_from.get(b, [])
-        return any(e.get("target") == a for e in edges)
+        return any(e.get("to") == a for e in edges)
     except Exception:
         return False

@@ -89,8 +89,58 @@ class ResponseAssembler:
     All methods return AssembledResponse with full metadata.
     """
 
-    def __init__(self, store: KGStore) -> None:
+    def __init__(self, store: KGStore, formatter=None) -> None:
         self.store = store
+        self._fmt  = formatter   # TemplateFormatter (Tier 1 fallback)
+        self._flm  = None        # FluxLanguageModel (Tier 2 — loaded lazily)
+        self._flm_loaded = False # True once we've attempted to load (even if failed)
+
+    def _load_flm(self) -> None:
+        """Lazily load FluxLanguageModel. Called once on first explain query."""
+        if self._flm_loaded:
+            return
+        self._flm_loaded = True
+        try:
+            from pathlib import Path
+            ckpt = Path("checkpoints/generation/flux_lm_best.pt")
+            if not ckpt.exists():
+                return
+            from flux.language.generation.flux_language_model import FluxLanguageModel
+            import torch
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            self._flm = FluxLanguageModel.load(lambda t: None, device=device)
+            self._flm.eval()
+        except Exception as exc:
+            log.debug("FluxLanguageModel not loaded (%s) — using TemplateFormatter", exc)
+
+    @staticmethod
+    def _flm_quality_ok(text: str) -> bool:
+        """
+        Quality gate for FluxLanguageModel output.
+        Returns True only if the output is coherent natural language.
+
+        Checks:
+          1. At least 30 real alphabetic words (not punctuation tokens)
+          2. Type-token ratio > 0.35 (enough vocabulary variety)
+          3. Most common bigram < 20% of all bigrams (no repetition loops)
+        """
+        if not text:
+            return False
+        import re
+        alpha_words = re.findall(r"[a-zA-Z']+", text)
+        if len(alpha_words) < 30:
+            return False
+        unique = len(set(w.lower() for w in alpha_words))
+        ttr = unique / len(alpha_words)
+        if ttr < 0.35:
+            return False
+        # Bigram repetition
+        bigrams = [f"{alpha_words[i]}_{alpha_words[i+1]}" for i in range(len(alpha_words) - 1)]
+        if bigrams:
+            most_common_count = max(bigrams.count(b) for b in set(bigrams))
+            if most_common_count / len(bigrams) > 0.2:
+                return False
+        return True
 
     def assemble(
         self,
@@ -216,8 +266,37 @@ class ResponseAssembler:
                              for e in edges if e.get("to") == g)
                 lines.append(f"  {g}  (referenced by {n_refs} known concepts)")
 
+        # ── Build response text: FLM → TemplateFormatter → raw structured ──────
+        self._load_flm()
+
+        text = None
+
+        # Tier 2: FluxLanguageModel (if loaded and quality gate passes)
+        if self._flm is not None:
+            try:
+                from flux.language.generation.flux_language_model import build_node_fields
+                import torch
+                device = next(self._flm.parameters()).device
+                node_fields = build_node_fields(target, stage3, self.store)
+                raw = self._flm.generate(
+                    node_fields, device=device, max_words=150,
+                    temperature=0.85, top_k=20,
+                )
+                if self._flm_quality_ok(raw):
+                    text = raw
+            except Exception as exc:
+                log.debug("FluxLanguageModel generation failed (%s) — falling back", exc)
+
+        # Tier 1: TemplateFormatter
+        if text is None and self._fmt is not None:
+            text = self._fmt.format_explain(target, stage3, stage4)
+
+        # Tier 0: raw structured text
+        if text is None:
+            text = "\n".join(lines)
+
         return AssembledResponse(
-            text              = "\n".join(lines),
+            text              = text,
             intent            = "EXPLAIN",
             primary_concept   = target,
             secondary_concept = None,
@@ -301,7 +380,9 @@ class ResponseAssembler:
                          f"(conf={direct_edge.get('confidence',0.0):.3f})")
 
         return AssembledResponse(
-            text              = "\n".join(lines),
+            text              = self._fmt.format_connect(
+                                    primary, secondary, stage3_p, stage3_s, stage4)
+                                if self._fmt else "\n".join(lines),
             intent            = "CONNECT",
             primary_concept   = p_target,
             secondary_concept = s_target,
@@ -377,7 +458,10 @@ class ResponseAssembler:
                 lines.append(f"  (Searched around: {domain_concept})")
 
         return AssembledResponse(
-            text              = "\n".join(lines),
+            text              = self._fmt.format_gap(
+                                    domain_concept, dangling,
+                                    low_conf, chain_gaps)
+                                if self._fmt else "\n".join(lines),
             intent            = "GAP",
             primary_concept   = domain_concept,
             secondary_concept = None,

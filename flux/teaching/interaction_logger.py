@@ -22,7 +22,8 @@ class InteractionLogger:
     # Standard FLUX constitutional grammar blocks (must match FLUX_PRIMITIVES.md exactly)
     GRAMMAR_BLOCKS = [
         "TEACH", "QUERY", "COMPUTE", "CORRECT", "WRONG", "PARTIAL",
-        "PROPOSE_MODIFICATION", "APPROVE_MODIFICATION", "EVALUATE", "REJECT_MODIFICATION"
+        "PROPOSE_MODIFICATION", "APPROVE_MODIFICATION", "EVALUATE", "REJECT_MODIFICATION",
+        "CORRECT_RESPONSE",   # Block 11 — FLM training pair capture
     ]
     
     def __init__(self, log_path: str):
@@ -134,3 +135,48 @@ class InteractionLogger:
 
     def log_rejection(self, sender: str, content: str, metadata: Optional[Dict[str, Any]] = None):
         return self.log(sender, "flux", content, message_type="rejection", metadata=metadata)
+
+    def log_correction_response(self, sender: str, content: str, metadata: Optional[Dict[str, Any]] = None):
+        """Log a CORRECT_RESPONSE block — an FLM training pair correction."""
+        return self.log(sender, "flux", content, message_type="correction_response", metadata=metadata)
+
+    def extract_corrections(self) -> Generator[Dict[str, Any], None, None]:
+        """
+        Scan the log for all CORRECT_RESPONSE blocks and yield structured
+        training pair dicts ready for appending to train_gold.jsonl.
+
+        Yields dicts with keys:
+            concept_id  : str   — normalised concept id (spaces→underscores, lowercase)
+            query       : str   — the original query that triggered the bad response
+            flux_said   : str   — what Flux actually said (captured at log time)
+            better      : str   — the user's preferred response (the gold output)
+            timestamp   : float — when the correction was logged
+        """
+        for entry in self.get_interactions():
+            blocks = entry.get("parsed_blocks", {}).get("CORRECT_RESPONSE", [])
+            for block in blocks:
+                if "_error" in block:
+                    continue
+                query      = str(block.get("query",      "")).strip()
+                flux_said  = str(block.get("flux_said",  "")).strip()
+                better     = str(block.get("better",     "")).strip()
+                concept    = str(block.get("concept",    "")).strip()
+
+                if not better:
+                    continue   # no gold output → useless
+
+                # Derive concept_id: explicit > from query
+                if not concept and query:
+                    # Naive: take last meaningful word of query as concept hint
+                    words = [w.strip("?.,!") for w in query.lower().split() if len(w) > 3]
+                    concept = words[-1] if words else "unknown"
+
+                concept_id = concept.lower().replace(" ", "_").replace("-", "_")
+
+                yield {
+                    "concept_id": concept_id,
+                    "query":      query,
+                    "flux_said":  flux_said,
+                    "better":     better,
+                    "timestamp":  entry.get("timestamp", 0.0),
+                }

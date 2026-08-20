@@ -100,7 +100,17 @@ class FluxInterface:
         self.qengine   = QueryEngine(self.store)
         self.rengine   = ReasoningEngine(self.store)
         self.session   = SessionHandler(self.store)
-        self.assembler = ResponseAssembler(self.store)
+
+        # Natural-language formatter — converts structured KG output to English prose
+        _fmt = None
+        try:
+            from flux.language.template_formatter import TemplateFormatter
+            _fmt = TemplateFormatter(self.store)
+            log.info("TemplateFormatter: loaded (natural English output enabled)")
+        except Exception as exc:
+            log.warning("TemplateFormatter unavailable (%s) — using structured output", exc)
+
+        self.assembler = ResponseAssembler(self.store, formatter=_fmt)
         self.parser    = KGParser(self.store, self.qengine)   # KG-aware, LTC-embedded
         self.self_mon  = SelfMonitor(self.store)
         self.sen_log   = SensorLogger()
@@ -174,10 +184,11 @@ class FluxInterface:
     def _infer_action(self, text: str) -> str:
         """Map raw text to the action label used for sensor prediction."""
         t = text.strip().upper()
-        if "[TEACH]" in t:   return "TEACH"
-        if "[WRONG]" in t:   return "WRONG"
-        if "[CORRECT]" in t: return "CORRECT"
-        if "[PROPOSE" in t:  return "PROPOSE"
+        if "[TEACH]"            in t: return "TEACH"
+        if "[WRONG]"            in t: return "WRONG"
+        if "[CORRECT]"          in t: return "CORRECT"
+        if "[PROPOSE"           in t: return "PROPOSE"
+        if "[CORRECT_RESPONSE]" in t: return "CORRECT_RESPONSE"
         return "QUERY"
 
     def refresh(self) -> None:
@@ -294,8 +305,8 @@ class FluxInterface:
         """
         Fast-path intent handler that fires BEFORE fuzzy concept resolution.
 
-        Returns an AssembledResponse if the query matches a SELF or CAPABILITY
-        trigger; returns None to fall through to normal parsing.
+        Returns an AssembledResponse if the query matches a SELF, CAPABILITY,
+        or CORRECT_RESPONSE trigger; returns None to fall through to normal parsing.
         """
         low = raw_text.strip().lower()
         # Strip trailing punctuation for matching
@@ -310,7 +321,146 @@ class FluxInterface:
             if low_clean == phrase or low_clean.startswith(phrase):
                 return self._handle_capability()
 
+        # Block 11 — CORRECT_RESPONSE: FLM training pair capture
+        if "[correct_response]" in low:
+            return self._handle_correct_response(raw_text)
+
         return None
+
+    def _handle_correct_response(self, raw_text: str) -> AssembledResponse:
+        """
+        Parse a [CORRECT_RESPONSE]...[/CORRECT_RESPONSE] block and append
+        the (input, output) pair to logs/generation/train_gold.jsonl.
+
+        Expected block format (YAML inside the tags):
+            [CORRECT_RESPONSE]
+            query:      what is entropy
+            flux_said:  Entropy — A thermodynamic state function...
+            better:     Entropy is the universe's way of measuring disorder...
+            concept:    entropy          # optional — inferred from query if absent
+            [/CORRECT_RESPONSE]
+
+        The 'better' field becomes the new gold output.
+        The structured input is auto-generated from the KG node (same as training_data.py).
+        """
+        import re as _re
+        from pathlib import Path as _Path
+
+        GOLD_PATH = _Path("logs/generation/train_gold.jsonl")
+        GOLD_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+        # Extract block content
+        match = _re.search(
+            r"\[CORRECT_RESPONSE\]\s*(.*?)\s*\[/CORRECT_RESPONSE\]",
+            raw_text, flags=_re.IGNORECASE | _re.DOTALL,
+        )
+        if not match:
+            return AssembledResponse(
+                text              = "⚠ Malformed [CORRECT_RESPONSE] block — no closing [/CORRECT_RESPONSE] tag found.",
+                intent            = "CORRECT_RESPONSE",
+                primary_concept   = None,
+                secondary_concept = None,
+            )
+
+        block_text = match.group(1).strip()
+
+        # Parse key: value lines (simple, no full YAML needed)
+        fields: dict[str, str] = {}
+        for line in block_text.split("\n"):
+            if ":" in line:
+                k, _, v = line.partition(":")
+                k, v = k.strip(), v.strip()
+                if k:
+                    fields[k] = v
+
+        better = fields.get("better", "").strip()
+        if not better:
+            return AssembledResponse(
+                text              = "⚠ [CORRECT_RESPONSE] needs a 'better:' field with your preferred response.",
+                intent            = "CORRECT_RESPONSE",
+                primary_concept   = None,
+                secondary_concept = None,
+            )
+
+        query     = fields.get("query",     "").strip()
+        flux_said = fields.get("flux_said", "").strip()
+        concept   = fields.get("concept",   "").strip()
+
+        # Derive concept_id
+        if not concept and query:
+            words = [w.strip("?.,!") for w in query.lower().split() if len(w) > 3]
+            concept = words[-1] if words else "unknown"
+        concept_id = concept.lower().replace(" ", "_").replace("-", "_")
+
+        # Build structured input from KG (same format as training_data.py)
+        try:
+            from flux.language.generation.training_data import build_input_text
+            node = self.store.get(concept_id)
+            if node:
+                input_text = build_input_text(concept_id, node, self.store)
+            else:
+                # Concept not in KG — build minimal input from the block fields
+                input_text = (
+                    f"concept: {concept_id}\n"
+                    f"type: CONCEPT\n"
+                    f"query: {query}\n"
+                    f"flux_said: {flux_said[:200] if flux_said else '(not recorded)'}"
+                )
+        except Exception:
+            input_text = f"concept: {concept_id}\nquery: {query}"
+
+        # Load existing gold pairs to check for duplicates
+        existing: list[dict] = []
+        if GOLD_PATH.exists():
+            for line in GOLD_PATH.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if line:
+                    try:
+                        existing.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        pass
+
+        existing_ids = {r["concept_id"] for r in existing}
+        is_update    = concept_id in existing_ids
+
+        new_pair = {
+            "concept_id": concept_id,
+            "input":      input_text,
+            "output":     better,
+        }
+
+        if is_update:
+            # Replace the existing entry for this concept
+            updated = [new_pair if r["concept_id"] == concept_id else r for r in existing]
+            GOLD_PATH.write_text(
+                "\n".join(json.dumps(r, ensure_ascii=False) for r in updated) + "\n",
+                encoding="utf-8",
+            )
+            action_word = "updated"
+        else:
+            # Append new pair
+            with GOLD_PATH.open("a", encoding="utf-8") as f:
+                f.write(json.dumps(new_pair, ensure_ascii=False) + "\n")
+            action_word = "added"
+
+        total = len(existing) if is_update else len(existing) + 1
+
+        log.info(
+            "CORRECT_RESPONSE: %s training pair for '%s' → %s (%d total pairs)",
+            action_word, concept_id, GOLD_PATH, total,
+        )
+
+        confirmation = (
+            f"✓ Training pair {action_word} for '{concept_id}'.\n"
+            f"  Gold pairs in {GOLD_PATH}: {total}\n"
+            f"  Run 'python -m flux.language.generation.trainer' to retrain FLM with the new data."
+        )
+        return AssembledResponse(
+            text              = confirmation,
+            intent            = "CORRECT_RESPONSE",
+            primary_concept   = concept_id,
+            secondary_concept = None,
+        )
 
     def _handle_self(self) -> AssembledResponse:
         """SELF intent: return Flux's identity card from the KG."""

@@ -1,31 +1,27 @@
 """
 flux/language/triplet_generator.py
 
-Generates (anchor, positive, negative) triplets from Flux's KG.
-Zero external contamination — every triplet derived from concepts
-Akhil taught Flux.
+Generates (anchor, positive, negative) triplets from Flux KG.
 
-Strategy
---------
-For each concept C in the KG:
-  anchor   = query_template(C)          e.g. "what is entropy"
-  positive = different_template(C)      e.g. "tell me about entropy"
-  negative = query_template(C') where C' ≠ C (random or hardest sample)
+Negative strategy — 3:1 hard:easy mix
+--------------------------------------
+OLD: all negatives cross-domain (different type::layer bucket).
+     transfer_learning and overfitting were NEVER each other's negatives
+     → model never learned to push them apart → cross-concept stayed at 0.98.
 
-Paraphrase templates cover:
-  • direct name queries
-  • indirect / descriptive queries (first 5 tokens of definition)
-  • structural queries (gap, connect)
+NEW: hard negatives = same domain bucket + NO KG edge.
+     These are concepts that share a domain but aren't explicitly related.
+     Forces fine-grained separation within a domain, not just coarse
+     physics-vs-ML separation that the model learns trivially by epoch 3.
 
-Produces ~5000 triplets from 374 concepts — enough for a solid
-projection head without any external data.
+     3 hard negatives : 1 cross-domain per anchor
+     Hard > word-overlap (confusable names) > same bucket > cross-domain fallback
 """
 from __future__ import annotations
 
 import random
 import re
 from dataclasses import dataclass
-from typing import Iterator
 
 
 @dataclass(frozen=True)
@@ -35,12 +31,18 @@ class Triplet:
     negative: str
 
 
-# ── Query templates ───────────────────────────────────────────────────────────
+# ── Text helpers ──────────────────────────────────────────────────────────────
 
-def _readable(concept_id: str) -> str:
-    """Convert concept_id to readable form: gibbs_free_energy → gibbs free energy."""
-    return concept_id.replace("_", " ")
+def _readable(cid: str) -> str:
+    return cid.replace("_", " ")
 
+def _definition_snippet(defn: str, max_words: int = 6) -> str:
+    words = re.split(r"\s+", defn.strip())
+    snippet = " ".join(w for w in words[:max_words] if len(w) > 2)
+    return snippet if len(snippet) > 5 else defn[:40]
+
+
+# ── Templates ─────────────────────────────────────────────────────────────────
 
 _EXPLAIN_TEMPLATES = [
     lambda n, _:  f"what is {n}",
@@ -52,22 +54,11 @@ _EXPLAIN_TEMPLATES = [
     lambda n, _:  f"{n}",
     lambda n, _:  f"{n} what is it",
     lambda n, _:  f"i want to understand {n}",
-    lambda n, _:  f"can you tell me what {n} is",
     lambda n, _:  f"what does {n} mean",
     lambda n, _:  f"flux what is {n}",
-    lambda n, _:  f"i was wondering what {n} is",
-    lambda n, d:  f"{d}",           # first N words of definition (no wrapper)
-    lambda n, d:  f"{n}: {d}",      # concept: definition snippet
-    lambda n, d:  f"{n} is {d}",    # concept is definition
-]
-
-# Core forms — concept substance without query templates
-# These are the ANCHORS that train the head on pure concept signal
-_CORE_FORMS = [
-    lambda n, d: f"{n}",
-    lambda n, d: f"{n} {d}",
-    lambda n, d: f"{d}",
-    lambda n, d: f"{n}: {d}",
+    lambda n, d:  f"{d}",
+    lambda n, d:  f"{n}: {d}",
+    lambda n, d:  f"{n} is {d}",
 ]
 
 _CONNECT_TEMPLATES = [
@@ -89,154 +80,168 @@ _GAP_TEMPLATES = [
 ]
 
 
-def _definition_snippet(definition: str, max_words: int = 6) -> str:
-    """Take first N non-trivial words from definition."""
-    words = re.split(r"\s+", definition.strip())
-    snippet = " ".join(w for w in words[:max_words] if len(w) > 2)
-    return snippet if len(snippet) > 5 else definition[:40]
+# ── Negative samplers ─────────────────────────────────────────────────────────
+
+def _build_domain_buckets(nodes: dict) -> dict[str, list[str]]:
+    buckets: dict[str, list[str]] = {}
+    for cid, nd in nodes.items():
+        key = f"{nd.get('type','UNKNOWN')}::{nd.get('layer','unknown')}"
+        buckets.setdefault(key, []).append(cid)
+    return buckets
 
 
-# ── Triplet generation ────────────────────────────────────────────────────────
+def _build_adj(store, cids: list[str]) -> dict[str, set[str]]:
+    """Undirected adjacency set from KG edges."""
+    cid_set = set(cids)
+    adj: dict[str, set[str]] = {c: set() for c in cids}
+    for cid in cids:
+        for e in (store._edges_from.get(cid, []) if store else []):
+            nb = e.get("to", "")
+            if nb in cid_set:
+                adj[cid].add(nb)
+                adj[nb].add(cid)
+    return adj
+
+
+def _hard_neg(anchor_cid, anchor_bucket, buckets, adj, all_cids, rng, excl):
+    """
+    Hard negative: same domain bucket + no KG edge, OR name word overlap + no edge.
+    Falls back to cross-domain if nothing found.
+    """
+    anchor_words = set(anchor_cid.split("_"))
+    blocked      = excl | adj.get(anchor_cid, set())
+
+    # Priority 1: name word overlap + no edge (confusable concept names)
+    word_pool = [c for c in all_cids
+                 if c not in blocked and anchor_words & set(c.split("_"))]
+    if word_pool:
+        return rng.choice(word_pool)
+
+    # Priority 2: same domain bucket + no edge
+    domain_pool = [c for c in buckets.get(anchor_bucket, []) if c not in blocked]
+    if domain_pool:
+        return rng.choice(domain_pool)
+
+    # Fallback: cross-domain
+    return _cross_neg(anchor_bucket, buckets, rng, excl)
+
+
+def _cross_neg(anchor_bucket, buckets, rng, excl):
+    """Cross-domain negative (different type::layer bucket)."""
+    other = [k for k in buckets if k != anchor_bucket]
+    if not other:
+        return None
+    rng.shuffle(other)
+    for bk in other:
+        pool = [c for c in buckets[bk] if c not in excl]
+        if pool:
+            return rng.choice(pool)
+    return None
+
+
+def _sample_neg(anchor_cid, anchor_bucket, buckets, adj, all_cids, rng, excl, hard=True):
+    """3:1 hard:cross-domain mix."""
+    if hard and rng.random() < 0.75:
+        neg = _hard_neg(anchor_cid, anchor_bucket, buckets, adj, all_cids, rng, excl)
+    else:
+        neg = _cross_neg(anchor_bucket, buckets, rng, excl)
+    return neg
+
+
+# ── Main generator ────────────────────────────────────────────────────────────
 
 def generate_triplets(
     nodes: dict,
+    store=None,
     n_negatives_per_anchor: int = 2,
     seed: int = 42,
 ) -> list[Triplet]:
-    """
-    Generate contrastive training triplets from KG nodes dict.
-
-    Key design decision:
-    Anchors are CORE FORMS (concept name + definition snippet) — no query templates.
-    Positives are either another core form OR a full query template.
-    This prevents the head from ignoring concept content (templates like
-    'what is ' are identical across ALL concepts and drown out the signal).
-
-    Hard negatives: same-layer concepts are harder negatives than random ones.
-    They force the head to learn fine-grained distinctions within a domain.
-
-    nodes: { concept_id: { "definition": str, "layer": str, ... } }
-    """
     rng = random.Random(seed)
 
-    concept_ids   = list(nodes.keys())
-    # Filter out internal/axiom nodes that have no meaningful definition
-    concept_ids   = [
-        c for c in concept_ids
+    concept_ids = [
+        c for c in nodes
         if not c.startswith("axiom_")
         and not c.startswith("__")
+        and not c.startswith("consequence_query_")
         and len(nodes[c].get("definition", "")) > 10
+        and nodes[c].get("confidence", 0) > 0.4
     ]
-
     if len(concept_ids) < 3:
-        raise ValueError(f"Too few usable concepts ({len(concept_ids)}) to generate triplets.")
+        raise ValueError(f"Too few usable concepts ({len(concept_ids)})")
 
-    # Build layer → concept_ids map for hard negatives
-    layer_map: dict[str, list[str]] = {}
-    for cid in concept_ids:
-        layer = nodes[cid].get("layer", "unknown")
-        layer_map.setdefault(layer, []).append(cid)
+    filtered   = {c: nodes[c] for c in concept_ids}
+    buckets    = _build_domain_buckets(filtered)
+    adj        = _build_adj(store, concept_ids)
+    bkt_of     = {c: bk for bk, ids in buckets.items() for c in ids}
 
     triplets: list[Triplet] = []
 
     for cid in concept_ids:
-        node    = nodes[cid]
-        name    = _readable(cid)
-        defn    = node.get("definition", "")
-        snippet = _definition_snippet(defn)
-        layer   = node.get("layer", "unknown")
+        nd     = nodes[cid]
+        name   = _readable(cid)
+        defn   = nd.get("definition", "")
+        snip   = _definition_snippet(defn)
+        full   = defn[:180]
+        bucket = bkt_of.get(cid, "UNKNOWN::unknown")
+        excl   = {cid}
 
-        # Core forms for this concept (substance without template noise)
-        core_forms = [t(name, snippet) for t in _CORE_FORMS]
+        def neg(hard=True):
+            return _sample_neg(cid, bucket, buckets, adj, concept_ids, rng, excl, hard)
 
-        # Full query variants
-        explain_variants = [t(name, snippet) for t in _EXPLAIN_TEMPLATES]
+        # ── Signal 1: Name ↔ Definition (no character overlap) ───────────────
+        for _ in range(n_negatives_per_anchor):
+            n1 = neg()
+            if n1:
+                n1_name = _readable(n1)
+                triplets.append(Triplet(name, full, n1_name))
+                q = rng.choice(_EXPLAIN_TEMPLATES)
+                triplets.append(Triplet(
+                    f"{name}: {full}",
+                    q(name, snip),
+                    q(n1_name, _definition_snippet(nodes[n1].get("definition", ""))),
+                ))
 
-        # ── Core ↔ Core pairs (strongest signal: pure concept substance) ───
-        for i in range(len(core_forms)):
-            for j in range(i + 1, len(core_forms)):
-                anchor   = core_forms[i]
-                positive = core_forms[j]
-                # Random negatives
-                neg_pool = [c for c in concept_ids if c != cid]
-                for neg_cid in rng.sample(neg_pool, min(n_negatives_per_anchor, len(neg_pool))):
-                    neg_name = _readable(neg_cid)
-                    neg_snip = _definition_snippet(nodes[neg_cid].get("definition", ""))
-                    neg_t    = rng.choice(_CORE_FORMS)
-                    triplets.append(Triplet(anchor=anchor, positive=positive,
-                                           negative=neg_t(neg_name, neg_snip)))
+        # ── Signal 2: KG edge neighbors as structural positives ──────────────
+        if store is not None:
+            for e in store._edges_from.get(cid, [])[:3]:
+                nb = e.get("to", "")
+                if nb not in filtered or nb == cid:
+                    continue
+                nb_name = _readable(nb)
+                nb_defn = nodes[nb].get("definition", "")[:180]
+                n2 = neg()
+                if n2:
+                    n2_name = _readable(n2)
+                    ct = rng.choice(_CONNECT_TEMPLATES)
+                    triplets.append(Triplet(f"{name}: {full}", f"{nb_name}: {nb_defn}", ct(name, n2_name)))
+                    triplets.append(Triplet(name, nb_name, n2_name))
 
-        # ── Core ↔ Query pairs (bridges substance → natural language) ───
-        for cf in core_forms:
-            qv = rng.choice(explain_variants)
-            # Random negative
-            neg_cid  = rng.choice([c for c in concept_ids if c != cid])
-            neg_name = _readable(neg_cid)
-            neg_snip = _definition_snippet(nodes[neg_cid].get("definition", ""))
-            neg_cf   = rng.choice(_CORE_FORMS)(neg_name, neg_snip)
-            triplets.append(Triplet(anchor=cf, positive=qv, negative=neg_cf))
+        # ── Signal 3: Query paraphrases ──────────────────────────────────────
+        variants = [t(name, snip) for t in _EXPLAIN_TEMPLATES]
+        rng.shuffle(variants)
+        for i in range(0, len(variants) - 1, 2):
+            n3 = neg()
+            if n3:
+                n3_name = _readable(n3)
+                n3_snip = _definition_snippet(nodes[n3].get("definition", ""))
+                tmpl    = _EXPLAIN_TEMPLATES[i % len(_EXPLAIN_TEMPLATES)]
+                triplets.append(Triplet(variants[i], variants[i+1], tmpl(n3_name, n3_snip)))
 
-            # Hard negative: same-layer concept (harder to distinguish)
-            same_layer = [c for c in layer_map.get(layer, []) if c != cid]
-            if same_layer:
-                hn_cid   = rng.choice(same_layer)
-                hn_name  = _readable(hn_cid)
-                hn_snip  = _definition_snippet(nodes[hn_cid].get("definition", ""))
-                hn_neg   = rng.choice(_CORE_FORMS)(hn_name, hn_snip)
-                triplets.append(Triplet(anchor=cf, positive=qv, negative=hn_neg))
-
-        # ── Same-concept query pairs (natural language paraphrases) ───
-        rng.shuffle(explain_variants)
-        for i in range(0, len(explain_variants) - 1, 2):
-            anchor   = explain_variants[i]
-            positive = explain_variants[i + 1]
-            neg_pool = [c for c in concept_ids if c != cid]
-            for neg_cid in rng.sample(neg_pool, min(1, len(neg_pool))):
-                neg_name = _readable(neg_cid)
-                neg_snip = _definition_snippet(nodes[neg_cid].get("definition", ""))
-                neg_t    = rng.choice(_CORE_FORMS)
-                triplets.append(Triplet(anchor=anchor, positive=positive,
-                                       negative=neg_t(neg_name, neg_snip)))
-
-        # ── CONNECT pairs ─────────────────────────────────────────────────
-        edges = node.get("relations", []) or []
-        related = [e.get("target", "") for e in edges if e.get("target") in nodes]
-        if not related:
-            related = rng.sample([c for c in concept_ids if c != cid], min(2, len(concept_ids)-1))
-
-        for rel_cid in related[:2]:
-            rel_name = _readable(rel_cid)
-            ct       = rng.choice(_CONNECT_TEMPLATES)
-            anchor   = ct(name, rel_name)
-            pos_t    = rng.choice([t for t in _CONNECT_TEMPLATES if t is not ct])
-            positive = pos_t(name, rel_name)
-            neg_cid  = rng.choice([c for c in concept_ids if c not in (cid, rel_cid)])
-            neg_name = _readable(neg_cid)
-            neg_snip = _definition_snippet(nodes[neg_cid].get("definition", ""))
-            neg_cf   = rng.choice(_CORE_FORMS)(neg_name, neg_snip)
-            triplets.append(Triplet(anchor=anchor, positive=positive, negative=neg_cf))
-
-        # ── GAP pairs ──────────────────────────────────────────────────────
-        gt       = rng.choice(_GAP_TEMPLATES)
-        anchor   = gt(name, snippet)
-        gt2      = rng.choice([t for t in _GAP_TEMPLATES if t is not gt])
-        positive = gt2(name, snippet)
-        neg_cid  = rng.choice([c for c in concept_ids if c != cid])
-        neg_name = _readable(neg_cid)
-        neg_snip = _definition_snippet(nodes[neg_cid].get("definition", ""))
-        triplets.append(Triplet(
-            anchor=anchor, positive=positive,
-            negative=rng.choice(_CORE_FORMS)(neg_name, neg_snip)
-        ))
+        # ── Signal 3b: Gap paraphrases ───────────────────────────────────────
+        gt, gt2 = rng.sample(_GAP_TEMPLATES, 2)
+        n4 = neg()
+        if n4:
+            n4_name = _readable(n4)
+            n4_snip = _definition_snippet(nodes[n4].get("definition", ""))
+            triplets.append(Triplet(gt(name, snip), gt2(name, snip), gt(n4_name, n4_snip)))
 
     rng.shuffle(triplets)
     return triplets
 
 
 def split(triplets: list[Triplet], val_frac: float = 0.1, seed: int = 42):
-    """Split into train/val sets."""
-    rng = random.Random(seed)
+    rng  = random.Random(seed)
     data = list(triplets)
     rng.shuffle(data)
-    n_val  = max(1, int(len(data) * val_frac))
+    n_val = max(1, int(len(data) * val_frac))
     return data[n_val:], data[:n_val]

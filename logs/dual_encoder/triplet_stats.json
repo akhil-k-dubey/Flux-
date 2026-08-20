@@ -1,0 +1,8 @@
+{
+  "total": 278,
+  "hard": 274,
+  "easy": 4,
+  "priority_1_two_hop": 232,
+  "priority_2_same_domain": 42,
+  "priority_3_cross_domain": 4
+}

@@ -53,7 +53,7 @@ _model     = None
 _proj_head = None          # ProjectionHead | None
 _c2i:       dict[str, int] = {}
 _vocab_size: int            = 0
-_device    = torch.device("cpu")
+_device    = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 # ── Loaders ───────────────────────────────────────────────────────────────────
@@ -121,7 +121,7 @@ def _text_to_tensor(text: str) -> torch.Tensor:
 
 
 def _run_pass(char_indices: torch.Tensor) -> torch.Tensor:
-    """Run one forward pass, return blended 128-dim embedding."""
+    """Run one forward pass (no_grad), return blended 128-dim embedding."""
     with torch.no_grad():
         final, histories = _model(
             char_indices, _device,
@@ -129,10 +129,31 @@ def _run_pass(char_indices: torch.Tensor) -> torch.Tensor:
             return_history=True,
             solver="euler",
         )
-    # histories[1] = Cell-2 hidden states over all time steps (T, 128)
     mean_pool = histories[1].mean(dim=0)                   # (128,)
     blended   = (1 - _BLEND_MEAN) * final + _BLEND_MEAN * mean_pool
     return blended  # (128,)
+
+
+def _run_pass_grad(char_indices: torch.Tensor) -> torch.Tensor:
+    """Run one forward pass WITH gradient flow — for contrastive fine-tuning.
+    Same as _run_pass but without torch.no_grad(), so LTC weights receive gradients.
+    """
+    final, histories = _model(
+        char_indices, _device,
+        field_spans=None,
+        return_history=True,
+        solver="euler",
+    )
+    mean_pool = histories[1].mean(dim=0)                   # (128,)
+    blended   = (1 - _BLEND_MEAN) * final + _BLEND_MEAN * mean_pool
+    return blended  # (128,)
+
+
+def get_model() -> "torch.nn.Module | None":
+    """Return the LiquidTransformer nn.Module for optimizer parameter groups.
+    Returns None if not loaded yet.
+    """
+    return _model
 
 
 # ── Public API ────────────────────────────────────────────────────────────────

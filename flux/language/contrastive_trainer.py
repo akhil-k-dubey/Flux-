@@ -1,40 +1,17 @@
 """
 flux/language/contrastive_trainer.py
 
-InfoNCE contrastive training loop for the ProjectionHead.
+InfoNCE + margin contrastive training with persistent embedding cache
+and alternating frozen/unfrozen LTC epochs.
 
-Loss
-----
-InfoNCE (also called NT-Xent / SimCLR loss):
-  For a batch of N (anchor, positive) pairs:
-    sim_matrix[i,j] = cos_sim(anchor_i, positive_j) / temperature
-    loss = mean(cross_entropy(sim_matrix, eye(N)))
+Loss = InfoNCE(anchor, positive, temp) + MARGIN_ALPHA * max(0, sim(a,n) - MARGIN_THRESHOLD)
 
-  All (i, j≠i) pairs in the batch are implicit negatives — much
-  more sample-efficient than classic triplet loss.
-  temperature=0.05 gives sharper discrimination.
+The margin term explicitly penalises any (anchor, negative) pair whose
+cosine similarity exceeds 0.35 — the direct push-down that InfoNCE alone
+does not provide (InfoNCE only maximises relative ranking, not absolute gap).
 
-Training protocol
------------------
-  1. LTC base weights: FROZEN — gradient never reaches them.
-     No EWC math needed — protection by construction.
-  2. ProjectionHead: trained from random init.
-  3. Optimizer: AdamW, cosine LR schedule.
-  4. Validation loss checked every epoch; best head saved.
-  5. Early stopping if val loss stops improving (patience=10).
-
-Batch encoding
---------------
-  For each text in the batch:
-    chars_fwd = tokenise(text)
-    chars_bwd = flip(chars_fwd)
-    emb_fwd   = ltc(chars_fwd)     # 128-dim, no_grad
-    emb_bwd   = ltc(chars_bwd)     # 128-dim, no_grad
-    raw_emb   = cat(fwd, bwd)      # 256-dim
-    proj_emb  = proj_head(raw_emb) # 128-dim, L2-normalised
-
-  raw_emb computed once and cached per unique text within the epoch
-  (most triplets share texts — caching 3×-5× speedup).
+Speed: persistent cache built once, rebuilt only after LTC-update epochs.
+Device: auto-detects CUDA.
 """
 from __future__ import annotations
 
@@ -52,161 +29,238 @@ from flux.language.triplet_generator import Triplet
 
 log = logging.getLogger(__name__)
 
-# ── Hyper-parameters (tuned for ~5000 triplets, CPU, 374 concepts) ──────────
-LR           = 3e-4
-WEIGHT_DECAY = 1e-4
-TEMPERATURE  = 0.02    # lower = sharper, forces stronger concept separation
-MAX_EPOCHS   = 100
-BATCH_SIZE   = 64      # number of (anchor, positive) pairs per step
-PATIENCE     = 15      # early stop if val loss doesn't improve
-MIN_DELTA    = 1e-4
+# ── Hyper-parameters ──────────────────────────────────────────────────────────
+LR_HEAD            = 3e-4
+LR_LTC             = 3e-5
+WEIGHT_DECAY       = 1e-4
+TEMP_START         = 0.30   # sharper start than 0.50 — hard negatives can handle it
+TEMP_END           = 0.07
+TEMP_ANNEAL_EPOCHS = 50
+MAX_EPOCHS         = 100
+BATCH_SIZE         = 64
+PATIENCE           = 15
+MIN_DELTA          = 1e-4
+LTC_UPDATE_EVERY   = 10
+MARGIN_THRESHOLD   = 0.55
+MARGIN_ALPHA       = 0.0    # disabled — hard negatives carry the signal
 
 
-# ── InfoNCE loss ─────────────────────────────────────────────────────────────
-
-def info_nce_loss(
-    anchors:   torch.Tensor,   # (N, D) L2-normalised
-    positives: torch.Tensor,   # (N, D) L2-normalised
-    temperature: float = TEMPERATURE,
-) -> torch.Tensor:
-    """
-    Symmetric InfoNCE loss.
-    Both anchors→positives and positives→anchors directions.
-    """
-    N = anchors.size(0)
-    sim = (anchors @ positives.T) / temperature   # (N, N)
-    labels = torch.arange(N, device=anchors.device)
-    loss_ap = F.cross_entropy(sim,   labels)      # anchor→positive
-    loss_pa = F.cross_entropy(sim.T, labels)      # positive→anchor
-    return (loss_ap + loss_pa) / 2.0
+def _temperature(epoch: int) -> float:
+    frac = min(1.0, (epoch - 1) / TEMP_ANNEAL_EPOCHS)
+    return TEMP_START - frac * (TEMP_START - TEMP_END)
 
 
-# ── Batch encoder ─────────────────────────────────────────────────────────────
+def _auto_device() -> torch.device:
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def _encode_batch(
-    texts:     list[str],
-    ltc_encode: Callable[[str], torch.Tensor],
-    proj_head: ProjectionHead,
+
+# ── Losses ────────────────────────────────────────────────────────────────────
+
+def info_nce_loss(anchors: torch.Tensor, positives: torch.Tensor, temperature: float) -> torch.Tensor:
+    N   = anchors.size(0)
+    sim = (anchors @ positives.T) / temperature
+    lbl = torch.arange(N, device=anchors.device)
+    return (F.cross_entropy(sim, lbl) + F.cross_entropy(sim.T, lbl)) / 2.0
+
+
+def margin_loss(anchors: torch.Tensor, negatives: torch.Tensor) -> torch.Tensor:
+    """Penalise sim(anchor_i, negative_i) > MARGIN_THRESHOLD."""
+    return F.relu((anchors * negatives).sum(dim=1) - MARGIN_THRESHOLD).mean()
+
+
+def combined_loss(a, p, n, temp):
+    return info_nce_loss(a, p, temp) + MARGIN_ALPHA * margin_loss(a, n)
+
+
+# ── Cache ─────────────────────────────────────────────────────────────────────
+
+def _build_cache(texts: list[str], ltc_encode: Callable, device: torch.device) -> dict[str, torch.Tensor]:
+    cache: dict[str, torch.Tensor] = {}
+    with torch.no_grad():
+        for t in texts:
+            cache[t] = ltc_encode(t).detach().to(device)
+    return cache
+
+
+# ── Head-only epoch ───────────────────────────────────────────────────────────
+
+def _head_epoch(
+    pairs:     list[tuple[str, str, str]],
     cache:     dict[str, torch.Tensor],
-) -> torch.Tensor:
-    """Encode a list of texts through LTC (cached, no_grad) → proj_head."""
-    raw_embs = []
-    for t in texts:
-        if t not in cache:
-            cache[t] = ltc_encode(t)   # (256,) no_grad already
-        raw_embs.append(cache[t])
-    raw = torch.stack(raw_embs)        # (N, 256)
-    return proj_head(raw)              # (N, 128) L2-normalised
+    proj_head: ProjectionHead,
+    temp:      float,
+    optimizer: torch.optim.Optimizer,
+) -> float:
+    import random
+    random.shuffle(pairs)
+    proj_head.train()
+    losses: list[float] = []
+
+    for start in range(0, len(pairs), BATCH_SIZE):
+        batch = pairs[start:start + BATCH_SIZE]
+        if len(batch) < 2:
+            continue
+        a_embs = proj_head(torch.stack([cache[a] for a, _, _ in batch]))
+        p_embs = proj_head(torch.stack([cache[p] for _, p, _ in batch]))
+        n_embs = proj_head(torch.stack([cache[n] for _, _, n in batch]))
+        loss   = combined_loss(a_embs, p_embs, n_embs, temp)
+        optimizer.zero_grad()
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(proj_head.parameters(), 1.0)
+        optimizer.step()
+        losses.append(loss.item())
+
+    return sum(losses) / max(len(losses), 1)
 
 
-# ── Main trainer ─────────────────────────────────────────────────────────────
+# ── LTC-update epoch ──────────────────────────────────────────────────────────
 
-def train(
+def _ltc_epoch(
+    pairs:      list[tuple[str, str, str]],
+    ltc_encode: Callable,
     proj_head:  ProjectionHead,
-    ltc_encode: Callable[[str], torch.Tensor],
-    train_set:  list[Triplet],
-    val_set:    list[Triplet],
-    device:     torch.device = torch.device("cpu"),
-    progress_cb: Callable[[int, float, float], None] | None = None,
-) -> dict:
-    """
-    Train the ProjectionHead using InfoNCE on (anchor, positive) pairs.
-    Negatives come from the batch implicitly.
+    temp:       float,
+    optimizer:  torch.optim.Optimizer,
+    ltc_model:  "torch.nn.Module",
+    device:     torch.device,
+) -> float:
+    """Per-batch fresh encoding — avoids double-backward, keeps graph small."""
+    import random
+    random.shuffle(pairs)
+    proj_head.train()
+    ltc_model.train()
+    losses: list[float] = []
 
-    progress_cb(epoch, train_loss, val_loss) called each epoch.
-    Returns metrics dict.
-    """
-    proj_head.to(device).train()
+    for start in range(0, len(pairs), BATCH_SIZE):
+        batch = pairs[start:start + BATCH_SIZE]
+        if len(batch) < 2:
+            continue
+        unique = list({t for a, p, n in batch for t in [a, p, n]})
+        embs   = {t: ltc_encode(t).to(device) for t in unique}
 
-    optimizer = AdamW(
-        proj_head.parameters(),
-        lr=LR,
-        weight_decay=WEIGHT_DECAY,
-    )
-    scheduler = CosineAnnealingLR(optimizer, T_max=MAX_EPOCHS, eta_min=LR * 0.01)
+        a_embs = proj_head(torch.stack([embs[a] for a, _, _ in batch]))
+        p_embs = proj_head(torch.stack([embs[p] for _, p, _ in batch]))
+        n_embs = proj_head(torch.stack([embs[n] for _, _, n in batch]))
+        loss   = combined_loss(a_embs, p_embs, n_embs, temp)
+        optimizer.zero_grad()
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(proj_head.parameters(), 1.0)
+        torch.nn.utils.clip_grad_norm_(ltc_model.parameters(), 0.5)
+        optimizer.step()
+        losses.append(loss.item())
 
-    best_val   = float("inf")
-    patience_c = 0
-    history    = {"train_loss": [], "val_loss": []}
-    t_start    = time.time()
+    return sum(losses) / max(len(losses), 1)
 
-    log.info("ContrastiveTrainer: %d train / %d val triplets", len(train_set), len(val_set))
-    log.info("  LR=%.4f  TEMP=%.3f  BATCH=%d  MAX_EPOCHS=%d",
-             LR, TEMPERATURE, BATCH_SIZE, MAX_EPOCHS)
 
-    for epoch in range(1, MAX_EPOCHS + 1):
-        # ── Train ─────────────────────────────────────────────────────────
-        proj_head.train()
-        train_cache: dict[str, torch.Tensor] = {}
-        epoch_losses: list[float] = []
+# ── Validation ────────────────────────────────────────────────────────────────
 
-        # Shuffle anchors/positives from triplets
-        pairs = [(t.anchor, t.positive) for t in train_set]
-        import random; random.shuffle(pairs)
+def _validate(val_set: list[Triplet], cache: dict, proj_head: ProjectionHead,
+              temp: float, device: torch.device, ltc_encode: Callable) -> float:
+    proj_head.eval()
+    vc: dict[str, torch.Tensor] = {}
 
+    def _get(t):
+        if t not in cache:
+            if t not in vc:
+                with torch.no_grad():
+                    vc[t] = ltc_encode(t).detach().to(device)
+            return vc[t]
+        return cache[t]
+
+    losses: list[float] = []
+    with torch.no_grad():
+        pairs = [(t.anchor, t.positive) for t in val_set]
         for start in range(0, len(pairs), BATCH_SIZE):
             batch = pairs[start:start + BATCH_SIZE]
             if len(batch) < 2:
-                continue  # InfoNCE needs ≥2 pairs
+                continue
+            a = proj_head(torch.stack([_get(a) for a, _ in batch]))
+            p = proj_head(torch.stack([_get(p) for _, p in batch]))
+            losses.append(info_nce_loss(a, p, temp).item())
 
-            anchors_txt  = [p[0] for p in batch]
-            positives_txt = [p[1] for p in batch]
+    return sum(losses) / max(len(losses), 1)
 
-            anchor_embs   = _encode_batch(anchors_txt,   ltc_encode, proj_head, train_cache)
-            positive_embs = _encode_batch(positives_txt, ltc_encode, proj_head, train_cache)
 
-            loss = info_nce_loss(anchor_embs, positive_embs)
-            optimizer.zero_grad()
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(proj_head.parameters(), 1.0)
-            optimizer.step()
-            epoch_losses.append(loss.item())
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+def train(
+    proj_head:        ProjectionHead,
+    ltc_encode:       Callable,
+    train_set:        list[Triplet],
+    val_set:          list[Triplet],
+    device:           torch.device | None = None,
+    progress_cb:      Callable[[int, float, float], None] | None = None,
+    frozen_ltc:       bool = True,
+    ltc_model:        "torch.nn.Module | None" = None,
+    ltc_update_every: int = LTC_UPDATE_EVERY,
+) -> dict:
+    if device is None:
+        device = _auto_device()
+
+    proj_head.to(device).train()
+    if ltc_model is not None and not frozen_ltc:
+        ltc_model.to(device)
+
+    if frozen_ltc or ltc_model is None:
+        log.info("ContrastiveTrainer: LTC FROZEN on %s", device)
+        optimizer = AdamW(proj_head.parameters(), lr=LR_HEAD, weight_decay=WEIGHT_DECAY)
+    else:
+        log.info("ContrastiveTrainer: LTC UNFROZEN — alternating every %d epochs on %s",
+                 ltc_update_every, device)
+        optimizer = AdamW(
+            [{"params": ltc_model.parameters(), "lr": LR_LTC},
+             {"params": proj_head.parameters(), "lr": LR_HEAD}],
+            weight_decay=WEIGHT_DECAY,
+        )
+
+    scheduler    = CosineAnnealingLR(optimizer, T_max=MAX_EPOCHS, eta_min=LR_HEAD * 0.01)
+    train_pairs  = [(t.anchor, t.positive, t.negative) for t in train_set]
+    unique_train = list({t for a, p, n in train_pairs for t in [a, p, n]})
+
+    log.info("ContrastiveTrainer: %d train / %d val | %d unique texts | device=%s",
+             len(train_set), len(val_set), len(unique_train), device)
+    log.info("  TEMP: %.2f→%.2f  MARGIN: sim>%.2f × %.1f  BATCH=%d  MAX=%d",
+             TEMP_START, TEMP_END, MARGIN_THRESHOLD, MARGIN_ALPHA, BATCH_SIZE, MAX_EPOCHS)
+
+    log.info("  Building cache (%d texts)...", len(unique_train))
+    t0 = time.time()
+    cache = _build_cache(unique_train, ltc_encode, device)
+    log.info("  Cache built in %.1fs", time.time() - t0)
+
+    best_val, patience_c = float("inf"), 0
+    history = {"train_loss": [], "val_loss": [], "temperature": [], "ltc_updated": []}
+    t_start = time.time()
+
+    for epoch in range(1, MAX_EPOCHS + 1):
+        temp       = _temperature(epoch)
+        update_ltc = (not frozen_ltc) and (ltc_model is not None) and (epoch % ltc_update_every == 0)
+        history["temperature"].append(temp)
+        history["ltc_updated"].append(update_ltc)
+
+        if update_ltc:
+            train_loss = _ltc_epoch(train_pairs, ltc_encode, proj_head, temp, optimizer, ltc_model, device)
+            cache      = _build_cache(unique_train, ltc_encode, device)
+        else:
+            train_loss = _head_epoch(train_pairs, cache, proj_head, temp, optimizer)
 
         scheduler.step()
-        train_loss = sum(epoch_losses) / max(len(epoch_losses), 1)
+        val_loss = _validate(val_set, cache, proj_head, temp, device, ltc_encode)
 
-        # ── Validate ──────────────────────────────────────────────────────
-        proj_head.eval()
-        val_cache:   dict[str, torch.Tensor] = {}
-        val_losses:  list[float] = []
-
-        with torch.no_grad():
-            val_pairs = [(t.anchor, t.positive) for t in val_set]
-            for start in range(0, len(val_pairs), BATCH_SIZE):
-                batch = val_pairs[start:start + BATCH_SIZE]
-                if len(batch) < 2:
-                    continue
-                a_embs = _encode_batch([p[0] for p in batch], ltc_encode, proj_head, val_cache)
-                p_embs = _encode_batch([p[1] for p in batch], ltc_encode, proj_head, val_cache)
-                val_losses.append(info_nce_loss(a_embs, p_embs).item())
-
-        val_loss = sum(val_losses) / max(len(val_losses), 1)
         history["train_loss"].append(train_loss)
         history["val_loss"].append(val_loss)
-
         if progress_cb:
             progress_cb(epoch, train_loss, val_loss)
 
-        # ── Early stop / save best ────────────────────────────────────────
         if val_loss < best_val - MIN_DELTA:
-            best_val   = val_loss
-            patience_c = 0
+            best_val, patience_c = val_loss, 0
             proj_head.save()
-            log.debug("  Epoch %3d | train=%.4f val=%.4f ← saved", epoch, train_loss, val_loss)
         else:
             patience_c += 1
-            log.debug("  Epoch %3d | train=%.4f val=%.4f (patience %d/%d)",
-                      epoch, train_loss, val_loss, patience_c, PATIENCE)
             if patience_c >= PATIENCE:
                 log.info("  Early stop at epoch %d (best val=%.4f)", epoch, best_val)
                 break
 
     elapsed = time.time() - t_start
     log.info("ContrastiveTrainer: done in %.1fs — best val_loss=%.4f", elapsed, best_val)
-
-    return {
-        "best_val_loss": best_val,
-        "epochs": len(history["train_loss"]),
-        "elapsed_s": elapsed,
-        "history": history,
-    }
+    return {"best_val_loss": best_val, "epochs": len(history["train_loss"]),
+            "elapsed_s": elapsed, "history": history}
