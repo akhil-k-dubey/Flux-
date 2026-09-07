@@ -39,10 +39,12 @@ _STOP = frozenset({
     "tell", "explain", "describe", "show", "give", "get",
     "about", "between", "there", "here", "please", "hmm",
     "like", "think", "thought", "know", "wonder", "wondering",
-    "relate", "relates", "related", "relationship", "connection",
-    "connect", "connects", "something", "anything", "nothing",
-    "flux", "hey", "hi", "okay", "alright", "yeah", "yes", "no",
+    "something", "anything", "nothing",
+    "hey", "hi", "okay", "alright", "yeah", "yes", "no",
+    # NOTE: "flux" intentionally NOT in stop list — it is a concept prefix
+    # NOTE: "connect*", "relat*" intentionally NOT here — they are intent signals
 })
+
 
 # Words that signal a boundary BETWEEN concepts — always split here
 _SPLIT_WORDS = frozenset({
@@ -112,10 +114,21 @@ class KGParser:
         if not spans:
             return self._fallback.parse(clean)
 
-        # 4. Resolve concepts — two-pass to prevent composite junk from blocking short spans
-        # Pass 1: exact tier-1 matches only (score ≥ 0.99) — lock these concepts first
+        # 4. Resolve concepts — three-pass to handle compound concepts correctly.
+        # Pass 0: direct KG ID match (span == node_id exactly) — highest priority.
+        #   This handles "flux identity" → "flux_identity" without TF-IDF interference.
+        direct_resolved: list[tuple[str, str, float]] = []
+        direct_seen:     set[str] = set()
+        if self._store:
+            all_kg_ids = set(self._store.all_ids())
+            for span in spans:
+                if span in all_kg_ids and span not in direct_seen:
+                    direct_resolved.append((span, span, 1.0))
+                    direct_seen.add(span)
+
+        # Pass 1: exact tier-1 matches only (score ≥ 0.99) — lock these first
         exact_resolved: list[tuple[str, str, float]] = []
-        exact_seen:     set[str] = set()
+        exact_seen:     set[str] = set(direct_seen)
         for span in spans:
             hits = self._index.query_one(span, 1)
             if hits and hits[0][1] >= 0.99:
@@ -135,7 +148,7 @@ class KGParser:
                     near_resolved.append((span, cid, score))
                     near_seen.add(cid)
 
-        resolved = exact_resolved + near_resolved
+        resolved = direct_resolved + exact_resolved + near_resolved
         resolved.sort(key=lambda x: x[2], reverse=True)
 
         if not resolved:

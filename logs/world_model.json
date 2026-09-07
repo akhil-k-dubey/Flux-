@@ -1,0 +1,254 @@
+{
+  "physical": {
+    "laptop": {
+      "hostname": "akhil-Nitro",
+      "cpu_temp_c": 55.4,
+      "ram_used_mb": 7505.7,
+      "ram_total_mb": 14773.9,
+      "battery_pct": 100.0,
+      "battery_charging": true,
+      "uptime_hours": 77.09,
+      "last_seen": 1788777444.6454444
+    },
+    "sensors": {
+      "active": false,
+      "co2": null,
+      "presence": null,
+      "lux": null,
+      "power_watts": null
+    }
+  },
+  "agents": {
+    "akhil": {
+      "last_interaction": 1788777445.7438612,
+      "session_count_today": 73,
+      "session_date": "2026-09-07",
+      "typical_session_start": 9,
+      "current_focus_domain": "flux_architecture",
+      "predicted_next_query": "likely: flux_architecture (most frequent topic)",
+      "cognitive_load": "low",
+      "total_queries": 281,
+      "domain_history": [
+        "thermodynamics",
+        "thermodynamics",
+        "thermodynamics",
+        "thermodynamics",
+        "thermodynamics",
+        "unknown",
+        "unknown",
+        "unknown",
+        "unknown",
+        "unknown",
+        "unknown",
+        "thermodynamics",
+        "information_theory",
+        "thermodynamics",
+        "thermodynamics",
+        "unknown",
+        "unknown",
+        "unknown",
+        "unknown",
+        "flux_architecture"
+      ],
+      "full_name": "Akhil Dubey",
+      "name": "Akhil Dubey"
+    }
+  },
+  "knowledge": {
+    "kg_nodes": 837,
+    "kg_edges": 118,
+    "domains": {
+      "constitutional": 83,
+      "flux_architecture": 56,
+      "unknown": 22,
+      "quantum_mechanics": 41,
+      "thermodynamics": 38,
+      "physics": 7,
+      "machine_learning": 45,
+      "mathematics": 124,
+      "cognitive_science": 3,
+      "philosophy": 1,
+      "information_theory": 66,
+      "probability_theory": 34,
+      "computer_science": 1,
+      "neuroscience": 12,
+      "linear_algebra": 138,
+      "general_relativity": 1,
+      "algorithms": 54,
+      "reinforcement_learning": 7,
+      "compiler_theory": 12,
+      "python": 22,
+      "type_theory": 14,
+      "abstract_algebra": 24,
+      "statistical_mechanics": 13,
+      "probabilistic_ml": 7,
+      "operating_systems": 2,
+      "software_engineering": 10
+    },
+    "last_stage_b": null,
+    "books_processed": [
+      "Axler Linear Algebra Done Right",
+      "Tao Analysis I",
+      "Tao Analysis II",
+      "Dummit Foote Abstract Algebra",
+      "Concrete Mathematics Knuth",
+      "Topology I",
+      "Cover Thomas Information Theory",
+      "Category Theory for Programmers",
+      "Feynman Lectures I-II-III",
+      "Griffiths Introduction to Quantum Mechanics",
+      "Pathria Statistical Mechanics",
+      "Carroll General Relativity",
+      "Peskin Schroeder QFT",
+      "PH409 Advanced Physics",
+      "Bishop PRML",
+      "Hastie ESL",
+      "Goodfellow Deep Learning",
+      "Koller Probabilistic Graphical Models",
+      "Sutton Barto Reinforcement Learning",
+      "Knuth TAOCP Vol 1",
+      "Knuth TAOCP Vol 2",
+      "Knuth TAOCP Vol 3",
+      "Knuth TAOCP Vol 4 SAT",
+      "Algorithms 2022",
+      "SICP",
+      "Dragon Book Compilers",
+      "Pierce Types and Programming Languages",
+      "OS Three Easy Pieces",
+      "Tanenbaum Computer Networks",
+      "TAOUP Unix Programming",
+      "Fluent Python",
+      "Python Tricks",
+      "Numerical Python"
+    ]
+  },
+  "processes": {
+    "active_rsm_proposals": [
+      {
+        "id": "prop_1787226072_shrink",
+        "change_type": "SHRINK",
+        "hypothesis": "Reduce LTC hidden_dim 128\u219264 to cut inference latency (triggered: latency_ms)"
+      },
+      {
+        "id": "prop_1787226072_grow",
+        "change_type": "GROW",
+        "hypothesis": "Grow LTC hidden_dim 128\u2192192 to break Fisher saturation \u2014 model has no remaining "
+      },
+      {
+        "id": "prop_1787226072_regularize",
+        "change_type": "REGULARIZE",
+        "hypothesis": "Add warmup_cosine LR schedule + dropout 0.1\u21920.2 to reduce EWC forgetting rate (t"
+      },
+      {
+        "id": "prop_1787226072_deepen",
+        "change_type": "DEEPEN",
+        "hypothesis": "Widen consolidation bottleneck 32\u219264 + cosine LR to improve benchmark plateau (t"
+      },
+      {
+        "id": "prop_1787226072_shrink",
+        "change_type": "SHRINK",
+        "hypothesis": "Reduce LTC hidden_dim 128\u219264 to cut inference latency (triggered: latency_ms, fi"
+      },
+      {
+        "id": "prop_1787226072_regularize",
+        "change_type": "REGULARIZE",
+        "hypothesis": "Add warmup_cosine LR schedule + dropout 0.1\u21920.2 to reduce EWC forgetting rate (t"
+      },
+      {
+        "id": "prop_1787245853_shrink",
+        "change_type": "SHRINK",
+        "hypothesis": "Reduce LTC hidden_dim 128\u219264 to cut inference latency (triggered: latency_ms)"
+      },
+      {
+        "id": "prop_1787281864_deepen",
+        "change_type": "DEEPEN",
+        "hypothesis": "Widen consolidation bottleneck 32\u219264 + cosine LR to improve benchmark plateau (t"
+      },
+      {
+        "id": "prop_1787282101_deepen",
+        "change_type": "DEEPEN",
+        "hypothesis": "Widen consolidation bottleneck 32\u219264 + cosine LR to improve benchmark plateau (t"
+      },
+      {
+        "id": "prop_1787282880_deepen",
+        "change_type": "DEEPEN",
+        "hypothesis": "Widen consolidation bottleneck 32\u219264 + cosine LR to improve benchmark plateau (t"
+      },
+      {
+        "id": "prop_1787451846_deepen",
+        "change_type": "DEEPEN",
+        "hypothesis": "Widen consolidation bottleneck 32\u219264 + cosine LR to improve benchmark plateau (t"
+      },
+      {
+        "id": "prop_1787582517_deepen",
+        "change_type": "DEEPEN",
+        "hypothesis": "Widen consolidation bottleneck 32\u219264 + cosine LR to improve benchmark plateau (t"
+      },
+      {
+        "id": "prop_1787645090_deepen",
+        "change_type": "DEEPEN",
+        "hypothesis": "Widen consolidation bottleneck 32\u219264 + cosine LR to improve benchmark plateau (t"
+      }
+    ],
+    "open_failures": [],
+    "jarvis_tests": {
+      "test1_rsm_audit": "PASSING",
+      "test2_counterfactual_thermo": "PASSING",
+      "test3_holographic_gaps": "UNKNOWN",
+      "test4_unsolved_intersection": "UNKNOWN",
+      "test5_decision_memory": "PASSING"
+    }
+  },
+  "predictions": {
+    "next_akhil_session": null,
+    "next_rsm_trigger": null,
+    "next_stage_b": null
+  },
+  "self": {
+    "architecture": {
+      "hidden_dim": 128,
+      "cons_bottleneck": 64,
+      "dropout": 0.1,
+      "lr_schedule": "cosine"
+    },
+    "capabilities": {
+      "confirmed": [
+        "EXPLAIN",
+        "CONNECT",
+        "AUDIT",
+        "SELF",
+        "REASON",
+        "linear_algebra",
+        "mathematics",
+        "abstract_algebra",
+        "information_theory",
+        "physics",
+        "quantum_mechanics",
+        "statistical_mechanics",
+        "general_relativity",
+        "machine_learning",
+        "probabilistic_ml",
+        "reinforcement_learning",
+        "algorithms",
+        "compiler_theory",
+        "type_theory",
+        "operating_systems",
+        "software_engineering",
+        "python"
+      ],
+      "partial": [
+        "COUNTERFACTUAL",
+        "HYPOTHESIZE"
+      ],
+      "missing": [
+        "SYNTHESIS",
+        "DECISION"
+      ]
+    },
+    "last_shutdown": null,
+    "total_uptime_hours": 0.0,
+    "total_queries_answered": 281,
+    "total_failures": 0,
+    "start_time": "2026-09-07T16:07:24.546389"
+  }
+}

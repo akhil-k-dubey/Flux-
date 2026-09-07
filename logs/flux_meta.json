@@ -359,12 +359,20 @@
       "normalized": "thermodynamics_connects_statistical_mechanics",
       "resolved_to": "lagrangian_mechanics",
       "resolved": false
+    },
+    "ewc": {
+      "count": 1,
+      "first_seen": "2026-08-27T04:19:05Z",
+      "normalized": "ewc",
+      "resolved_to": null,
+      "resolved": false
     }
   },
   "gap_query_counts": {
     "hamiltonian": 8,
     "wave_function_collapse_and_how_it_connect_decoherence": 2,
     "quantum_consciousness": 1,
-    "microcanonical_ensemble": 1
+    "microcanonical_ensemble": 1,
+    "ewc": 1
   }
 }

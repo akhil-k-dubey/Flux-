@@ -1,0 +1,161 @@
+{
+  "proposal_id": "prop_1787281864_deepen",
+  "mode": "architecture",
+  "benchmark_score": 1.0,
+  "regression_passed": 20,
+  "regression_total": 20,
+  "regression_details": {
+    "quantum_superposition": {
+      "passed": true,
+      "baseline_len": 129,
+      "candidate_len": 129,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "electric_field": {
+      "passed": true,
+      "baseline_len": 81,
+      "candidate_len": 81,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "enthalpy": {
+      "passed": true,
+      "baseline_len": 124,
+      "candidate_len": 124,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "thermodynamic_equilibrium": {
+      "passed": true,
+      "baseline_len": 122,
+      "candidate_len": 122,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "wavefunction": {
+      "passed": true,
+      "baseline_len": 116,
+      "candidate_len": 116,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "recursive_self_improvement": {
+      "passed": true,
+      "baseline_len": 70,
+      "candidate_len": 70,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "limit_definition": {
+      "passed": true,
+      "baseline_len": 47,
+      "candidate_len": 47,
+      "key_terms_found": 0,
+      "key_terms_total": 4
+    },
+    "error_correcting_codes": {
+      "passed": true,
+      "baseline_len": 86,
+      "candidate_len": 86,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "lumen_memory_tier": {
+      "passed": true,
+      "baseline_len": 105,
+      "candidate_len": 105,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "entropy": {
+      "passed": true,
+      "baseline_len": 137,
+      "candidate_len": 137,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "helmholtz_free_energy": {
+      "passed": true,
+      "baseline_len": 98,
+      "candidate_len": 98,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "carnot_cycle": {
+      "passed": true,
+      "baseline_len": 132,
+      "candidate_len": 132,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "gibbs_free_energy": {
+      "passed": true,
+      "baseline_len": 132,
+      "candidate_len": 132,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "gradient_vector": {
+      "passed": true,
+      "baseline_len": 68,
+      "candidate_len": 68,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "flux_vocab_drift": {
+      "passed": true,
+      "baseline_len": 90,
+      "candidate_len": 90,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "density_matrix": {
+      "passed": true,
+      "baseline_len": 98,
+      "candidate_len": 98,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "kolmogorov_complexity": {
+      "passed": true,
+      "baseline_len": 110,
+      "candidate_len": 110,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "wave_particle_duality": {
+      "passed": true,
+      "baseline_len": 115,
+      "candidate_len": 115,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "heat_capacity": {
+      "passed": true,
+      "baseline_len": 110,
+      "candidate_len": 110,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    },
+    "fermi_dirac_statistics": {
+      "passed": true,
+      "baseline_len": 109,
+      "candidate_len": 109,
+      "key_terms_found": 0,
+      "key_terms_total": 8
+    }
+  },
+  "latency_p95_ms": 2.1030589999782023,
+  "training_duration_s": 21.33482003211975,
+  "final_train_loss": 0.37265856160181704,
+  "final_val_loss": 0.3324575998164989,
+  "architecture": {
+    "hidden_dim": 128,
+    "cons_bottleneck": 64,
+    "dropout": 0.1,
+    "lr_schedule": "cosine",
+    "embed_dim": 32
+  },
+  "error": null
+}

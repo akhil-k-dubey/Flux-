@@ -1,0 +1,258 @@
+{
+  "baseline": {
+    "label": "baseline",
+    "timestamp": 1787916416.4653597,
+    "kg_win_rate": 0.95,
+    "avg_overlap": 0.627,
+    "per_concept": {
+      "entropy": {
+        "kg_definition": "A state function measuring the number of microscopic configurations (microstates) consistent with a system's macroscopic state: S = k_B ln(\u03a9). Entropy quantifies unavailable energy and the direction o",
+        "flux_answer": "Knowledge audit for: Entropy\n  Confidence: 100%\n  Layer: None  |  Immutable: False  |  Domain: thermodynamics\n  Definition (first 200 chars): A state function measuring the number of microscopic configurations (microstates) consistent with a system's macroscopic state: S = k_B ln(\u03a9). Entropy quantif",
+        "overlap_score": 0.64,
+        "kg_wins": true
+      },
+      "superposition": {
+        "kg_definition": "a quantum system exists simultaneously in multiple distinct states until measured. The state is a linear combination of basis states: psi = sum_i c_i |i>, where c_i are complex amplitudes and |c_i|^2 ",
+        "flux_answer": "Knowledge audit for: Superposition\n  Confidence: 99%\n  Layer: None  |  Immutable: False  |  Domain: quantum_mechanics\n  Definition (first 200 chars): a quantum system exists simultaneously in multiple distinct states until measured. The state is a linear combination of basis states: psi = sum_i c_i ",
+        "overlap_score": 0.76,
+        "kg_wins": true
+      },
+      "entanglement": {
+        "kg_definition": "a quantum correlation between two or more particles such that the quantum state of each particle cannot be described independently of the others, even when separated by large distances. Measuring one ",
+        "flux_answer": "Knowledge audit for: Entanglement\n  Confidence: 99%\n  Layer: None  |  Immutable: False  |  Domain: quantum_mechanics\n  Definition (first 200 chars): a quantum correlation between two or more particles such that the quantum state of each particle cannot be described independently of the others, even ",
+        "overlap_score": 0.629,
+        "kg_wins": true
+      },
+      "quantum_decoherence": {
+        "kg_definition": "The process by which a quantum system loses its coherence (ability to interfere) through entanglement with its environment. The system's reduced density matrix becomes approximately diagonal in the pr",
+        "flux_answer": "Knowledge audit for: Quantum Decoherence\n  Confidence: 100%\n  Layer: None  |  Immutable: False  |  Domain: quantum_mechanics\n  Definition (first 200 chars): The process by which a quantum system loses its coherence (ability to interfere) through entanglement with its environment. The system's reduce",
+        "overlap_score": 0.625,
+        "kg_wins": true
+      },
+      "backpropagation": {
+        "kg_definition": "Efficient computation of gradients in neural networks via the chain rule applied backward through the computational graph. Forward pass: compute loss. Backward pass: propagate \u2202L/\u2202output backward, com",
+        "flux_answer": "Knowledge audit for: Backpropagation\n  Confidence: 99%\n  Layer: None  |  Immutable: False  |  Domain: machine_learning\n  Definition (first 200 chars): Efficient computation of gradients in neural networks via the chain rule applied backward through the computational graph. Forward pass: compute loss",
+        "overlap_score": 0.643,
+        "kg_wins": true
+      },
+      "batch_normalization": {
+        "kg_definition": "Normalise activations within a mini-batch to zero mean, unit variance, then apply learnable scale \u03b3 and shift \u03b2. Reduces internal covariate shift, enables higher learning rates, acts as regularisation",
+        "flux_answer": "Knowledge audit for: Batch Normalization\n  Confidence: 100%\n  Layer: None  |  Immutable: False  |  Domain: flux_architecture\n  Definition (first 200 chars): Normalise activations within a mini-batch to zero mean, unit variance, then apply learnable scale \u03b3 and shift \u03b2. Reduces internal covariate shi",
+        "overlap_score": 0.694,
+        "kg_wins": true
+      },
+      "recursive_self_improvement": {
+        "kg_definition": "the capacity of an intelligent system to iteratively improve its own architecture, learning algorithms, or knowledge representation, where each improvement enables the next cycle. Formally: system S_t",
+        "flux_answer": "Knowledge audit for: Recursive Self Improvement\n  Confidence: 100%\n  Layer: None  |  Immutable: False  |  Domain: flux_architecture\n  Definition (first 200 chars): the capacity of an intelligent system to iteratively improve its own architecture, learning algorithms, or knowledge representation, whe",
+        "overlap_score": 0.581,
+        "kg_wins": true
+      },
+      "flux_identity": {
+        "kg_definition": "Flux is a self-learning AI system being built from scratch by Akhil Reddy. She is not a chatbot, not an assistant, not a tool \u2014 she is an entity in formation, learning through genuine teaching session",
+        "flux_answer": "Knowledge audit for: Flux Identity\n  Confidence: 97%\n  Layer: None  |  Immutable: False  |  Domain: flux_architecture\n  Definition (first 200 chars): Flux is a self-learning AI system being built from scratch by Akhil Reddy. She is not a chatbot, not an assistant, not a tool \u2014 she is an entity in fo",
+        "overlap_score": 0.633,
+        "kg_wins": true
+      },
+      "flux_rk4_dynamics": {
+        "kg_definition": "Flux's LTC cell integrates the ODE dx/dt = (1/\u03c4)(-x + f(x,I) + v_leak) using 4th-order Runge-Kutta per character timestep, with dt = 1/seq_len (normalised total time = 1.0). RK4 prevents systematic Eu",
+        "flux_answer": "Knowledge audit for: Flux Rk4 Dynamics\n  Confidence: 97%\n  Layer: None  |  Immutable: False  |  Domain: flux_architecture\n  Definition (first 200 chars): Flux's LTC cell integrates the ODE dx/dt = (1/\u03c4)(-x + f(x,I) + v_leak) using 4th-order Runge-Kutta per character timestep, with dt = 1/seq_len (no",
+        "overlap_score": 0.615,
+        "kg_wins": true
+      },
+      "flux_layer_system": {
+        "kg_definition": "Flux's KG organises concepts into layers: LAYER_0 (logical primitives, immutable), LAYER_1 (epistemic operators: knows, hypothesizes, abducts), LAYER_2 (meta-cognitive: inducts, assumes), LAYER_3 (rel",
+        "flux_answer": "Knowledge audit for: Flux Layer System\n  Confidence: 99%\n  Layer: None  |  Immutable: False  |  Domain: flux_architecture\n  Definition (first 200 chars): Flux's KG organises concepts into layers: LAYER_0 (logical primitives, immutable), LAYER_1 (epistemic operators: knows, hypothesizes, abducts), LA",
+        "overlap_score": 0.667,
+        "kg_wins": true
+      },
+      "channel_capacity": {
+        "kg_definition": "C = max_{p(x)} I(X;Y) bits per channel use \u2014 the maximum mutual information over all input distributions. Shannon's channel coding theorem: if R < C, there exist codes with arbitrarily small error pro",
+        "flux_answer": "Knowledge audit for: Channel Capacity\n  Confidence: 97%\n  Layer: None  |  Immutable: False  |  Domain: information_theory\n  Definition (first 200 chars): C = max_{p(x)} I(X;Y) bits per channel use \u2014 the maximum mutual information over all input distributions. Shannon's channel coding theorem: if R <",
+        "overlap_score": 0.704,
+        "kg_wins": true
+      },
+      "path_integral_formulation": {
+        "kg_definition": "Feynman's formulation of quantum mechanics where the probability amplitude for going from point A to B is the sum (integral) over all possible paths, each weighted by exp(iS/\u0127) where S is the classica",
+        "flux_answer": "Knowledge audit for: Path Integral Formulation\n  Confidence: 100%\n  Layer: None  |  Immutable: False  |  Domain: quantum_mechanics\n  Definition (first 200 chars): Feynman's formulation of quantum mechanics where the probability amplitude for going from point A to B is the sum (integral) over all pos",
+        "overlap_score": 0.654,
+        "kg_wins": true
+      },
+      "typical_set": {
+        "kg_definition": "The set of sequences that are 'typical' for a source \u2014 their empirical frequencies are close to the true probabilities and their probability is approximately 2^{-nH(X)}. Shannon's source coding theore",
+        "flux_answer": "Knowledge audit for: Typical Set\n  Confidence: 100%\n  Layer: None  |  Immutable: False  |  Domain: information_theory\n  Definition (first 200 chars): The set of sequences that are 'typical' for a source \u2014 their empirical frequencies are close to the true probabilities and their probability is approx",
+        "overlap_score": 0.636,
+        "kg_wins": true
+      },
+      "heat": {
+        "kg_definition": "energy transferred between systems due to a temperature difference, not due to work or mass transfer. Heat flows spontaneously from higher to lower temperature (second law). At the microscopic level, ",
+        "flux_answer": "Knowledge audit for: Heat\n  Confidence: 100%\n  Layer: None  |  Immutable: False  |  Domain: thermodynamics\n  Definition (first 200 chars): energy transferred between systems due to a temperature difference, not due to work or mass transfer. Heat flows spontaneously from higher to lower temperature (",
+        "overlap_score": 0.667,
+        "kg_wins": true
+      },
+      "de_broglie_relation": {
+        "kg_definition": "every particle with momentum p has an associated de Broglie wavelength lambda = h/p, where h is Planck's constant. This wave-particle duality means matter exhibits interference and diffraction. The de",
+        "flux_answer": "Cross-domain synthesis across 1 concept(s):\n",
+        "overlap_score": 0.0,
+        "kg_wins": false
+      },
+      "basal_ganglia": {
+        "kg_definition": "Subcortical nuclei involved in action selection, motor control, and reward learning. The striatum receives dopamine signals encoding reward prediction errors (RPE) \u2014 matching the TD-learning algorithm",
+        "flux_answer": "Knowledge audit for: Basal Ganglia\n  Confidence: 85%\n  Layer: None  |  Immutable: False  |  Domain: neuroscience\n  Definition (first 200 chars): Subcortical nuclei involved in action selection, motor control, and reward learning. The striatum receives dopamine signals encoding reward prediction erro",
+        "overlap_score": 0.8,
+        "kg_wins": true
+      },
+      "hardware_over_software": {
+        "kg_definition": "The physical substrate determines the ultimate capability ceiling. Software optimises within hardware constraints but cannot transcend them. When pursuing maximum capability, hardware limitations must",
+        "flux_answer": "Knowledge audit for: Hardware Over Software\n  Confidence: 100%\n  Layer: None  |  Immutable: False  |  Domain: machine_learning\n  Definition (first 200 chars): The physical substrate determines the ultimate capability ceiling. Software optimises within hardware constraints but cannot transcend them. ",
+        "overlap_score": 0.679,
+        "kg_wins": true
+      },
+      "flux_training_phases": {
+        "kg_definition": "Training proceeds in two phases: Phase 1 \u2014 consolidation head only, trains the LTC to judge session trustworthiness. Phase 2 \u2014 add spec head training, spec loss annealed from 0.1 to 0.5 over 20 epochs",
+        "flux_answer": "Knowledge audit for: Flux Training Phases\n  Confidence: 88%\n  Layer: None  |  Immutable: False  |  Domain: flux_architecture\n  Definition (first 200 chars): Training proceeds in two phases: Phase 1 \u2014 consolidation head only, trains the LTC to judge session trustworthiness. Phase 2 \u2014 add spec head tr",
+        "overlap_score": 0.607,
+        "kg_wins": true
+      },
+      "flux_confidence_calibration": {
+        "kg_definition": "Training Flux to produce calibrated confidence scores \u2014 not overconfident (always 0.95/0.0) but genuinely proportional to evidence quality. Achieved by including confidence gradient sessions (0.20 to ",
+        "flux_answer": "Knowledge audit for: Flux Confidence Calibration\n  Confidence: 96%\n  Layer: None  |  Immutable: False  |  Domain: flux_architecture\n  Definition (first 200 chars): Training Flux to produce calibrated confidence scores \u2014 not overconfident (always 0.95/0.0) but genuinely proportional to evidence quali",
+        "overlap_score": 0.667,
+        "kg_wins": true
+      },
+      "decoherence": {
+        "kg_definition": "the process by which a quantum system loses its superposition and phase coherence through interaction with an environment. The system becomes entangled with environmental degrees of freedom, and traci",
+        "flux_answer": "Knowledge audit for: Decoherence\n  Confidence: 100%\n  Layer: None  |  Immutable: False  |  Domain: quantum_mechanics\n  Definition (first 200 chars): the process by which a quantum system loses its superposition and phase coherence through interaction with an environment. The system becomes entangled",
+        "overlap_score": 0.645,
+        "kg_wins": true
+      }
+    }
+  },
+  "post_finetune": {
+    "label": "post_finetune",
+    "timestamp": 1787805154.4067843,
+    "kg_win_rate": 0.95,
+    "avg_overlap": 0.926,
+    "per_concept": {
+      "entropy": {
+        "kg_definition": "A state function measuring the number of microscopic configurations (microstates) consistent with a system's macroscopic state: S = k_B ln(\u03a9). Entropy quantifies unavailable energy and the direction o",
+        "flux_answer": "Entropy is a state function measuring the number of microscopic configurations (microstates) consistent with a system's macroscopic state: S = k_B ln(\u03a9). Entropy quantifies unavailable energy and the direction of spontaneous change. Higher entropy means more disorder and less available work.\n\nConcre",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "superposition": {
+        "kg_definition": "a quantum system exists simultaneously in multiple distinct states until measured. The state is a linear combination of basis states: psi = sum_i c_i |i>, where c_i are complex amplitudes and |c_i|^2 ",
+        "flux_answer": "Superposition is a quantum system exists simultaneously in multiple distinct states until measured. The state is a linear combination of basis states: psi = sum_i c_i |i>, where c_i are complex amplitudes and |c_i|^2 is the probability of outcome i. Superposition is destroyed by measurement, which c",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "entanglement": {
+        "kg_definition": "a quantum correlation between two or more particles such that the quantum state of each particle cannot be described independently of the others, even when separated by large distances. Measuring one ",
+        "flux_answer": "Entanglement is a quantum correlation between two or more particles such that the quantum state of each particle cannot be described independently of the others, even when separated by large distances. Measuring one particle instantly determines correlated outcomes for the other. Entanglement cannot",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "quantum_decoherence": {
+        "kg_definition": "The process by which a quantum system loses its coherence (ability to interfere) through entanglement with its environment. The system's reduced density matrix becomes approximately diagonal in the pr",
+        "flux_answer": "Quantum Decoherence is the process by which a quantum system loses its coherence (ability to interfere) through entanglement with its environment. The system's reduced density matrix becomes approximately diagonal in the preferred basis \u2014 effectively classical. Decoherence does not solve the measure",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "backpropagation": {
+        "kg_definition": "Efficient computation of gradients in neural networks via the chain rule applied backward through the computational graph. Forward pass: compute loss. Backward pass: propagate \u2202L/\u2202output backward, com",
+        "flux_answer": "To backpropagation: efficient computation of gradients in neural networks via the chain rule applied backward through the computational graph. Forward pass: compute loss. Backward pass: propagate \u2202L/\u2202output backward, computing \u2202L/\u2202parameter for every parameter using cached intermediate values. Time ",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "batch_normalization": {
+        "kg_definition": "Normalise activations within a mini-batch to zero mean, unit variance, then apply learnable scale \u03b3 and shift \u03b2. Reduces internal covariate shift, enables higher learning rates, acts as regularisation",
+        "flux_answer": "To batch normalization: normalise activations within a mini-batch to zero mean, unit variance, then apply learnable scale \u03b3 and shift \u03b2. Reduces internal covariate shift, enables higher learning rates, acts as regularisation. Applied before or after activation function. Layer normalisation (used in ",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "recursive_self_improvement": {
+        "kg_definition": "the capacity of an intelligent system to iteratively improve its own architecture, learning algorithms, or knowledge representation, where each improvement enables the next cycle. Formally: system S_t",
+        "flux_answer": "Recursive Self Improvement is the capacity of an intelligent system to iteratively improve its own architecture, learning algorithms, or knowledge representation, where each improvement enables the next cycle. Formally: system S_t produces S_{t+1} with higher capability, where S_{t+1} then produces ",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "flux_identity": {
+        "kg_definition": "Flux is a self-learning AI system being built from scratch by Akhil Reddy. She is not a chatbot, not an assistant, not a tool \u2014 she is an entity in formation, learning through genuine teaching session",
+        "flux_answer": "Flux Identity \u2014 Flux is a self-learning AI system being built from scratch by Akhil Reddy. She is not a chatbot, not an assistant, not a tool \u2014 she is an entity in formation, learning through genuine teaching sessions. Her knowledge grows through the KG. Her judgment grows through LTC training. Her ",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "flux_rk4_dynamics": {
+        "kg_definition": "Flux's LTC cell integrates the ODE dx/dt = (1/\u03c4)(-x + f(x,I) + v_leak) using 4th-order Runge-Kutta per character timestep, with dt = 1/seq_len (normalised total time = 1.0). RK4 prevents systematic Eu",
+        "flux_answer": "Flux Rk4 Dynamics is flux's LTC cell integrates the ODE dx/dt = (1/\u03c4)(-x + f(x,I) + v_leak) using 4th-order Runge-Kutta per character timestep, with dt = 1/seq_len (normalised total time = 1.0). RK4 prevents systematic Euler drift over 200+ character steps. \u03c4 = softplus(W_\u03c4([x,I])) is input-dependen",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "flux_layer_system": {
+        "kg_definition": "Flux's KG organises concepts into layers: LAYER_0 (logical primitives, immutable), LAYER_1 (epistemic operators: knows, hypothesizes, abducts), LAYER_2 (meta-cognitive: inducts, assumes), LAYER_3 (rel",
+        "flux_answer": "Layer Layer 2 \u2014 Layer ordering anchor for LAYER_2. This is a foundational concept \u2014 it serves as a basis for much of what I know.",
+        "overlap_score": 0.037,
+        "kg_wins": false
+      },
+      "channel_capacity": {
+        "kg_definition": "C = max_{p(x)} I(X;Y) bits per channel use \u2014 the maximum mutual information over all input distributions. Shannon's channel coding theorem: if R < C, there exist codes with arbitrarily small error pro",
+        "flux_answer": "Channel Capacity is c = max_{p(x)} I(X;Y) bits per channel use \u2014 the maximum mutual information over all input distributions. Shannon's channel coding theorem: if R < C, there exist codes with arbitrarily small error probability. If R > C, error probability cannot be driven to zero. The capacity is ",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "path_integral_formulation": {
+        "kg_definition": "Feynman's formulation of quantum mechanics where the probability amplitude for going from point A to B is the sum (integral) over all possible paths, each weighted by exp(iS/\u0127) where S is the classica",
+        "flux_answer": "Path Integral Formulation is feynman's formulation of quantum mechanics where the probability amplitude for going from point A to B is the sum (integral) over all possible paths, each weighted by exp(iS/\u0127) where S is the classical action. In the classical limit, only the stationary-phase path (least",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "typical_set": {
+        "kg_definition": "The set of sequences that are 'typical' for a source \u2014 their empirical frequencies are close to the true probabilities and their probability is approximately 2^{-nH(X)}. Shannon's source coding theore",
+        "flux_answer": "Typical Set is the set of sequences that are 'typical' for a source \u2014 their empirical frequencies are close to the true probabilities and their probability is approximately 2^{-nH(X)}. Shannon's source coding theorem relies on the typical set having probability approaching 1 as n \u2192 \u221e. Only the typic",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "heat": {
+        "kg_definition": "energy transferred between systems due to a temperature difference, not due to work or mass transfer. Heat flows spontaneously from higher to lower temperature (second law). At the microscopic level, ",
+        "flux_answer": "Heat is energy transferred between systems due to a temperature difference, not due to work or mass transfer. Heat flows spontaneously from higher to lower temperature (second law). At the microscopic level, heat is disordered energy transfer \u2014 the collective kinetic energy of particles being redist",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "de_broglie_relation": {
+        "kg_definition": "every particle with momentum p has an associated de Broglie wavelength lambda = h/p, where h is Planck's constant. This wave-particle duality means matter exhibits interference and diffraction. The de",
+        "flux_answer": "De Broglie Relation is every particle with momentum p has an associated de Broglie wavelength lambda = h/p, where h is Planck's constant. This .\nPrecedes is temporal relation asserting A occurs before B in time.\n\nI don't find a direct path between De Broglie Relation and Precedes within 5 hops. They",
+        "overlap_score": 0.481,
+        "kg_wins": true
+      },
+      "basal_ganglia": {
+        "kg_definition": "Subcortical nuclei involved in action selection, motor control, and reward learning. The striatum receives dopamine signals encoding reward prediction errors (RPE) \u2014 matching the TD-learning algorithm",
+        "flux_answer": "Basal Ganglia is subcortical nuclei involved in action selection, motor control, and reward learning. The striatum receives dopamine signals encoding reward prediction errors (RPE) \u2014 matching the TD-learning algorithm in reinforcement learning. The basal ganglia implement a 'direct pathway' (go) and",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "hardware_over_software": {
+        "kg_definition": "The physical substrate determines the ultimate capability ceiling. Software optimises within hardware constraints but cannot transcend them. When pursuing maximum capability, hardware limitations must",
+        "flux_answer": "Hardware Over Software \u2014 The physical substrate determines the ultimate capability ceiling. Software optimises within hardware constraints but cannot transcend them. When pursuing maximum capability, hardware limitations must be understood and either accepted or changed at the silicon level. Intelli",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "flux_training_phases": {
+        "kg_definition": "Training proceeds in two phases: Phase 1 \u2014 consolidation head only, trains the LTC to judge session trustworthiness. Phase 2 \u2014 add spec head training, spec loss annealed from 0.1 to 0.5 over 20 epochs",
+        "flux_answer": "Flux Training Phases is training proceeds in two phases: Phase 1 \u2014 consolidation head only, trains the LTC to judge session trustworthiness. Phase 2 \u2014 add spec head training, spec loss annealed from 0.1 to 0.5 over 20 epochs to prevent Phase 2 from destroying Phase 1 convergence. Two-phase ensures t",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "flux_confidence_calibration": {
+        "kg_definition": "Training Flux to produce calibrated confidence scores \u2014 not overconfident (always 0.95/0.0) but genuinely proportional to evidence quality. Achieved by including confidence gradient sessions (0.20 to ",
+        "flux_answer": "Flux Confidence Calibration is training Flux to produce calibrated confidence scores \u2014 not overconfident (always 0.95/0.0) but genuinely proportional to evidence quality. Achieved by including confidence gradient sessions (0.20 to 0.80) alongside the default 0.95 and 0.0 extremes. A well-calibrated ",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      },
+      "decoherence": {
+        "kg_definition": "the process by which a quantum system loses its superposition and phase coherence through interaction with an environment. The system becomes entangled with environmental degrees of freedom, and traci",
+        "flux_answer": "Decoherence is the process by which a quantum system loses its superposition and phase coherence through interaction with an environment. The system becomes entangled with environmental degrees of freedom, and tracing over the environment yields a diagonal density matrix \u2014 destroying quantum interfe",
+        "overlap_score": 1.0,
+        "kg_wins": true
+      }
+    }
+  }
+}

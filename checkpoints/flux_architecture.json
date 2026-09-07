@@ -1,0 +1,9 @@
+{
+  "hidden_dim": 128,
+  "cons_bottleneck": 64,
+  "dropout": 0.1,
+  "lr_schedule": "cosine",
+  "embed_dim": 32,
+  "promoted_from": "prop_1787282880_deepen",
+  "promoted_at": 1787283586
+}

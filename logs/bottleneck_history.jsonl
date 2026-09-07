@@ -1,0 +1,2 @@
+{"session_id": "test_realdata_001", "timestamp": 1787225751.954323, "latency_ms": 64.435, "fisher_sat": 0.0002410321778125274, "plateau_var": 0.23600000000000002, "ewc_forget": 0.0, "triggered": []}
+{"session_id": "ba043aa4", "timestamp": 1787225858.5669644, "latency_ms": 70.97999999999999, "fisher_sat": 0.0002410321778125274, "plateau_var": 0.23600000000000002, "ewc_forget": 0.0, "triggered": []}

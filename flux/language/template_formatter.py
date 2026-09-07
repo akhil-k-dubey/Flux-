@@ -140,92 +140,158 @@ class TemplateFormatter:
 
     def format_explain(self, concept: str, stage3: dict, stage4) -> str:
         """
-        Convert an EXPLAIN stage3+stage4 result to a natural English paragraph.
+        Convert an EXPLAIN stage3+stage4 result to a rich multi-paragraph response.
 
-        Sections (only rendered if data exists):
-          1. Opening sentence  — name + definition
-          2. Examples          — "For example, ..."
-          3. Non-examples      — "Worth noting: ..."
-          4. Dependencies      — "It requires ..."
-          5. Connections       — "It enables / is analogous to ..."
-          6. Derivations       — "From this, I can reason toward ..."
-          7. Gaps              — "I reference X but haven't been taught it yet"
+        Paragraphs (rendered only when data exists):
+          1. Opening paragraph — name + full definition + domain context
+          2. Examples paragraph — concrete cases and use-cases
+          3. Relations paragraph — requires, enables, connects (from KG edges)
+          4. Deeper reasoning — stage4 derivations / causal chains
+          5. Knowledge gaps — concepts Flux references but hasn't learned yet
+          6. Confidence note — only if partial knowledge
         """
-        node_type  = stage3.get("type",        "")
+        node_type  = stage3.get("type",         "")
         name       = _title(concept)
-        definition = stage3.get("definition",  "")
-        examples   = stage3.get("examples",    [])
+        definition = stage3.get("definition",   "")
+        examples   = stage3.get("examples",     [])
         non_ex     = stage3.get("non_examples", [])
-        related    = stage3.get("related",     [])
+        related    = stage3.get("related",      [])
+        confidence = float(stage3.get("confidence", 1.0))
+        domain     = str(stage3.get("domain", "") or "").replace("_", " ")
+        layer      = str(stage3.get("layer", "") or "")
+        immutable  = bool(stage3.get("immutable", False))
 
-        sentences: list[str] = []
+        paragraphs: list[str] = []
 
-        # 1. Opening
-        sentences.append(_opening(name, definition, node_type))
+        # ── Paragraph 1: Opening + definition ────────────────────────────────
+        opening = _opening(name, definition, node_type)
+        if domain and domain not in ("unknown", "none", ""):
+            domain_phrase = f" This falls within the domain of {domain}."
+        else:
+            domain_phrase = ""
+        if layer in ("0", "1") or immutable:
+            foundation = " This is a foundational concept — it serves as a basis for much of what I know."
+        else:
+            foundation = ""
+        paragraphs.append(opening + domain_phrase + foundation)
 
-        # 2. Examples
-        ex_list = [str(e).strip() for e in examples if str(e).strip()][:3]
+        # ── Paragraph 2: Examples and use-cases ──────────────────────────────
+        ex_parts: list[str] = []
+        ex_list = [str(e).strip() for e in examples if str(e).strip()][:4]
         if ex_list:
             ex_strs = [e.rstrip(".") for e in ex_list]
             if len(ex_strs) == 1:
-                sentences.append(f"For example: {ex_strs[0].lower()}.")
+                ex_parts.append(f"For example: {ex_strs[0]}.")
             else:
-                sentences.append(
-                    f"Examples include {_join_list([s.lower() for s in ex_strs])}."
-                )
-
-        # 3. Non-examples
+                ex_parts.append(f"Concrete examples include: {_join_list(ex_strs)}.")
         ne_list = [str(e).strip() for e in non_ex if str(e).strip()][:1]
         if ne_list:
             ne = ne_list[0].rstrip(".")
-            sentences.append(f"Worth noting: {ne[0].lower()}{ne[1:]}.")
+            ex_parts.append(f"Worth noting: {ne[0].lower()}{ne[1:]}.")
+        if ex_parts:
+            paragraphs.append(" ".join(ex_parts))
 
-        # 4. Dependencies (REQUIRES edges)
-        requires = [r for r in related if r.get("edge") == "REQUIRES"][:3]
-        if requires:
-            req_names = [_name(r["concept"]) for r in requires]
-            sentences.append(
-                f"It requires {_join_list(req_names)}."
-            )
+        # ── Paragraph 3: Relations — pull directly from KG edges + stage3 ────
+        # Merge stage3 related with live KG edges for completeness
+        live_edges = self._store.edges_from(concept) if self._store else []
+        edge_targets: dict[str, list[str]] = {}   # edge_type → [concept_names]
+        for edge in live_edges:
+            etype = str(edge.get("type", edge.get("edge", "RELATES_TO"))).upper()
+            tgt   = edge.get("to", edge.get("concept", ""))
+            if tgt and tgt != concept:
+                edge_targets.setdefault(etype, []).append(_name(tgt))
 
-        # 5. Connections (everything except REQUIRES / IS_A)
-        connects = [r for r in related
-                    if r.get("edge") not in ("REQUIRES", "IS_A")][:4]
+        # Augment with stage3 related items
+        for r in related:
+            etype = str(r.get("edge", "RELATES_TO")).upper()
+            tgt   = r.get("concept", "")
+            if tgt and tgt != concept:
+                if tgt not in edge_targets.get(etype, []):
+                    edge_targets.setdefault(etype, []).append(_name(tgt))
+
+        rel_parts: list[str] = []
+        req = edge_targets.get("REQUIRES", [])[:3]
+        if req:
+            rel_parts.append(f"It requires {_join_list(req)}.")
+        enables = edge_targets.get("ENABLES", [])[:3]
+        if enables:
+            rel_parts.append(f"Understanding this enables {_join_list(enables)}.")
+        causes = edge_targets.get("CAUSES", [])[:2]
+        if causes:
+            rel_parts.append(f"It causes or produces {_join_list(causes)}.")
+        connects = (
+            edge_targets.get("CONNECTS", []) +
+            edge_targets.get("RELATES_TO", []) +
+            edge_targets.get("SIMILAR_TO", []) +
+            edge_targets.get("ANALOGOUS_TO", [])
+        )[:3]
         if connects:
-            conn_parts = []
-            for r in connects:
-                verb  = _RELATION_VERB.get(r.get("edge", ""), "connects to")
-                tname = _name(r["concept"])
-                conn_parts.append(f"{verb} {tname}")
-            sentences.append(f"It {_join_list(conn_parts)}.")
+            rel_parts.append(f"It connects to {_join_list(connects)}.")
+        if rel_parts:
+            paragraphs.append(" ".join(rel_parts))
 
-        # 6. Stage 4 derivations (only well-known targets)
+        # ── Paragraph 4: Derivations from reasoning ───────────────────────────
         if stage4 and hasattr(stage4, "derivations") and stage4.derivations:
             derives = [
                 d for d in stage4.derivations
                 if d.target != concept and self._store.get(d.target)
-            ][:2]
+            ][:3]
             if derives:
                 d_names = [_name(d.target) for d in derives]
-                sentences.append(
-                    f"From this, I can reason toward {_join_list(d_names)}."
+                paragraphs.append(
+                    f"From this concept, I can reason toward {_join_list(d_names)}."
                 )
 
-        # 7. Gaps (dangling edges)
-        dangling_names = []
-        for edge in self._store.edges_from(concept):
-            tgt = edge.get("to", "")
+        # ── Paragraph 5: Knowledge gaps ───────────────────────────────────────
+        dangling: list[str] = []
+        for edge in live_edges:
+            tgt = edge.get("to", edge.get("concept", ""))
             if tgt and not self._store.get(tgt):
-                dangling_names.append(_name(tgt))
-        if dangling_names:
-            gn = dangling_names[:2]
+                dangling.append(_name(tgt))
+        if dangling:
+            gn = list(dict.fromkeys(dangling))[:2]   # deduplicate
             them = "it" if len(gn) == 1 else "them"
-            sentences.append(
-                f"I reference {_join_list(gn)} but haven't been taught "
-                f"{them} yet — want to teach me?"
+            paragraphs.append(
+                f"I reference {_join_list(gn)} but haven't fully learned "
+                f"{them} yet — you can teach me by saying "
+                f"\"[TEACH] {gn[0].replace(' ', '_')} ...\""
             )
 
-        return " ".join(sentences)
+        # ── Paragraph 6: Confidence note (only for partial knowledge) ─────────
+        if confidence < 0.75:
+            paragraphs.append(
+                f"Note: my knowledge of {name.lower()} is partial "
+                f"(confidence {confidence:.0%}). I may be missing nuance."
+            )
+
+        return "\n\n".join(paragraphs)
+
+    def format_deep_explain(self, concept: str, stage3: dict, stage4) -> str:
+        """
+        Elaboration mode — called when user says 'tell me more', 'elaborate', etc.
+        Produces a longer response that digs into the KG node's full context.
+        """
+        # Start with the standard explain
+        base = self.format_explain(concept, stage3, stage4)
+
+        # Add: full definition as a separate paragraph if it was truncated
+        definition = stage3.get("definition", "")
+        if definition and len(definition) > 150:
+            base += f"\n\nFull definition:\n{definition}"
+
+        # Add: all concepts that point TO this concept (in-edges)
+        in_edges = self._store.edges_to(concept) if hasattr(self._store, "edges_to") else []
+        parents: list[str] = []
+        for edge in in_edges[:4]:
+            src = edge.get("from", edge.get("concept", ""))
+            if src and src != concept:
+                parents.append(_name(src))
+        if parents:
+            base += f"\n\nConcepts that depend on or reference this: {_join_list(parents)}."
+
+        return base
+
+
 
     # ── CONNECT ───────────────────────────────────────────────────────────────
 

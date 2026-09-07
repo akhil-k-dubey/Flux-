@@ -349,6 +349,7 @@ def session_loss(
     spec_weight: float = 0.0,
     solver: str = SOLVER,
     ewc_state: tuple | None = None,
+    lambda_ewc: float | None = None,   # override EWC_LAMBDA (e.g. 500 for expansion)
 ) -> torch.Tensor:
     """
     Compute weighted loss for one session.
@@ -383,7 +384,8 @@ def session_loss(
     # L_EWC = (λ/2) × Σ F_i × (θ_i − θ*_i)²
     if ewc_state is not None:
         fm, fc, om, oc = ewc_state
-        loss = loss + ewc_penalty(model, cons_head, fm, fc, om, oc)
+        _lam = lambda_ewc if lambda_ewc is not None else EWC_LAMBDA
+        loss = loss + ewc_penalty(model, cons_head, fm, fc, om, oc, lambda_ewc=_lam)
 
     return loss
 

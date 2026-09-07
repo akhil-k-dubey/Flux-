@@ -113,34 +113,68 @@ class ResponseAssembler:
         except Exception as exc:
             log.debug("FluxLanguageModel not loaded (%s) — using TemplateFormatter", exc)
 
+    # Common filler words that dominate word-salad FLM output
+    _STOP_WORDS: frozenset[str] = frozenset({
+        "the", "a", "an", "and", "to", "of", "is", "in", "it", "by",
+        "on", "at", "or", "be", "as", "for", "with", "from", "that",
+        "this", "are", "was", "were", "its", "not", "but", "if", "so",
+    })
+
     @staticmethod
     def _flm_quality_ok(text: str) -> bool:
         """
         Quality gate for FluxLanguageModel output.
         Returns True only if the output is coherent natural language.
 
-        Checks:
-          1. At least 30 real alphabetic words (not punctuation tokens)
-          2. Type-token ratio > 0.35 (enough vocabulary variety)
+        Checks (all must pass):
+          1. At least 30 real alphabetic words
+          2. Type-token ratio > 0.40 (enough vocabulary variety)
           3. Most common bigram < 20% of all bigrams (no repetition loops)
+          4. Stop-word ratio < 55% (word-salad is >70% stop words)
+          5. Punctuation density < 12% of total chars (broken output has dense punct)
+          6. First word must be capitalized (coherent sentences start correctly)
         """
-        if not text:
+        if not text or len(text) < 40:
             return False
         import re
         alpha_words = re.findall(r"[a-zA-Z']+", text)
         if len(alpha_words) < 30:
             return False
-        unique = len(set(w.lower() for w in alpha_words))
-        ttr = unique / len(alpha_words)
-        if ttr < 0.35:
+
+        lower_words = [w.lower() for w in alpha_words]
+
+        # 2. Type-token ratio (stricter: 0.40 vs previous 0.35)
+        unique = len(set(lower_words))
+        ttr = unique / len(lower_words)
+        if ttr < 0.40:
             return False
-        # Bigram repetition
-        bigrams = [f"{alpha_words[i]}_{alpha_words[i+1]}" for i in range(len(alpha_words) - 1)]
+
+        # 3. Bigram repetition
+        bigrams = [f"{lower_words[i]}_{lower_words[i+1]}" for i in range(len(lower_words) - 1)]
         if bigrams:
             most_common_count = max(bigrams.count(b) for b in set(bigrams))
             if most_common_count / len(bigrams) > 0.2:
                 return False
+
+        # 4. Stop-word dominance — word salad is mostly articles, prepositions, conjunctions
+        stop_count = sum(1 for w in lower_words
+                         if w in ResponseAssembler._STOP_WORDS)
+        if stop_count / len(lower_words) > 0.55:
+            return False
+
+        # 5. Punctuation density — garbage output has lots of . , - | = chars
+        total_chars = len(text)
+        punct_chars  = sum(1 for c in text if c in ".,;:!?|=—–-()[]{}")
+        if total_chars > 0 and punct_chars / total_chars > 0.12:
+            return False
+
+        # 6. First word should be capitalized (coherent sentences start with capital)
+        stripped = text.lstrip()
+        if stripped and not stripped[0].isupper():
+            return False
+
         return True
+
 
     def assemble(
         self,
