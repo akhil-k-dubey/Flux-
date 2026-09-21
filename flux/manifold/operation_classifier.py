@@ -153,9 +153,12 @@ def find_concepts_in_query(text: str, store: "KGStore",
     tl_norm = tl.replace(" ", "_").replace("-", "_")
     words   = set(tl.split())
 
+    # Skip known false-positive structural phrases produced by "what is a X"
+    _SKIP_IDS = {"is_a", "is", "of", "in", "on", "at", "to", "a", "i", "an", "the"}
+
     found = []
     for cid in store.all_ids():
-        if len(cid) < 4:
+        if len(cid) < 4 or cid in _SKIP_IDS:
             continue
         label = cid.replace("_", " ")
         if "_" in cid:

@@ -31,6 +31,21 @@ class ExtractionResult:
     slots:        list[str]     # raw phrase slots (not yet KG IDs)
     confidence:   float
     template_hit: str           # which template matched
+    modifiers:    list[str] = None   # transformation words stripped from slot fronts
+
+    def __post_init__(self):
+        if self.modifiers is None:
+            self.modifiers = []
+
+
+# Transformation modifiers — stripped from the front of slots so
+# "inverse first law of thermodynamics" → slot="first law of thermodynamics", modifier="inverse"
+_MODIFIERS = {
+    "inverse", "invert", "reverse", "reversed", "negate", "negated",
+    "violate", "violated", "remove", "removed", "eliminate", "eliminated",
+    "double", "halve", "stop", "prevent", "maximize", "minimize",
+    "increase", "decrease", "disable", "ignore",
+}
 
 
 # ── Intent-specific templates ──────────────────────────────────────────────────
@@ -181,15 +196,43 @@ _COUNTERFACTUAL_TEMPLATES = [
     # NEW: "what if X"
     (r"what if (?P<slot>.+?) (?:decreas|increas|stop|disappear|chang|didn.t|weren.t|wasn.t)(?:.{0,30})?(?:\?|$)",
      ["slot"], "what_if_changed"),
+    # "what if i were to [modifier] X" / "if i were to [modifier] X"
+    # modifier is stripped by _strip_modifier in _extract_groups
+    (r"what if (?:i|we|you) (?:were|was) to (?P<slot>.+?)(?:\?|$)",
+     ["slot"], "what_if_were_to"),
+    (r"if (?:i|we|you) (?:were|was) to (?P<slot>.+?)(?:\?|$)",
+     ["slot"], "if_were_to"),
+    # "suppose X were reversed" / "imagine X was violated"
+    (r"(?:suppose|imagine|assume|consider) (?P<slot>.+?) (?:were|was) (?:reversed|violated|absent|removed|false|wrong|inverted)",
+     ["slot"], "suppose_reversed"),
+]
+
+_SMALLTALK_TEMPLATES = [
+    # Greetings
+    (r"^(?:hi|hello|hey|good\s+(?:morning|afternoon|evening|night|day))[\s,!.]*(?:flux|there)?[\s,!.]*$",
+     [], "greeting"),
+    # How are you
+    (r"how\s+(?:are\s+you|do\s+you\s+(?:feel|do)|is\s+it\s+going|you\s+doing)[\s?!.]*$",
+     [], "how_are_you"),
+    # Acknowledgments / filler
+    (r"^(?:ok(?:ay)?|sure|alright|alr|cool|great|nice|thanks?|thank you|got it|"
+     r"understood|makes sense|perfect|awesome|yep|yup|yeah|nope|no problem|np)[\s!.]*$",
+     [], "ack"),
+    # Goodbye
+    (r"^(?:bye(?:bye)?|goodbye|see\s+you|later|take\s+care|cya)[\s!.]*$",
+     [], "bye"),
+    # "how are you" with name prefix stripped by _strip_agent_address
+    (r"^(?:what(?:'s| is) up|wassup|sup)[\s?!.]*$", [], "whats_up"),
 ]
 
 _ALL_TEMPLATES: dict[str, list] = {
+    "SMALLTALK":      _SMALLTALK_TEMPLATES,       # ← checked FIRST in _phase1_handle
     "SYNTHESIS":      _SYNTHESIS_TEMPLATES,
     "AUDIT":          _AUDIT_TEMPLATES,
-    "EXPLAIN":        _EXPLAIN_TEMPLATES,        # ← was missing
-    "SELF":           _SELF_TEMPLATES,           # ← was missing
-    "CONNECT":        _CONNECT_TEMPLATES,        # ← was missing
-    "COUNTERFACTUAL": _COUNTERFACTUAL_TEMPLATES, # ← extended
+    "EXPLAIN":        _EXPLAIN_TEMPLATES,
+    "SELF":           _SELF_TEMPLATES,
+    "CONNECT":        _CONNECT_TEMPLATES,
+    "COUNTERFACTUAL": _COUNTERFACTUAL_TEMPLATES,
     "DECISION":       _DECISION_TEMPLATES,
     "REASON":         _REASON_TEMPLATES,
     "HYPOTHESIZE":    _HYPOTHESIZE_TEMPLATES,
@@ -242,12 +285,13 @@ class SlotExtractor:
             m = pattern.search(text)
             if not m:
                 continue
-            slots = self._extract_groups(m, groups, text)
+            slots, modifiers = self._extract_groups(m, groups, text)
             if slots:
                 return ExtractionResult(
                     slots        = slots,
                     confidence   = 0.95,
                     template_hit = f"{intent}:{name}",
+                    modifiers    = modifiers,
                 )
 
         # 3. Fallback: generic noun phrase extraction
@@ -276,8 +320,13 @@ class SlotExtractor:
         return text.strip()
 
     def _extract_groups(self, match: re.Match, groups: list[str], full_text: str) -> list[str]:
-        """Extract and clean named groups from a regex match."""
-        slots: list[str] = []
+        """Extract and clean named groups from a regex match.
+        Returns (slots, modifiers) — modifiers are transformation words stripped
+        from slot fronts (e.g. 'inverse', 'reverse', 'negate').
+        """
+        slots:     list[str] = []
+        modifiers: list[str] = []
+
         for group in groups:
             try:
                 val = match.group(group)
@@ -294,11 +343,31 @@ class SlotExtractor:
                 for part in parts:
                     part = part.strip().rstrip("?.,!")
                     if len(part) >= 2 and part.lower() not in self._protected:
-                        slots.append(part)
+                        cleaned, mod = self._strip_modifier(part)
+                        if mod:
+                            modifiers.append(mod)
+                        slots.append(cleaned)
             else:
                 if val.lower() not in self._protected and len(val) >= 2:
-                    slots.append(val)
-        return slots
+                    cleaned, mod = self._strip_modifier(val)
+                    if mod:
+                        modifiers.append(mod)
+                    slots.append(cleaned)
+        return slots, modifiers
+
+    def _strip_modifier(self, slot: str) -> tuple[str, str | None]:
+        """
+        Strip a leading transformation modifier from a slot phrase.
+        "inverse first law of thermodynamics" → ("first law of thermodynamics", "inverse")
+        "entropy"                             → ("entropy", None)
+        """
+        words = slot.split()
+        if words and words[0].lower() in _MODIFIERS:
+            remaining = " ".join(words[1:]).strip()
+            if remaining:           # don't strip if nothing left
+                return remaining, words[0].lower()
+        return slot, None
+
 
     def _fallback_extract(self, text: str, intent: str) -> list[str]:
         """

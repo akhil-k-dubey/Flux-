@@ -114,6 +114,14 @@ class KGStore:
                     elif rtype == "edge":
                         self._register_edge(data)
                         loaded_edges += 1
+                    elif rtype == "delete_edge":
+                        self._unregister_edge(data)
+                    elif rtype == "patch_node":
+                        nid = data.get("id")
+                        if nid and nid in self._nodes:
+                            self._nodes[nid].update(
+                                {k: v for k, v in data.items() if k != "id"}
+                            )
                 except (json.JSONDecodeError, KeyError) as exc:
                     log.warning(
                         "Skipping malformed live record at line %d: %s", lineno, exc
@@ -129,6 +137,18 @@ class KGStore:
             self._edges_from.setdefault(src, []).append(edge)
         if tgt:
             self._edges_to.setdefault(tgt, []).append(edge)
+
+    def _unregister_edge(self, edge: dict) -> None:
+        src  = edge.get("from", "")
+        tgt  = edge.get("to",   "")
+        etype = edge.get("type", "")
+        def _drop(lst, s, t, e):
+            return [x for x in lst
+                    if not (x.get("from") == s and x.get("to") == t and x.get("type") == e)]
+        if src and src in self._edges_from:
+            self._edges_from[src] = _drop(self._edges_from[src], src, tgt, etype)
+        if tgt and tgt in self._edges_to:
+            self._edges_to[tgt] = _drop(self._edges_to[tgt], src, tgt, etype)
 
     # ── Read API ───────────────────────────────────────────────────────────────
 

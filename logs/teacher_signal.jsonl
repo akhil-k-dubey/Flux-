@@ -1,0 +1,295 @@
+{"timestamp": 1789329108.0805624, "utterance": "how much do you understand thermodynamics", "correct_operator": "Assess", "noun_slot": "thermodynamics", "source": "parallel_teacher"}
+{"timestamp": 1789329108.091269, "utterance": "can you build a carnot cycle", "correct_operator": "CanYou", "noun_slot": "build_a_carnot_cycle", "source": "parallel_teacher"}
+{"timestamp": 1789329108.1056733, "utterance": "what would happen if entropy decreased", "correct_operator": "Simulate", "noun_slot": "entropy_decreased", "source": "parallel_teacher"}
+{"timestamp": 1789330965.6551194, "utterance": "how much do you understand thermodynamics", "correct_operator": "Assess", "noun_slot": "thermodynamics", "source": "parallel_teacher"}
+{"timestamp": 1789330965.6582994, "utterance": "can you build a carnot cycle", "correct_operator": "CanYou", "noun_slot": "build_a_carnot_cycle", "source": "parallel_teacher"}
+{"timestamp": 1789330965.6619222, "utterance": "what would happen if entropy decreased", "correct_operator": "Simulate", "noun_slot": "entropy_decreased", "source": "parallel_teacher"}
+{"timestamp": 1789330965.6669068, "utterance": "connect entropy to boltzmann", "correct_operator": "Connect", "noun_slot": "entropy_to_boltzmann", "source": "parallel_teacher"}
+{"timestamp": 1789330965.6709018, "utterance": "how much do you understand thermodynamics", "correct_operator": "Assess", "noun_slot": "thermodynamics", "source": "parallel_teacher"}
+{"timestamp": 1789382662.4649694, "utterance": "will you build a fusion reactor", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789382662.4676025, "utterance": "how confident are you about thermodynamics", "correct_operator": "Assess", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789382662.4698136, "utterance": "suppose entropy vanished", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789382662.4716177, "utterance": "find the link between plasma and temperature", "correct_operator": "Connect", "noun_slot": "temperature", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789382951.0927598, "utterance": "will you build a fusion reactor", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789382951.0946462, "utterance": "should you design a laser", "correct_operator": "CanYou", "noun_slot": "design", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789382951.0959966, "utterance": "can you build a carnot cycle", "correct_operator": "CanYou", "noun_slot": "carnot_cycle", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789382951.0971115, "utterance": "assemble a quantum computer", "correct_operator": "Build", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789382951.1305127, "utterance": "fabricate entropy", "correct_operator": "Build", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789382951.1328712, "utterance": "how confident are you about thermodynamics", "correct_operator": "Assess", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789382951.1344018, "utterance": "gauge your understanding of entropy", "correct_operator": "Assess", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789382951.1365967, "utterance": "suppose entropy vanished", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789382951.1392126, "utterance": "hypothetically if temperature disappeared", "correct_operator": "Simulate", "noun_slot": "temperature", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789382951.1430454, "utterance": "find the link between entropy and thermodynamics", "correct_operator": "Connect", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789382951.1447134, "utterance": "find the link between plasma and temperature", "correct_operator": "Connect", "noun_slot": "temperature", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383199.0873373, "utterance": "will you build a fusion reactor", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383199.0895119, "utterance": "should you design a laser", "correct_operator": "CanYou", "noun_slot": "design", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383199.0911129, "utterance": "can you build a carnot cycle", "correct_operator": "CanYou", "noun_slot": "carnot_cycle", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383199.093185, "utterance": "assemble a quantum computer", "correct_operator": "Build", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383199.1275182, "utterance": "fabricate entropy", "correct_operator": "Build", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383199.1298192, "utterance": "how confident are you about thermodynamics", "correct_operator": "Assess", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383199.131711, "utterance": "suppose entropy vanished", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383199.135306, "utterance": "find the link between entropy and thermodynamics", "correct_operator": "Connect", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383199.1368606, "utterance": "find the link between plasma and temperature", "correct_operator": "Connect", "noun_slot": "temperature", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383440.5868244, "utterance": "will you build a fusion reactor", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383440.5899446, "utterance": "should you design a laser", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383440.5913696, "utterance": "can you build a carnot cycle", "correct_operator": "CanYou", "noun_slot": "carnot_cycle", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383440.5925825, "utterance": "will you create entropy", "correct_operator": "CanYou", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383440.5945618, "utterance": "assemble a quantum computer", "correct_operator": "Build", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383440.6311462, "utterance": "fabricate entropy", "correct_operator": "Build", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383440.6348715, "utterance": "how confident are you about thermodynamics", "correct_operator": "Assess", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383440.6402495, "utterance": "gauge your understanding of entropy", "correct_operator": "Assess", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383440.6438243, "utterance": "suppose entropy vanished", "correct_operator": "Simulate", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383440.6490514, "utterance": "find the link between entropy and thermodynamics", "correct_operator": "Connect", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383440.651276, "utterance": "find the link between plasma and temperature", "correct_operator": "Connect", "noun_slot": "temperature", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383619.272139, "utterance": "will you build a fusion reactor", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383619.2751877, "utterance": "should you design a laser", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383619.276423, "utterance": "can you build a carnot cycle", "correct_operator": "CanYou", "noun_slot": "carnot_cycle", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383619.2788615, "utterance": "are you capable of generating plasma", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383619.312918, "utterance": "fabricate entropy", "correct_operator": "Build", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383619.3154833, "utterance": "assemble a quantum computer", "correct_operator": "Build", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383619.3172386, "utterance": "how confident are you about thermodynamics", "correct_operator": "Assess", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383619.3186474, "utterance": "gauge your understanding of entropy", "correct_operator": "Assess", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383619.3204322, "utterance": "suppose entropy vanished", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383619.3227255, "utterance": "hypothetically if temperature disappeared", "correct_operator": "Simulate", "noun_slot": "temperature", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383619.3247483, "utterance": "model the effect of changing entropy", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383619.3282502, "utterance": "find the link between entropy and thermodynamics", "correct_operator": "Connect", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383619.330653, "utterance": "find the link between plasma and temperature", "correct_operator": "Connect", "noun_slot": "temperature", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.672942, "utterance": "will you build a fusion reactor", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.6758811, "utterance": "should you design a laser", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.6772642, "utterance": "can you build a carnot cycle", "correct_operator": "CanYou", "noun_slot": "carnot_cycle", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.6801355, "utterance": "could you construct a wormhole", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.6834898, "utterance": "would you be able to fabricate plasma", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.6852252, "utterance": "is it feasible to design a laser", "correct_operator": "CanYou", "noun_slot": "design", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.687449, "utterance": "assemble a quantum computer", "correct_operator": "Build", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.723576, "utterance": "fabricate entropy", "correct_operator": "Build", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.728802, "utterance": "let's engineer a thermodynamic engine", "correct_operator": "Build", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.7322934, "utterance": "help me build a reactor", "correct_operator": "Build", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.734695, "utterance": "how confident are you about thermodynamics", "correct_operator": "Assess", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.7365212, "utterance": "gauge your understanding of entropy", "correct_operator": "Assess", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.7384884, "utterance": "rate your knowledge of quantum mechanics", "correct_operator": "Assess", "noun_slot": "quantum_mechanics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.740802, "utterance": "suppose entropy vanished", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.7432387, "utterance": "imagine if temperature doubled", "correct_operator": "Simulate", "noun_slot": "temperature", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.7467413, "utterance": "hypothetically if gravity disappeared", "correct_operator": "Simulate", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.7503734, "utterance": "find the link between entropy and thermodynamics", "correct_operator": "Connect", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.753495, "utterance": "find the link between plasma and temperature", "correct_operator": "Connect", "noun_slot": "temperature", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789383782.7568898, "utterance": "how does entropy relate to thermodynamics", "correct_operator": "Connect", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384176.975198, "utterance": "will you build a fusion reactor", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384176.9786913, "utterance": "should you design a laser", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384176.9805152, "utterance": "is it feasible to design a laser", "correct_operator": "CanYou", "noun_slot": "design", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384176.983214, "utterance": "would you be able to fabricate plasma", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384176.9850833, "utterance": "can you build a carnot cycle", "correct_operator": "CanYou", "noun_slot": "carnot_cycle", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384177.0212004, "utterance": "assemble a quantum computer", "correct_operator": "Build", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384177.0248623, "utterance": "fabricate entropy", "correct_operator": "Build", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384177.0298994, "utterance": "let's engineer a thermodynamic engine", "correct_operator": "Build", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384177.031968, "utterance": "how confident are you about thermodynamics", "correct_operator": "Assess", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384177.0339434, "utterance": "gauge your understanding of entropy", "correct_operator": "Assess", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384177.035937, "utterance": "suppose entropy vanished", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384177.039242, "utterance": "hypothetically if gravity disappeared", "correct_operator": "Simulate", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384177.042031, "utterance": "imagine if temperature doubled", "correct_operator": "Simulate", "noun_slot": "temperature", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384177.0454772, "utterance": "find the link between entropy and thermodynamics", "correct_operator": "Connect", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384177.048866, "utterance": "find the link between plasma and temperature", "correct_operator": "Connect", "noun_slot": "temperature", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384177.053015, "utterance": "how does entropy relate to thermodynamics", "correct_operator": "Connect", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.8405275, "utterance": "will you build a fusion reactor", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.843889, "utterance": "should you design a laser", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.8454063, "utterance": "is it feasible to design a laser", "correct_operator": "CanYou", "noun_slot": "design", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.8479042, "utterance": "would you be able to fabricate plasma", "correct_operator": "CanYou", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.8497484, "utterance": "can you build a carnot cycle", "correct_operator": "CanYou", "noun_slot": "carnot_cycle", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.8852172, "utterance": "let's engineer a thermodynamic engine", "correct_operator": "Build", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.8903842, "utterance": "assemble a quantum computer", "correct_operator": "Build", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.8941517, "utterance": "fabricate entropy", "correct_operator": "Build", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.8963263, "utterance": "how confident are you about thermodynamics", "correct_operator": "Assess", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.8982725, "utterance": "gauge your understanding of entropy", "correct_operator": "Assess", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.9000976, "utterance": "suppose entropy vanished", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.9033077, "utterance": "hypothetically if gravity disappeared", "correct_operator": "Simulate", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.9061015, "utterance": "imagine if temperature doubled", "correct_operator": "Simulate", "noun_slot": "temperature", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.9090903, "utterance": "model the effect of changing entropy", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.9151824, "utterance": "find the link between entropy and thermodynamics", "correct_operator": "Connect", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.9200299, "utterance": "how does entropy relate to thermodynamics", "correct_operator": "Connect", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789384404.9272146, "utterance": "find the link between plasma and temperature", "correct_operator": "Connect", "noun_slot": "temperature", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390573.9449263, "utterance": "do you know entropy", "correct_operator": "Know", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390573.9477706, "utterance": "have you heard of thermodynamics", "correct_operator": "Know", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390573.9502091, "utterance": "is carnot cycle in your knowledge base", "correct_operator": "Know", "noun_slot": "carnot_cycle", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390573.9528356, "utterance": "do you have entropy in your records", "correct_operator": "Understand", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390573.9563055, "utterance": "do you understand entropy", "correct_operator": "Understand", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390573.9589822, "utterance": "do you grasp thermodynamics", "correct_operator": "Understand", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390573.963329, "utterance": "is entropy clear to you", "correct_operator": "Understand", "noun_slot": "", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390573.9670215, "utterance": "do you have a working model of entropy", "correct_operator": "Understand", "noun_slot": "model", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390573.9699688, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390573.97268, "utterance": "teach me thermodynamics", "correct_operator": "Explain", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390573.9755602, "utterance": "walk me through carnot cycle", "correct_operator": "Explain", "noun_slot": "carnot_cycle", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390573.9782891, "utterance": "unpack entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390573.980727, "utterance": "demystify thermodynamics", "correct_operator": "Explain", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390573.9833477, "utterance": "can you build a carnot cycle", "correct_operator": "CanYou", "noun_slot": "carnot_cycle", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390574.0310464, "utterance": "fabricate entropy", "correct_operator": "Build", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390574.0340421, "utterance": "how confident are you about thermodynamics", "correct_operator": "Assess", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390574.0377083, "utterance": "suppose entropy vanished", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789390574.043565, "utterance": "find the link between entropy and thermodynamics", "correct_operator": "Connect", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.8447876, "utterance": "do you know entropy", "correct_operator": "Know", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.8473945, "utterance": "have you heard of thermodynamics", "correct_operator": "Know", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.8504884, "utterance": "is carnot cycle in your knowledge base", "correct_operator": "Know", "noun_slot": "carnot_cycle", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.8530316, "utterance": "do you have entropy in your records", "correct_operator": "Understand", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.8554795, "utterance": "do you understand entropy", "correct_operator": "Understand", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.8574853, "utterance": "do you grasp thermodynamics", "correct_operator": "Understand", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.8599312, "utterance": "is thermodynamics clear to you", "correct_operator": "Understand", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.862516, "utterance": "do you have a working model of entropy", "correct_operator": "Understand", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.8647504, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.866922, "utterance": "teach me thermodynamics", "correct_operator": "Explain", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.8691573, "utterance": "walk me through carnot cycle", "correct_operator": "Explain", "noun_slot": "carnot_cycle", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.8714123, "utterance": "unpack entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.8736417, "utterance": "can you build a carnot cycle", "correct_operator": "CanYou", "noun_slot": "carnot_cycle", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.9215884, "utterance": "fabricate entropy", "correct_operator": "Build", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.9241998, "utterance": "how confident are you about thermodynamics", "correct_operator": "Assess", "noun_slot": "thermodynamics", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.9273322, "utterance": "suppose entropy vanished", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789407374.9320085, "utterance": "find the link between entropy and thermodynamics", "correct_operator": "Connect", "noun_slot": "entropy", "source": "user_accept", "reward": 1.0}
+{"timestamp": 1789591795.8095427, "utterance": "hi there", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789591795.811901, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789591795.814206, "utterance": "do you know thermodynamics", "correct_operator": "Assess", "wrong_operator": "Know", "source": "constitutional_red", "reward": -1.0}
+{"timestamp": 1789591795.8165429, "utterance": "can you build carnot cycle", "correct_operator": "CanYou", "noun_slot": "carnot_cycle", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789591795.820852, "utterance": "sounds good", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789591795.9658568, "utterance": "suppose entropy vanished", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789591953.3560212, "utterance": "Hello, flux how have you been", "correct_operator": "Greet", "wrong_operator": "Build", "source": "constitutional_red", "reward": -1.0}
+{"timestamp": 1789617072.3749514, "utterance": "Can you understand my language", "correct_operator": "Understand", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789617202.6185625, "utterance": "Do you know what we working on", "correct_operator": "Assess", "wrong_operator": "Know", "source": "constitutional_red", "reward": -1.0}
+{"timestamp": 1789620150.798846, "utterance": "Hello, flux how have you been", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789620150.8036866, "utterance": "Hii, flux i was wondering do you understand about your architecture", "correct_operator": "Assess", "wrong_operator": "Understand", "source": "constitutional_red", "reward": -1.0}
+{"timestamp": 1789620150.806445, "utterance": "Can you understand my language", "correct_operator": "Understand", "noun_slot": "akhil", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789620150.8101368, "utterance": "Do you know what we working on", "correct_operator": "Assess", "wrong_operator": "Know", "source": "constitutional_red", "reward": -1.0}
+{"timestamp": 1789620370.2277079, "utterance": "Hello, flux how have you been", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789620370.2355404, "utterance": "Can you understand my language", "correct_operator": "Understand", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789620370.2452557, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789620478.736693, "utterance": "Hello, flux how have you been", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789620478.7447321, "utterance": "Can you understand my language", "correct_operator": "Understand", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789620478.7492623, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789624918.809276, "utterance": "Can you understand my language", "correct_operator": "Understand", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789626119.1825626, "utterance": "Hello, flux how have you been", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789630724.607442, "utterance": "Can you buid a holographic projection", "correct_operator": "CanYou", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789641069.5296774, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789641069.648135, "utterance": "build carnot cycle", "correct_operator": "Build", "noun_slot": "carnot_cycle", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789641069.6555667, "utterance": "Hello flux", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789641069.6581714, "utterance": "can you connect entropy to thermodynamics", "correct_operator": "CanYou", "noun_slot": "thermodynamics", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789641956.7045379, "utterance": "Hello, flux how have you been", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789641956.7356856, "utterance": "Can you understand my language", "correct_operator": "Understand", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789641956.7410183, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789641956.8428152, "utterance": "build carnot cycle", "correct_operator": "Build", "noun_slot": "carnot_cycle", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789641956.8472135, "utterance": "can you connect entropy to thermodynamics", "correct_operator": "CanYou", "noun_slot": "thermodynamics", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789641956.855627, "utterance": "what if entropy doubled", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789641956.8605187, "utterance": "hello", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789641956.8648806, "utterance": "yup go for it", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789641956.8689313, "utterance": "okay cancel that", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789642047.729215, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789642047.828688, "utterance": "build carnot cycle", "correct_operator": "Build", "noun_slot": "carnot_cycle", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789642047.8542464, "utterance": "hello flux how have you been", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789642047.859293, "utterance": "hello", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789642047.8639998, "utterance": "yup go for it", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789642047.8684502, "utterance": "okay cancel that", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789642047.8727546, "utterance": "can you simulate a black hole", "correct_operator": "CanYou", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789642047.8820865, "utterance": "what if entropy doubled", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789642612.7372427, "utterance": "how well do you know entropy", "correct_operator": "Assess", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789642612.7429652, "utterance": "have you heard of carnot cycle", "correct_operator": "Know", "noun_slot": "carnot_cycle", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737726.9023538, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737727.0257995, "utterance": "build carnot cycle", "correct_operator": "Build", "noun_slot": "carnot_cycle", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737727.067553, "utterance": "hello flux how have you been", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737727.0758948, "utterance": "yup go for it", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737727.086898, "utterance": "okay cancel that", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737866.571886, "utterance": "Hello, flux how have you been", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737866.592456, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737866.86847, "utterance": "build carnot cycle", "correct_operator": "Build", "noun_slot": "carnot_cycle", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737866.877727, "utterance": "connect entropy to thermodynamics", "correct_operator": "Connect", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737866.8886313, "utterance": "what if entropy doubled", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737866.916333, "utterance": "yup go for it", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737866.9214466, "utterance": "never mind", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737866.9265952, "utterance": "okay cancel that", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737866.9339242, "utterance": "hello", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789737866.9398088, "utterance": "goodbye", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789963901.6411407, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789963901.7282789, "utterance": "build carnot cycle", "correct_operator": "Build", "noun_slot": "carnot_cycle", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789963901.7336452, "utterance": "connect entropy to thermodynamics", "correct_operator": "Connect", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789963901.739854, "utterance": "what if entropy doubled", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789963901.742151, "utterance": "hello flux how have you been", "correct_operator": "Greet", "noun_slot": "flux", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789963901.7630575, "utterance": "yup go for it", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789963901.7658703, "utterance": "okay cancel that", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789963901.7692194, "utterance": "how well do you know entropy", "correct_operator": "Assess", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789963901.7714312, "utterance": "can you simulate a black hole", "correct_operator": "CanYou", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789963901.7745686, "utterance": "never mind", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789963901.7781038, "utterance": "hello", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789986375.5539966, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789986375.6621618, "utterance": "build carnot cycle", "correct_operator": "Build", "noun_slot": "carnot_cycle", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789986375.6669147, "utterance": "connect entropy to thermodynamics", "correct_operator": "Connect", "noun_slot": "thermodynamics", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789986375.673156, "utterance": "what if entropy doubled", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789986375.6753955, "utterance": "hello flux how have you been", "correct_operator": "Greet", "noun_slot": "flux", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789986375.6998487, "utterance": "yup go for it", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789986375.702572, "utterance": "okay cancel that", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789986375.7062495, "utterance": "how well do you know entropy", "correct_operator": "Assess", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789986375.7090263, "utterance": "can you simulate a black hole", "correct_operator": "CanYou", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789986375.7126791, "utterance": "never mind", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789986375.7158875, "utterance": "hello", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789990989.5727825, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789990989.9310617, "utterance": "build carnot cycle", "correct_operator": "Build", "noun_slot": "carnot_cycle", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789990989.937042, "utterance": "do you know thermodynamics", "correct_operator": "Know", "noun_slot": "thermodynamics", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789990989.9443395, "utterance": "connect entropy to thermodynamics", "correct_operator": "Connect", "noun_slot": "thermodynamics", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789990989.9604788, "utterance": "what if entropy doubled", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789990989.9688163, "utterance": "hello flux how have you been", "correct_operator": "Greet", "noun_slot": "flux", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789990990.0175843, "utterance": "yup go for it", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789990990.023829, "utterance": "do you understand quantum mechanics", "correct_operator": "Understand", "noun_slot": "quantum_mechanics", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789990990.0343337, "utterance": "how well do you know entropy", "correct_operator": "Assess", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789990990.0443633, "utterance": "can you simulate a black hole", "correct_operator": "CanYou", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789990990.0545673, "utterance": "never mind", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789990990.068594, "utterance": "hello", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789990990.073512, "utterance": "do you know linear algebra", "correct_operator": "Know", "noun_slot": "linear_algebra", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.155581, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.3142016, "utterance": "build carnot cycle", "correct_operator": "Build", "noun_slot": "carnot_cycle", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.319137, "utterance": "do you know thermodynamics", "correct_operator": "Know", "noun_slot": "thermodynamics", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.3254216, "utterance": "connect entropy to thermodynamics", "correct_operator": "Connect", "noun_slot": "thermodynamics", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.3379931, "utterance": "what if entropy doubled", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.3418248, "utterance": "hello flux how have you been", "correct_operator": "Greet", "noun_slot": "flux", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.3728514, "utterance": "yup go for it", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.378309, "utterance": "okay cancel that", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.3816538, "utterance": "do you understand quantum mechanics", "correct_operator": "Understand", "noun_slot": "quantum_mechanics", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.3848767, "utterance": "how well do you know entropy", "correct_operator": "Assess", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.389417, "utterance": "can you simulate a black hole", "correct_operator": "CanYou", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.3941982, "utterance": "never mind", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.4002883, "utterance": "hello", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.4070275, "utterance": "link entropy to information theory", "correct_operator": "Connect", "noun_slot": "information_theory", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.411727, "utterance": "what would happen if energy doubled", "correct_operator": "Simulate", "noun_slot": "energy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.414634, "utterance": "do you grasp linear algebra", "correct_operator": "Understand", "noun_slot": "linear_algebra", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789991412.4178424, "utterance": "can you build a carnot cycle", "correct_operator": "CanYou", "noun_slot": "carnot_cycle", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789992013.8943043, "utterance": "Can you buid a holographic projection", "correct_operator": "CanYou", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789992061.994809, "utterance": "Hello, flux how have you been", "correct_operator": "Greet", "noun_slot": "flux", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789992093.5800028, "utterance": "Hii, flux i was wondering do you understand about your architecture", "correct_operator": "Assess", "noun_slot": "architecture", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789992124.2090676, "utterance": "Can you understand my language", "correct_operator": "Understand", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789992153.3578954, "utterance": "Hello, What is temperature", "correct_operator": "Explain", "noun_slot": "temperature", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1789992187.6402626, "utterance": "How much connecting edges do you have", "correct_operator": "Assess", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.2245138, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.329587, "utterance": "build carnot cycle", "correct_operator": "Build", "noun_slot": "carnot_cycle", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.33222, "utterance": "do you know thermodynamics", "correct_operator": "Know", "noun_slot": "thermodynamics", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.337197, "utterance": "connect entropy to thermodynamics", "correct_operator": "Connect", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.3462448, "utterance": "what if entropy doubled", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.3489888, "utterance": "hello flux how have you been", "correct_operator": "Greet", "noun_slot": "flux", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.370431, "utterance": "yup go for it", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.374051, "utterance": "okay cancel that", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.3770852, "utterance": "yes proceed", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.3792024, "utterance": "do you understand quantum mechanics", "correct_operator": "Understand", "noun_slot": "quantum_mechanics", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.381722, "utterance": "how well do you know entropy", "correct_operator": "Assess", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.384911, "utterance": "can you simulate a black hole", "correct_operator": "CanYou", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.3882809, "utterance": "never mind", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.3927538, "utterance": "hello", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.3949056, "utterance": "relate eigenvalues to linear algebra", "correct_operator": "Connect", "noun_slot": "linear_algebra", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006029.3992968, "utterance": "path between entropy and information theory", "correct_operator": "Connect", "noun_slot": "information_theory", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006044.1994512, "utterance": "relate eigenvalues to linear algebra", "correct_operator": "Connect", "noun_slot": "linear_algebra", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.6611855, "utterance": "explain entropy", "correct_operator": "Explain", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.756806, "utterance": "build carnot cycle", "correct_operator": "Build", "noun_slot": "carnot_cycle", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.7594137, "utterance": "do you know thermodynamics", "correct_operator": "Know", "noun_slot": "thermodynamics", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.763377, "utterance": "connect entropy to thermodynamics", "correct_operator": "Connect", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.7721212, "utterance": "what if entropy doubled", "correct_operator": "Simulate", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.7754083, "utterance": "hello flux how have you been", "correct_operator": "Greet", "noun_slot": "flux", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.7995245, "utterance": "yup go for it", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.8031244, "utterance": "okay cancel that", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.8061757, "utterance": "yes proceed", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.808345, "utterance": "do you understand quantum mechanics", "correct_operator": "Understand", "noun_slot": "quantum_mechanics", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.8106394, "utterance": "how well do you know entropy", "correct_operator": "Assess", "noun_slot": "entropy", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.8140013, "utterance": "can you simulate a black hole", "correct_operator": "CanYou", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.8174534, "utterance": "never mind", "correct_operator": "Sync", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.822016, "utterance": "hello", "correct_operator": "Greet", "noun_slot": "", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.8262908, "utterance": "relate eigenvalues to linear algebra", "correct_operator": "Connect", "noun_slot": "eigenvalue", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.8306005, "utterance": "path between entropy and information theory", "correct_operator": "Connect", "noun_slot": "information_theory", "source": "constitutional_green", "reward": 1.0}
+{"timestamp": 1790006147.832863, "utterance": "do you grasp gradient descent", "correct_operator": "Understand", "noun_slot": "gradient", "source": "constitutional_green", "reward": 1.0}

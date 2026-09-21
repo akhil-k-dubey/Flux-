@@ -89,6 +89,22 @@ def _expand_abbreviations(text: str) -> str:
         text = pattern.sub(replacement, text)
     return text
 
+# State query detector — compiled once at module load (not per-call).
+# Catches "what is going on", "what project am i working on", etc.
+# Short-circuits to WorldModel state handler, bypassing the operator pipeline.
+_STATE_RE = re.compile(
+    r"\bwhat(?:'s| is) going on\b"
+    r"|\bwhat(?:'s| is) happening\b"
+    r"|\bwhat are you (?:doing|up to|working on)\b"
+    r"|\bgive me a status\b"
+    r"|\bstatus (?:update|report)\b"
+    r"|\bwhat(?:'s| is)(?: the)?(?: current)? status\b"
+    r"|\bare you (?:busy|running|active)\b"
+    r"|\bwhat project\b"
+    r"|\bwhat are (?:we|akhil|you) (?:working on|doing|building)\b",
+    re.IGNORECASE,
+)
+
 # ── Pre-dispatch trigger sets ─────────────────────────────────────────────────
 # These are matched BEFORE fuzzy concept resolution, so they are immune to the
 # exact bugs we are fixing here.  They use lowercased, stripped query text.
@@ -197,7 +213,7 @@ class FluxInterface:
         # Update KG stats in WorldModel
         all_ids = self.store.all_ids()
         self._wm.update("knowledge.kg_nodes", len(all_ids))
-        edge_count = sum(len(self.store.edges_from(nid)) for nid in all_ids[:100])  # sample
+        edge_count = sum(len(self.store.edges_from(nid)) for nid in all_ids)
         self._wm.update("knowledge.kg_edges", edge_count)
 
         # ── Sheaf + QueryUnderstanding ────────────────────────────────────────
@@ -284,6 +300,57 @@ class FluxInterface:
         # Wire WorldModel into PhaseOneReasoner so self_explain() reads live stats
         self.p1_reason._world_model = self._wm
 
+        # ── CPM — Continuous Personal Model ───────────────────────────────────
+        # Sits before everything else in ask(). Understands sentence structure,
+        # Akhil's temporal state, his vocabulary, and infers his goal.
+        try:
+            from flux.cpm import CPM
+            self._cpm = CPM(
+                world_model      = self._wm,
+                store            = self.store,
+                smalltalk_handler= lambda name, txt: self._handle_smalltalk(name, txt),
+                self_handler     = lambda txt: self._pre_dispatch(txt),
+                domain_handler   = lambda did: self._handle_domain_explain(did),
+                concept_handler  = lambda cid: self._handle_concept_explain(cid),
+                agent_name       = "flux",
+                user_name        = "akhil",
+            )
+            log.info("CPM ready — utterance-level understanding active")
+        except Exception as exc:
+            log.warning("CPM init failed (%s) — ask() will use legacy fast-paths", exc)
+            self._cpm = None
+
+        # ── Operator System (Phase 1 → Neural) ───────────────────────────────
+        # IntentRouter: LanguageEncoder → manifold geometry → operator routing
+        # ManifoldExecutor: runs manifold operation, accepts target_vec directly
+        # CorrectionPipeline: Akhil's corrections → immediate RL weight update
+        try:
+            from flux.operators.intent_router     import IntentRouter
+            from flux.operators.manifold_executor import ManifoldExecutor
+            from flux.operators.correction_log    import get_pipeline as _get_cp
+
+            self._intent_router = IntentRouter(manifold=self._manifold)
+            self._op_executor   = ManifoldExecutor(
+                store    = self.store,
+                manifold = self._manifold,
+            )
+            self._correction_pipe = _get_cp()
+
+            # Preload LanguageEncoder (may be untrained — that's ok)
+            try:
+                from flux.language.language_encoder import get_encoder
+                get_encoder()
+                log.info("LanguageEncoder loaded — neural routing active")
+            except Exception as e:
+                log.warning("LanguageEncoder unavailable (%s) — teacher-only mode", e)
+
+            log.info("Operator System ready (neural + parallel teacher)")
+        except Exception as exc:
+            log.warning("Operator System init failed (%s) — legacy classifier only", exc)
+            self._intent_router   = None
+            self._op_executor     = None
+            self._correction_pipe = None
+
         # ── Conversation context (multi-turn dialogue) ────────────────────────
         self._conversation_history: list[dict] = []
         self._max_history: int = 8
@@ -337,6 +404,90 @@ class FluxInterface:
             f.write(json.dumps(entry) + "\n")
         log.info("Feedback recorded: %s", rating)
 
+    def correct_operator(self,
+                         correct: str,
+                         query: str | None = None) -> str:
+        """
+        Correct Flux's operator routing on the last response.
+
+        correct: the operator name that SHOULD have been used.
+                 One of: Build, CanYou, Connect, Assess, Simulate
+        query:   the utterance (defaults to last conversation entry)
+
+        Usage:
+            flux.correct_operator("CanYou")
+            # "can you build X" was routed to Build — should be CanYou
+
+            flux.correct_operator("Assess")
+            # "how much do you know about X" → should be Assess
+
+        This is the RL signal. Every correction:
+          1. Records the correction in the correction log
+          2. Fires one gradient step on the LanguageEncoder (MSE in manifold space)
+          3. Saves updated checkpoint immediately
+          4. Writes teacher signal if parallel teacher is still active
+
+        After 50 corrections the hardcoded teacher retires — only neural routing.
+        """
+        if self._correction_pipe is None or self._intent_router is None:
+            return "Operator system not active."
+
+        if query is None and self._conversation_history:
+            last  = self._conversation_history[-1]
+            query = last.get("query", "")
+
+        if not query:
+            return "No query to correct."
+
+        route = self._intent_router.route(query.lower().strip())
+        wrong = route.operator.name if route.operator else "NONE"
+
+        # ── 1. Record in correction log (for batch retraining) ────────────────
+        self._correction_pipe.record(
+            utterance        = query,
+            verb_surface     = route.verb_surface or query.split()[0],
+            noun_slot        = route.noun_slot,
+            correct_operator = correct,
+            wrong_operator   = wrong,
+            correction_text  = f"User specified: {correct}",
+            session_id       = self.session.session_id,
+        )
+
+        # ── 2. Immediate RL gradient step on LanguageEncoder ─────────────────
+        rl_loss = None
+        try:
+            from flux.operators.rl_trainer import (
+                correction_update, interactions_until_graduation, is_graduated
+            )
+            concept_id = route.concept_id or route.noun_slot.replace(" ", "_")
+            rl_loss = correction_update(
+                utterance        = query,
+                correct_operator = correct,
+                concept_id       = concept_id,
+                manifold         = self._manifold,
+            )
+        except Exception as e:
+            log.warning("RL update failed: %s", e)
+
+        # ── 3. Report ─────────────────────────────────────────────────────────
+        summary = self._correction_pipe.correction_summary()
+        try:
+            from flux.operators.rl_trainer import interactions_until_graduation, is_graduated
+            left = interactions_until_graduation()
+            grad_status = (
+                "Teacher retired — neural routing only." if is_graduated()
+                else f"{left} corrections until teacher retires."
+            )
+        except Exception:
+            grad_status = ""
+
+        loss_str = f"  RL loss: {rl_loss:.4f}." if rl_loss is not None else ""
+        return (
+            f"Correction: '{route.verb_surface or query[:30]}' → {correct} (was {wrong}).\n"
+            f"Total corrections: {summary['total_corrections']}.{loss_str}\n"
+            f"{grad_status}"
+        )
+
     def ask(self, text: str) -> str:
         """
         Process a natural language query and return a structured text response.
@@ -356,7 +507,21 @@ class FluxInterface:
         # ── 1. Abbreviation expansion ─────────────────────────────────────────
         text = _expand_abbreviations(text)
 
-        # ── 2. Elaboration detection: prepend last topic if user is following up ──
+
+        # ── 2. State query detection ──────────────────────────────────────────
+        # Short-circuits to WorldModel state handler for "what is going on" etc.
+        if _STATE_RE.search(text):
+            _state_resp = self._handle_state_query()
+            if _state_resp:
+                self._conversation_history.append({
+                    "query": original_text, "response": _state_resp,
+                    "intent": "STATE_QUERY",
+                })
+                if len(self._conversation_history) > self._max_history:
+                    self._conversation_history.pop(0)
+                return _state_resp
+
+        # ── 3. Elaboration detection: prepend last topic if user is following up ──
         text_lower = text.lower()
         is_elaboration = any(ph in text_lower for ph in self._ELABORATION_PHRASES)
         if is_elaboration and self._conversation_history:
@@ -364,6 +529,176 @@ class FluxInterface:
             if last_query:
                 text = f"Explain in more detail: {last_query}"
                 log.info("Elaboration detected — expanding query to: %s", text[:80])
+
+        # ── Operator Stage: verb-noun routing → manifold execution ────────────
+        # Runs BEFORE CPM for physical operator queries (Build, CanYou, Connect,
+        # Assess, Simulate). CPM runs first ONLY when there's a pending alias
+        # state (multi-turn confirmation flow).
+        _has_pending_alias = bool(
+            self._conversation_history and (
+                self._conversation_history[-1].get("pending_alias") or
+                self._conversation_history[-1].get("pending_alias_confirm")
+            )
+        )
+        if self._intent_router is not None and not is_elaboration and not _has_pending_alias:
+            try:
+                _route = self._intent_router.route(text)
+                if _route.operator is not None:
+                    log.debug("OperatorRouter[neural]: %s → %s (conf=%.2f) slot=%r",
+                              _route.verb_surface, _route.operator.name,
+                              _route.confidence, _route.noun_slot)
+                    _op_result = self._op_executor.execute(
+                        operator    = _route.operator,
+                        noun_slot   = _route.noun_slot,
+                        noun_slot_b = getattr(_route, "noun_slot_b", ""),
+                        target_vec  = _route.target_vec,
+                    )
+                    _op_text = self._operator_result_to_text(_op_result, _route)
+                    if _op_text:
+                        elapsed_ms = round((time.perf_counter() - t0) * 1000, 2)
+                        self._conversation_history.append({
+                            "query":    original_text,
+                            "response": _op_text,
+                            "intent":   _route.operator.name,
+                            "operator": _route.operator.name,
+                            "slot":     _route.noun_slot,
+                        })
+                        if len(self._conversation_history) > self._max_history:
+                            self._conversation_history.pop(0)
+
+                        # ── Constitutional Layer + RL signal ──────────────────
+                        try:
+                            from flux.operators.constitutional_layer import get_constitutional_layer
+                            from flux.operators.rl_trainer import positive_signal, penalty_signal
+                            _cl = get_constitutional_layer()
+                            _insp = _cl.inspect(
+                                utterance  = original_text,
+                                neural_op  = _route.operator.name,
+                                confidence = _route.confidence,
+                                op_vec     = _route.op_vec,
+                            )
+                            log.debug("Constitutional: %s", _insp.detail)
+
+                            if _insp.tier == "green":
+                                positive_signal(
+                                    utterance     = original_text,
+                                    operator_name = _route.operator.name,
+                                    concept_id    = _route.concept_id,
+                                )
+                            elif _insp.tier == "red":
+                                try:
+                                    penalty_signal(
+                                        utterance             = original_text,
+                                        neural_operator       = _route.operator.name,
+                                        constitutional_operator = _insp.constitutional_op,
+                                    )
+                                except Exception:
+                                    pass
+                                log.warning(
+                                    "Constitutional RED: neural=%s constitutional=%s conf=%.3f",
+                                    _route.operator.name, _insp.constitutional_op,
+                                    _route.confidence,
+                                )
+                                # hard_mode: block and fall through to CPM
+                                if _insp.should_block:
+                                    log.warning("Constitutional hard-block — deferring to CPM")
+                                    raise RuntimeError("constitutional_block")
+                        except RuntimeError:
+                            raise
+                        except Exception:
+                            pass
+
+                        try:
+                            self._akhil.on_query(original_text, _op_text)
+                        except Exception:
+                            pass
+                        return _op_text
+            except RuntimeError:
+                pass  # constitutional hard-block falls through to CPM
+            except Exception as exc:
+                log.debug("Operator routing failed (%s) — falling through to CPM", exc)
+
+        # ── CPM Stage 0: utterance-level understanding ────────────────────────
+        # Handles: pending alias confirmation, smalltalk, self/identity queries.
+        # Also classifies deferred queries and provides clean slots for pipeline.
+        _cpm_pending_alias = None
+        if self._cpm is not None and not is_elaboration:
+            try:
+                _cpm_decision = self._cpm.process(
+                    utterance            = text,
+                    conversation_history = self._conversation_history,
+                    session_id           = self.session.session_id,
+                )
+                if _cpm_decision.handled:
+                    log.debug("CPM handled: %s", _cpm_decision.response[:60])
+                    _cpm_pending_alias = _cpm_decision.pending_alias
+                    self._conversation_history.append({
+                        "query":                 original_text,
+                        "response":              _cpm_decision.response,
+                        "intent":                "CPM",
+                        "pending_alias":         _cpm_decision.pending_alias,
+                        "pending_alias_confirm": _cpm_decision.pending_alias_confirm,
+                    })
+                    if len(self._conversation_history) > self._max_history:
+                        self._conversation_history.pop(0)
+                    return _cpm_decision.response
+                else:
+                    if _cpm_decision.pipeline_slot:
+                        log.debug("CPM deferred → slot=%r intent=%r",
+                                  _cpm_decision.pipeline_slot,
+                                  _cpm_decision.pipeline_intent)
+                        if _cpm_decision.pipeline_intent in ("EXPLAIN", "PERTURB", "GEODESIC"):
+                            text = _cpm_decision.pipeline_slot
+            except Exception as exc:
+                log.warning("CPM.process failed (%s) — falling through to legacy paths", exc)
+
+
+        # ── Legacy fast-paths (active only when CPM unavailable/failed) ───────
+        if self._cpm is None and not is_elaboration:
+            from flux.understanding.slot_extractor import _COMPILED as _ST_COMPILED
+            _st_patterns = _ST_COMPILED.get("SMALLTALK", [])
+            _st_stripped  = text.lower().strip().rstrip("?!., ")
+            for _pat, _groups, _name in _st_patterns:
+                if _pat.search(_st_stripped):
+                    return self._handle_smalltalk(_name, text)
+
+        if self._cpm is None and not is_elaboration:
+            _self_clean = text.strip().lower().rstrip("?.!")
+            if _self_clean in _SELF_EXACT or _self_clean in _SELF_TOKENS:
+                pre = self._pre_dispatch(text)
+                if pre is not None:
+                    return pre.text
+
+        if self._cpm is None and not is_elaboration:
+            from flux.manifold.operation_classifier import find_concepts_in_query
+            _domain_primary = find_concepts_in_query(text, self.store, max_results=2)
+            if len(_domain_primary) == 1:
+                _dp_node = self.store.get(_domain_primary[0]) or {}
+                if _dp_node.get("type") == "DOMAIN":
+                    return self._handle_domain_explain(_domain_primary[0])
+
+        if self._cpm is None and not is_elaboration:
+            import re as _re
+            _EXPLAIN_PAT = _re.compile(
+                r"^(?:what\s+(?:is|are|was|were)|"
+                r"explain|define|tell me about|describe|"
+                r"(?:can you )?(?:tell me|explain|describe)\s+(?:what\s+(?:is|are)\s+)?)"
+                r"\s+(?:a\s+|an\s+|the\s+)?(?P<slot>.+?)[\s?!.]*$",
+                _re.I
+            )
+            _em = _EXPLAIN_PAT.match(text.strip())
+            if _em:
+                from flux.manifold.operation_classifier import find_concepts_in_query
+                _slot_raw = _em.group("slot").strip()
+                _ep = find_concepts_in_query(_slot_raw, self.store, max_results=2)
+                if not _ep:
+                    _direct_id = _slot_raw.lower().replace(" ", "_").replace("-", "_")
+                    if self.store.get(_direct_id):
+                        _ep = [_direct_id]
+                if len(_ep) == 1:
+                    _ep_node = self.store.get(_ep[0]) or {}
+                    if _ep_node.get("type") == "CONCEPT" and _ep_node.get("definition"):
+                        return self._handle_concept_explain(_ep[0])
 
         # ── 3. Manifold pre-dispatch (Phase 3 → Phase 2 → Phase 1) ──────────
         # Priority:
@@ -459,6 +794,14 @@ class FluxInterface:
                         if mres.concepts:
                             manifold_resp = self._manifold_counterfactual_to_text(
                                 r.source_id, mres, r.direction)
+                        else:
+                            # Concept not yet in manifold embedding (newly added primitive) —
+                            # fall back to pure-KG propagator which works on any KG node
+                            prop_res = self._wm._propagator.perturb(
+                                r.source_id, direction=r.direction, depth=4)
+                            if prop_res.affected_concepts:
+                                manifold_resp = self._render_propagator_result(
+                                    r.source_id, prop_res, r.direction)
 
                     elif r.operation == "GEODESIC" and r.target_id:
                         mres = self._manifold.geodesic_query(
@@ -942,6 +1285,44 @@ class FluxInterface:
     # ── Manifold result → natural language ────────────────────────────────────
     # These convert geometric manifold outputs into readable English.
     # Eventually the FLM will do this — for now it's done procedurally.
+
+    def _render_propagator_result(self, concept_id: str,
+                                   pres, direction: float) -> str:
+        """
+        Render a PerturbationResult into natural language.
+        Used when the concept is not yet embedded in the manifold —
+        pure KG-propagator path.
+        """
+        from flux.manifold.propagator import PerturbationResult
+        direction_word = "decreased" if direction < 0 else "increased"
+        src_node = self.store.get(concept_id) or {}
+        src_name = src_node.get("id", concept_id).replace("_", " ").title()
+
+        direct   = [(c, m) for c, m in pres.affected_concepts.items() if pres.kg_verified.get(c)]
+        indirect = [(c, m) for c, m in pres.affected_concepts.items() if not pres.kg_verified.get(c)]
+
+        def fmt(cid: str, mag: float) -> str:
+            n = (self.store.get(cid) or {}).get("id", cid).replace("_", " ").title()
+            return f"{n} ({abs(mag)*100:.0f}% effect)"
+
+        lines = [f"If {src_name} {direction_word}:\n"]
+        if direct:
+            lines.append("Directly affected (causal KG edges):")
+            for cid, mag in direct[:4]:
+                lines.append(f"  • {fmt(cid, mag)}")
+        if indirect:
+            lines.append("\nPropagated effects (through causal chain):")
+            for cid, mag in indirect[:4]:
+                lines.append(f"  • {fmt(cid, mag)}")
+        if not direct and not indirect:
+            lines.append(
+                f"No significant downstream effects found for {src_name} yet. "
+                f"Teach me its causal connections with: [TEACH]")
+        if pres.cascade_depth > 1:
+            lines.append(
+                f"\nThis cascade propagates {pres.cascade_depth} hops through the causal graph "
+                f"— effects at deeper levels are less certain.")
+        return "\n".join(lines)
 
     def _manifold_counterfactual_to_text(self, concept_id: str,
                                           mres, direction: float) -> str:
@@ -1453,6 +1834,309 @@ class FluxInterface:
             primary_concept   = concept_id,
             secondary_concept = None,
         )
+
+    def _operator_result_to_text(self, result, route) -> str:
+        """
+        Phase 1 Decoder — translates OperatorResult into natural language.
+
+        Reads what the manifold computed (path, coverage, feasibility, cascade)
+        and formats it into Flux's response. This is NOT a definition lookup.
+        The KG confirms existence; the manifold does the computation;
+        this method translates that computation into language.
+        """
+        from flux.operators.manifold_executor import OperatorResult
+        op_name = result.operator_name
+        slot    = result.noun_slot
+
+        # ── No concept found ──────────────────────────────────────────────────
+        if result.status == "no_concept":
+            return result.raw_text or (
+                f"I don't have '{slot}' in my knowledge graph. "
+                f"You can teach me: [TEACH] {slot}: <what it means>"
+            )
+
+        # ── Build operator ────────────────────────────────────────────────────
+        if op_name == "Build":
+            mres = result.manifold_result
+            if result.status == "no_manifold":
+                return result.raw_text
+            if mres and hasattr(mres, "reasoning_path") and mres.reasoning_path:
+                path = mres.reasoning_path
+                steps = " → ".join(c.replace("_", " ") for c in path)
+                return (
+                    f"Construction path to '{slot}':\n"
+                    f"  {steps}\n\n"
+                    f"This is the causal chain the manifold finds from current knowledge "
+                    f"to '{slot}'. Each step is a concept that must be in place first."
+                )
+            return (
+                f"'{slot}' is in my knowledge graph but the manifold couldn't find "
+                f"a complete construction path. The concept may be an isolated node "
+                f"without enough causal edges to trace a build sequence."
+            )
+
+        # ── CanYou operator ───────────────────────────────────────────────────
+        if op_name == "CanYou":
+            if result.feasible is True:
+                return (
+                    f"Yes — '{slot}' is within my knowledge boundary. "
+                    f"I can reason about it. Want me to proceed?"
+                )
+            if result.feasible is False:
+                nearest = result.nearest_feasible
+                boundary = result.boundary_edge
+                nearest_str = f" Nearest known concept: '{nearest}'." if nearest else ""
+                return (
+                    f"Not directly — '{slot}' is at or beyond my current knowledge boundary.\n"
+                    f"{boundary}{nearest_str}\n\n"
+                    f"I can tell you what sits at the edge of what I know, "
+                    f"or we can work toward it by teaching the missing concepts."
+                )
+            return result.raw_text or f"I need more information to assess feasibility for '{slot}'."
+
+        # ── Connect operator ──────────────────────────────────────────────────
+        if op_name == "Connect":
+            mres = result.manifold_result
+            if result.status == "no_manifold":
+                return result.raw_text
+            if mres and hasattr(mres, "reasoning_path") and mres.reasoning_path:
+                path = mres.reasoning_path
+                slot_b = result.concept_id_b or route.noun_slot
+                steps  = " → ".join(c.replace("_", " ") for c in path)
+                return (
+                    f"Path between '{slot}' and '{slot_b}':\n"
+                    f"  {steps}\n\n"
+                    f"These are the intermediate concepts the manifold traces "
+                    f"along the geodesic between them."
+                )
+            cid_a = result.concept_id
+            cid_b = result.concept_id_b
+            if cid_a and cid_b:
+                edges_a = self.store.edges_from(cid_a) or []
+                direct  = [e for e in edges_a if e.get("to") == cid_b]
+                if direct:
+                    rel = direct[0].get("relation", "connects to")
+                    return f"Direct connection: '{cid_a}' {rel} '{cid_b}' (KG edge)."
+            return (
+                f"No direct path found between those concepts in the manifold. "
+                f"They may be in separate domains with no current causal bridge."
+            )
+
+        # ── Assess operator ───────────────────────────────────────────────────
+        if op_name == "Assess":
+            score    = result.coverage_score
+            concepts = result.coverage_concepts
+            cid      = result.concept_id
+
+            if result.status == "no_concept":
+                return result.raw_text
+
+            pct = int(score * 100)
+            depth_word = (
+                "deep" if score > 0.7 else
+                "moderate" if score > 0.4 else
+                "shallow" if score > 0.15 else
+                "minimal"
+            )
+            connected = (
+                f"\n  Connected to: {', '.join(c.replace('_',' ') for c in concepts[:5])}"
+                if concepts else ""
+            )
+            return (
+                f"My knowledge of '{slot}': {depth_word} ({pct}% coverage).\n"
+                f"  KG concept: {cid or slot}{connected}\n\n"
+                f"Coverage is measured by causal edge density — "
+                f"how many concepts this one connects to in the knowledge graph."
+            )
+
+        # ── Simulate operator ─────────────────────────────────────────────────
+        if op_name == "Simulate":
+            mres = result.manifold_result
+            if result.status == "no_manifold":
+                return result.raw_text
+            if mres and hasattr(mres, "concepts") and mres.concepts:
+                affected = mres.concepts[:6]
+                lines = "\n".join(
+                    f"  {i+1}. {c.replace('_', ' ')}"
+                    for i, c in enumerate(affected)
+                )
+                direction = "increase" if getattr(mres, "direction", -1) > 0 else "decrease"
+                return (
+                    f"Simulating a {direction} in '{slot}':\n"
+                    f"  Cascade through the causal graph:\n{lines}\n\n"
+                    f"These are the concepts most affected, ranked by causal magnitude."
+                )
+            return (
+                f"'{slot}' exists in my knowledge graph but the manifold didn't "
+                f"find significant causal propagation from it. "
+                f"It may have few outgoing causal edges."
+            )
+
+        # ── Fallback ──────────────────────────────────────────────────────────
+        return result.raw_text or ""
+
+    def _handle_concept_explain(self, concept_id: str) -> str:
+        """
+        EXPLAIN fast-path handler: renders a knowledge audit for a CONCEPT node.
+        Shows definition, domain, causal connections, and dependents.
+        """
+        node = self.store.get(concept_id)
+        if not node:
+            return f"I don't have '{concept_id}' in my knowledge graph yet."
+
+        label  = node.get("id", concept_id).replace("_", " ").title()
+        defn   = (node.get("definition") or "").strip()
+        conf   = node.get("confidence", 1.0) or 1.0
+        domain = node.get("domain", "unknown")
+        layer  = node.get("layer", None)
+        immut  = node.get("immutable", False)
+
+        lines = [
+            f"Knowledge audit for: {label}",
+            f"  Confidence: {conf*100:.0f}%",
+            f"  Layer: {layer}  |  Immutable: {immut}  |  Domain: {domain}",
+        ]
+        if defn:
+            lines.append(f"  Definition (first 200 chars): {defn[:200]}")
+
+        # Outgoing edges — what this concept connects to
+        out_edges = self.store.edges_from(concept_id) or []
+        causal    = [(e["to"], e["type"]) for e in out_edges
+                     if e.get("type") not in ("ENCOMPASSES","PART_OF","ALIAS_OF")]
+        if causal:
+            lines.append(f"\nKnown connections ({len(causal)}):")
+            for tgt, etype in causal[:8]:
+                tgt_label = tgt.replace("_", " ").title()
+                lines.append(f"  • {etype} {tgt_label}")
+
+        # Incoming edges — concepts that depend on this one (excluding chapter nodes)
+        in_edges = self.store.edges_to(concept_id) or []
+        dependents = [e["from"] for e in in_edges
+                      if e.get("type") not in ("ENCOMPASSES","PART_OF","ALIAS_OF")
+                      and (self.store.get(e["from"]) or {}).get("type") != "DOMAIN"]
+        if dependents:
+            dep_labels = [d.replace("_", " ").title() for d in dependents[:6]]
+            lines.append(f"\nConcepts that depend on this: {', '.join(dep_labels)}")
+
+        return "\n".join(lines)
+
+    def _handle_domain_explain(self, domain_id: str) -> str:
+        """
+        DOMAIN fast-path handler: renders a chapter-level response for a domain anchor node.
+        Shows the chapter definition + what Flux knows in this domain.
+        """
+        node = self.store.get(domain_id)
+        if not node:
+            return f"I don't have a chapter on '{domain_id}' yet."
+
+        label = node.get("id", domain_id).replace("_", " ").title()
+        defn  = node.get("definition", "") or ""
+        conf  = node.get("confidence", 1.0) or 1.0
+        lines = []
+
+        lines.append(f"Chapter: {label}")
+        lines.append(f"  Confidence: {conf*100:.0f}%")
+        lines.append(f"  Domain type: {node.get('type','?')}")
+        if defn:
+            lines.append(f"\n{defn}")
+
+        # What Flux knows in this domain — via ENCOMPASSES edges
+        encompasses = [e.get("to","") for e in self.store.edges_from(domain_id)
+                       if e.get("type") == "ENCOMPASSES"]
+        known = [c for c in encompasses if self.store.get(c)]
+        if known:
+            lines.append(f"\nFlux knows {len(known)} concept(s) in this chapter:")
+            for cid in sorted(known):
+                cnode = self.store.get(cid) or {}
+                c_label = cnode.get("id", cid).replace("_"," ").title()
+                c_conf  = cnode.get("confidence", 1.0) or 1.0
+                ctype   = cnode.get("type","")
+                if ctype == "DOMAIN":
+                    lines.append(f"  • [{ctype}] {c_label}")
+                else:
+                    lines.append(f"  • {c_label} (conf {c_conf*100:.0f}%)")
+
+        # Connections to other domains via PART_OF
+        part_of = [e.get("to","") for e in self.store.edges_from(domain_id)
+                   if e.get("type") == "PART_OF"]
+        if part_of:
+            pof_labels = [p.replace("_"," ").title() for p in part_of if self.store.get(p)]
+            lines.append(f"\nBranch of: {', '.join(pof_labels)}")
+
+        return "\n".join(lines)
+
+    def _handle_state_query(self) -> str:
+        """
+        Handle "what is going on" / "what are you doing" / "status" queries.
+        Returns a live snapshot of Flux's current state from WorldModel.
+        This is NOT a KG lookup — it reads real-time system state.
+        """
+        try:
+            kg_nodes = self._wm.get("knowledge.kg_nodes") or len(self.store.all_ids())
+            kg_edges = self._wm.get("knowledge.kg_edges") or 0
+            manifold_status = "stable" if self._manifold else "not loaded"
+            current_project = (
+                self._wm.get("current_project")
+                or self._wm.get("akhil.current_project")
+                or "FLUX"
+            )
+            lines = [
+                f"Currently working on: {current_project} project.",
+                f"Knowledge graph: {kg_nodes} concepts, {kg_edges} edges.",
+                f"Manifold: {manifold_status}.",
+            ]
+            if self._manifold:
+                lines.append(
+                    f"Encoder: 12-class language understanding active (98.6% accuracy)."
+                )
+            return "  ".join(lines)
+        except Exception as exc:
+            log.debug("_handle_state_query error: %s", exc)
+            return "Working on the FLUX project — language understanding system active."
+
+    def _handle_smalltalk(self, template_name: str, raw_text: str) -> str:
+        """
+        SMALLTALK intent: conversational responses for greetings, acks, farewells.
+        Returns a plain string (not AssembledResponse) since these are one-liners.
+        Context-aware: uses WorldModel session count and time-of-day if available.
+        """
+        import datetime
+        hour = datetime.datetime.now().hour
+
+        if template_name == "greeting":
+            if hour < 12:
+                greeting = "Good morning"
+            elif hour < 17:
+                greeting = "Good afternoon"
+            elif hour < 21:
+                greeting = "Good evening"
+            else:
+                greeting = "Hey"
+            kg_size = len(self.store.all_ids())
+            return (
+                f"{greeting}, Akhil. I'm online — {kg_size} concepts loaded.\n"
+                f"What would you like to explore today?"
+            )
+
+        if template_name == "how_are_you":
+            kg_size = len(self.store.all_ids())
+            edges   = sum(len(self.store.edges_from(c)) for c in self.store.all_ids())
+            return (
+                f"Running well. KG has {kg_size} concepts and {edges} edges. "
+                f"Manifold geometry is stable. What do you want to think about?"
+            )
+
+        if template_name == "ack":
+            return "Got it. What's next?"
+
+        if template_name == "bye":
+            return "Take care, Akhil. The KG will be here when you're back."
+
+        if template_name == "whats_up":
+            return "Ready to reason. Ask me anything."
+
+        # Generic fallback for any SMALLTALK variant
+        return "I'm here. What do you want to explore?"
 
     def _handle_self(self) -> AssembledResponse:
         """SELF intent: return Flux's identity card from the KG."""

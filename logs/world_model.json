@@ -2,13 +2,13 @@
   "physical": {
     "laptop": {
       "hostname": "akhil-Nitro",
-      "cpu_temp_c": 55.4,
-      "ram_used_mb": 7505.7,
+      "cpu_temp_c": 45.1,
+      "ram_used_mb": 5702.9,
       "ram_total_mb": 14773.9,
-      "battery_pct": 100.0,
-      "battery_charging": true,
-      "uptime_hours": 77.09,
-      "last_seen": 1788777444.6454444
+      "battery_pct": 70.0,
+      "battery_charging": false,
+      "uptime_hours": 5.89,
+      "last_seen": 1790006147.2615988
     },
     "sensors": {
       "active": false,
@@ -20,70 +20,602 @@
   },
   "agents": {
     "akhil": {
-      "last_interaction": 1788777445.7438612,
-      "session_count_today": 73,
-      "session_date": "2026-09-07",
+      "last_interaction": 1790006147.8329275,
+      "session_count_today": 107,
+      "session_date": "2026-09-21",
       "typical_session_start": 9,
-      "current_focus_domain": "flux_architecture",
-      "predicted_next_query": "likely: flux_architecture (most frequent topic)",
+      "current_focus_domain": "machine_learning",
+      "predicted_next_query": "likely: thermodynamics (most frequent topic)",
       "cognitive_load": "low",
-      "total_queries": 281,
+      "total_queries": 821,
       "domain_history": [
+        "mathematics",
+        "thermodynamics",
+        "mathematics",
         "thermodynamics",
         "thermodynamics",
         "thermodynamics",
         "thermodynamics",
         "thermodynamics",
+        "flux_architecture",
         "unknown",
         "unknown",
         "unknown",
-        "unknown",
-        "unknown",
-        "unknown",
-        "thermodynamics",
-        "information_theory",
-        "thermodynamics",
+        "quantum_mechanics",
         "thermodynamics",
         "unknown",
         "unknown",
         "unknown",
-        "unknown",
-        "flux_architecture"
+        "mathematics",
+        "thermodynamics",
+        "machine_learning"
       ],
       "full_name": "Akhil Dubey",
-      "name": "Akhil Dubey"
+      "name": "Akhil Dubey",
+      "vocabulary_patterns": {
+        "flux": {
+          "occurrences": 243,
+          "top_domain": "unknown",
+          "top_context": "EXPLAIN"
+        },
+        "entropy": {
+          "occurrences": 203,
+          "top_domain": "thermodynamics",
+          "top_context": "EXPLAIN"
+        },
+        "about": {
+          "occurrences": 139,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "know": {
+          "occurrences": 121,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "know about": {
+          "occurrences": 110,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "thermodynamics": {
+          "occurrences": 66,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "quantum": {
+          "occurrences": 60,
+          "top_domain": "unknown",
+          "top_context": "EXPLAIN"
+        },
+        "theory": {
+          "occurrences": 55,
+          "top_domain": "unknown",
+          "top_context": "SYNTHESIS"
+        },
+        "energy": {
+          "occurrences": 52,
+          "top_domain": "thermodynamics",
+          "top_context": "EXPLAIN"
+        },
+        "layer": {
+          "occurrences": 51,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "information": {
+          "occurrences": 51,
+          "top_domain": "unknown",
+          "top_context": "CONNECT"
+        },
+        "free": {
+          "occurrences": 46,
+          "top_domain": "thermodynamics",
+          "top_context": "EXPLAIN"
+        },
+        "free energy": {
+          "occurrences": 46,
+          "top_domain": "thermodynamics",
+          "top_context": "EXPLAIN"
+        },
+        "between": {
+          "occurrences": 45,
+          "top_domain": "unknown",
+          "top_context": "CONNECT"
+        },
+        "cycle": {
+          "occurrences": 45,
+          "top_domain": "thermodynamics",
+          "top_context": "GEODESIC"
+        },
+        "carnot": {
+          "occurrences": 44,
+          "top_domain": "thermodynamics",
+          "top_context": "GEODESIC"
+        },
+        "carnot cycle": {
+          "occurrences": 44,
+          "top_domain": "thermodynamics",
+          "top_context": "GEODESIC"
+        },
+        "from": {
+          "occurrences": 43,
+          "top_domain": "thermodynamics",
+          "top_context": "GEODESIC"
+        },
+        "connects": {
+          "occurrences": 42,
+          "top_domain": "unknown",
+          "top_context": "SYNTHESIS"
+        },
+        "your": {
+          "occurrences": 40,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "law": {
+          "occurrences": 40,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "law thermodynamics": {
+          "occurrences": 39,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "connect": {
+          "occurrences": 38,
+          "top_domain": "unknown",
+          "top_context": "CONNECT"
+        },
+        "are": {
+          "occurrences": 37,
+          "top_domain": "unknown",
+          "top_context": "SELF"
+        },
+        "were": {
+          "occurrences": 37,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "gibbs": {
+          "occurrences": 36,
+          "top_domain": "thermodynamics",
+          "top_context": "GEODESIC"
+        },
+        "gibbs free": {
+          "occurrences": 36,
+          "top_domain": "thermodynamics",
+          "top_context": "GEODESIC"
+        },
+        "flux know": {
+          "occurrences": 36,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "second": {
+          "occurrences": 33,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "second law": {
+          "occurrences": 33,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "heat": {
+          "occurrences": 31,
+          "top_domain": "thermodynamics",
+          "top_context": "EXPLAIN"
+        },
+        "flux connects": {
+          "occurrences": 30,
+          "top_domain": "unknown",
+          "top_context": "SYNTHESIS"
+        },
+        "relate": {
+          "occurrences": 29,
+          "top_domain": "unknown",
+          "top_context": "CONNECT"
+        },
+        "relationship": {
+          "occurrences": 29,
+          "top_domain": "unknown",
+          "top_context": "CONNECT"
+        },
+        "relationship between": {
+          "occurrences": 29,
+          "top_domain": "unknown",
+          "top_context": "CONNECT"
+        },
+        "happen": {
+          "occurrences": 29,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "gradient": {
+          "occurrences": 27,
+          "top_domain": "machine_learning",
+          "top_context": "EXPLAIN"
+        },
+        "thermodynamic": {
+          "occurrences": 27,
+          "top_domain": "thermodynamics",
+          "top_context": "CONNECT"
+        },
+        "path": {
+          "occurrences": 27,
+          "top_domain": "thermodynamics",
+          "top_context": "GEODESIC"
+        },
+        "information theory": {
+          "occurrences": 27,
+          "top_domain": "unknown",
+          "top_context": "GAP"
+        },
+        "reversed": {
+          "occurrences": 27,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "were reversed": {
+          "occurrences": 27,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "tell": {
+          "occurrences": 26,
+          "top_domain": "unknown",
+          "top_context": "EXPLAIN"
+        },
+        "tell about": {
+          "occurrences": 26,
+          "top_domain": "unknown",
+          "top_context": "EXPLAIN"
+        },
+        "happen entropy": {
+          "occurrences": 25,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "backpropagation": {
+          "occurrences": 24,
+          "top_domain": "unknown",
+          "top_context": "EXPLAIN"
+        },
+        "built": {
+          "occurrences": 23,
+          "top_domain": "unknown",
+          "top_context": "SELF"
+        },
+        "about your": {
+          "occurrences": 22,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "programming": {
+          "occurrences": 22,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "python": {
+          "occurrences": 22,
+          "top_domain": "unknown",
+          "top_context": "UNKNOWN"
+        },
+        "wave": {
+          "occurrences": 21,
+          "top_domain": "unknown",
+          "top_context": "EXPLAIN"
+        },
+        "information entropy": {
+          "occurrences": 21,
+          "top_domain": "unknown",
+          "top_context": "CONNECT"
+        },
+        "rsm": {
+          "occurrences": 21,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "rsm layer": {
+          "occurrences": 21,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "decreased": {
+          "occurrences": 21,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "entropy decreased": {
+          "occurrences": 21,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "mechanics": {
+          "occurrences": 20,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "quantum mechanics": {
+          "occurrences": 20,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "about entropy": {
+          "occurrences": 20,
+          "top_domain": "unknown",
+          "top_context": "UNKNOWN"
+        },
+        "layer layer": {
+          "occurrences": 20,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "path from": {
+          "occurrences": 20,
+          "top_domain": "thermodynamics",
+          "top_context": "GEODESIC"
+        },
+        "break": {
+          "occurrences": 19,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "thermodynamics were": {
+          "occurrences": 19,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "your flux": {
+          "occurrences": 19,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "flux rsm": {
+          "occurrences": 19,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "eigenvectors": {
+          "occurrences": 19,
+          "top_domain": "unknown",
+          "top_context": "SYNTHESIS"
+        },
+        "singular": {
+          "occurrences": 19,
+          "top_domain": "unknown",
+          "top_context": "SYNTHESIS"
+        },
+        "values": {
+          "occurrences": 19,
+          "top_domain": "unknown",
+          "top_context": "SYNTHESIS"
+        },
+        "connects eigenvectors": {
+          "occurrences": 19,
+          "top_domain": "unknown",
+          "top_context": "SYNTHESIS"
+        },
+        "eigenvectors singular": {
+          "occurrences": 19,
+          "top_domain": "unknown",
+          "top_context": "SYNTHESIS"
+        },
+        "singular values": {
+          "occurrences": 19,
+          "top_domain": "unknown",
+          "top_context": "SYNTHESIS"
+        },
+        "from carnot": {
+          "occurrences": 19,
+          "top_domain": "thermodynamics",
+          "top_context": "GEODESIC"
+        },
+        "cycle gibbs": {
+          "occurrences": 19,
+          "top_domain": "thermodynamics",
+          "top_context": "GEODESIC"
+        },
+        "don": {
+          "occurrences": 18,
+          "top_domain": "unknown",
+          "top_context": "GAP"
+        },
+        "don know": {
+          "occurrences": 18,
+          "top_domain": "unknown",
+          "top_context": "GAP"
+        },
+        "superposition": {
+          "occurrences": 18,
+          "top_domain": "unknown",
+          "top_context": "EXPLAIN"
+        },
+        "flux second": {
+          "occurrences": 18,
+          "top_domain": "unknown",
+          "top_context": "COUNTERFACTUAL"
+        },
+        "much": {
+          "occurrences": 18,
+          "top_domain": "unknown",
+          "top_context": "UNKNOWN"
+        },
+        "decoherence": {
+          "occurrences": 17,
+          "top_domain": "unknown",
+          "top_context": "EXPLAIN"
+        },
+        "capacity": {
+          "occurrences": 17,
+          "top_domain": "thermodynamics",
+          "top_context": "EXPLAIN"
+        },
+        "entropy information": {
+          "occurrences": 17,
+          "top_domain": "unknown",
+          "top_context": "CONNECT"
+        },
+        "connection": {
+          "occurrences": 16,
+          "top_domain": "unknown",
+          "top_context": "CONNECT"
+        },
+        "connection between": {
+          "occurrences": 16,
+          "top_domain": "unknown",
+          "top_context": "CONNECT"
+        },
+        "dynamic": {
+          "occurrences": 16,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "about dynamic": {
+          "occurrences": 16,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "dynamic programming": {
+          "occurrences": 16,
+          "top_domain": "unknown",
+          "top_context": "AUDIT"
+        },
+        "query": {
+          "occurrences": 15,
+          "top_domain": "unknown",
+          "top_context": "CORRECT_RESPONSE"
+        },
+        "axiom": {
+          "occurrences": 15,
+          "top_domain": "unknown",
+          "top_context": "CONNECT"
+        },
+        "most": {
+          "occurrences": 15,
+          "top_domain": "unknown",
+          "top_context": "SYNTHESIS"
+        },
+        "flux connection": {
+          "occurrences": 15,
+          "top_domain": "unknown",
+          "top_context": "CONNECT"
+        },
+        "between thermodynamic": {
+          "occurrences": 15,
+          "top_domain": "unknown",
+          "top_context": "CONNECT"
+        },
+        "thermodynamic entropy": {
+          "occurrences": 15,
+          "top_domain": "unknown",
+          "top_context": "CONNECT"
+        },
+        "understand": {
+          "occurrences": 15,
+          "top_domain": "unknown",
+          "top_context": "UNKNOWN"
+        },
+        "lumen": {
+          "occurrences": 14,
+          "top_domain": "unknown",
+          "top_context": "EXPLAIN"
+        },
+        "recursive": {
+          "occurrences": 14,
+          "top_domain": "unknown",
+          "top_context": "EXPLAIN"
+        },
+        "self": {
+          "occurrences": 14,
+          "top_domain": "unknown",
+          "top_context": "EXPLAIN"
+        },
+        "improvement": {
+          "occurrences": 14,
+          "top_domain": "unknown",
+          "top_context": "EXPLAIN"
+        },
+        "recursive self": {
+          "occurrences": 14,
+          "top_domain": "unknown",
+          "top_context": "EXPLAIN"
+        },
+        "self improvement": {
+          "occurrences": 14,
+          "top_domain": "unknown",
+          "top_context": "EXPLAIN"
+        },
+        "much understand": {
+          "occurrences": 14,
+          "top_domain": "unknown",
+          "top_context": "UNKNOWN"
+        }
+      },
+      "emotional_signal": "neutral",
+      "frustration_level": 0.0,
+      "session_domains": [
+        "unknown",
+        "thermodynamics",
+        "unknown",
+        "thermodynamics",
+        "unknown",
+        "quantum_mechanics",
+        "unknown",
+        "thermodynamics",
+        "unknown",
+        "thermodynamics",
+        "quantum_mechanics",
+        "thermodynamics",
+        "quantum_mechanics",
+        "thermodynamics",
+        "unknown",
+        "mathematics",
+        "thermodynamics",
+        "unknown",
+        "thermodynamics",
+        "unknown"
+      ],
+      "expertise_map": {
+        "thermodynamics": 0.46,
+        "quantum_mechanics": 0.065,
+        "mathematics": 0.02
+      }
     }
   },
   "knowledge": {
-    "kg_nodes": 837,
-    "kg_edges": 118,
+    "kg_nodes": 1007,
+    "kg_edges": 2103,
     "domains": {
-      "constitutional": 83,
-      "flux_architecture": 56,
+      "constitutional": 95,
+      "flux_architecture": 57,
+      "mathematics": 136,
       "unknown": 22,
-      "quantum_mechanics": 41,
-      "thermodynamics": 38,
-      "physics": 7,
-      "machine_learning": 45,
-      "mathematics": 124,
+      "quantum_mechanics": 54,
+      "thermodynamics": 58,
+      "physics": 12,
+      "machine_learning": 66,
       "cognitive_science": 3,
       "philosophy": 1,
-      "information_theory": 66,
-      "probability_theory": 34,
-      "computer_science": 1,
-      "neuroscience": 12,
-      "linear_algebra": 138,
+      "information_theory": 75,
+      "probability_theory": 40,
+      "computer_science": 12,
+      "neuroscience": 14,
+      "linear_algebra": 144,
       "general_relativity": 1,
-      "algorithms": 54,
+      "algorithms": 69,
       "reinforcement_learning": 7,
-      "compiler_theory": 12,
-      "python": 22,
+      "compiler_theory": 14,
+      "python": 47,
       "type_theory": 14,
       "abstract_algebra": 24,
       "statistical_mechanics": 13,
       "probabilistic_ml": 7,
       "operating_systems": 2,
-      "software_engineering": 10
+      "software_engineering": 10,
+      "operators": 10
     },
     "last_stage_b": null,
     "books_processed": [
@@ -247,8 +779,8 @@
     },
     "last_shutdown": null,
     "total_uptime_hours": 0.0,
-    "total_queries_answered": 281,
+    "total_queries_answered": 821,
     "total_failures": 0,
-    "start_time": "2026-09-07T16:07:24.546389"
+    "start_time": "2026-09-21T21:25:47.050931"
   }
 }

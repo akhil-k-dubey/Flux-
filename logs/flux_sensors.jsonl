@@ -672,3 +672,6 @@
 {"event": "domain_reclassification", "timestamp": 1788182184.925995, "source": "constitutional_layer_type", "node_id": "lumen_fsm", "old_domain": "unknown", "new_domain": "flux_architecture"}
 {"event": "domain_reclassification", "timestamp": 1788182184.925995, "source": "constitutional_layer_type", "node_id": "lumen_latency_budget", "old_domain": "unknown", "new_domain": "flux_architecture"}
 {"event": "manifold_training_complete", "timestamp": 1788508243.2365038, "epochs": 200, "best_ratio": 8.410856128167444, "final_geometry_passed": true, "concepts_embedded": 793, "dim": 256, "kappa": 1.0}
+{"event": "manifold_training_complete", "timestamp": 1788840746.2798948, "epochs": 30, "best_ratio": 2.086024436156892, "final_geometry_passed": true, "concepts_embedded": 714, "dim": 256, "kappa": 1.0}
+{"event": "manifold_training_complete", "timestamp": 1788969588.157008, "epochs": 30, "best_ratio": 1.8039394759466587, "final_geometry_passed": true, "concepts_embedded": 804, "dim": 256, "kappa": 1.0}
+{"event": "manifold_training_complete", "timestamp": 1788974094.8477347, "epochs": 30, "best_ratio": 2.1392279518926123, "final_geometry_passed": true, "concepts_embedded": 845, "dim": 256, "kappa": 1.0}

@@ -1,0 +1,15 @@
+INFO === LanguageEncoder Training ===
+INFO KGStore ready: 1002 nodes (108 seed / 894 live)  2159 edges
+INFO Loading manifold embeddings from cache logs/manifold_emb_cache.pt
+INFO Manifold embeddings: 868 concepts loaded
+INFO Training device: cuda
+INFO Dataset: 78057 bootstrap + 147 corrections = 78792 total
+INFO Pre-tokenizing 78792 examples...
+INFO Epoch 1/25  loss=0.8488  op_acc=73.1%  lr=2.99e-04
+INFO Epoch 5/25  loss=0.1923  op_acc=93.6%  lr=2.71e-04
+INFO Epoch 10/25  loss=0.1439  op_acc=94.9%  lr=1.96e-04
+INFO Epoch 15/25  loss=0.1305  op_acc=95.2%  lr=1.04e-04
+INFO Epoch 20/25  loss=0.1222  op_acc=95.4%  lr=2.86e-05
+INFO Epoch 25/25  loss=0.1200  op_acc=95.4%  lr=0.00e+00
+INFO LanguageEncoder saved → checkpoints/language_encoder.pt
+INFO Training complete. Checkpoint saved.

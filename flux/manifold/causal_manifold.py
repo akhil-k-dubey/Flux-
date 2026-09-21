@@ -144,6 +144,10 @@ class CausalManifold(nn.Module):
                 continue
             if nid.startswith("__") and nid.endswith("__"):
                 continue
+            # Skip concepts explicitly marked as manifold-ineligible
+            # (low-quality book extractions: conf<0.75 or def<80ch)
+            if node.get("manifold_eligible") is False:
+                continue
             concept_ids.append(nid)
 
         self._concept_ids   = concept_ids
@@ -269,6 +273,108 @@ class CausalManifold(nn.Module):
 
         sorted_idx = torch.argsort(dists)[:k]
         return [(self._concept_ids[i], float(dists[i])) for i in sorted_idx]
+
+    def get_embedding(self, concept_id: str) -> Optional[torch.Tensor]:
+        """Return the 257-dim Lorentz embedding for a concept_id, or None."""
+        self._ensure_built()
+        # Build index lazily (CausalManifold stores _concept_ids list, not a dict)
+        if not hasattr(self, "_concept_index") or self._concept_index is None:
+            self._concept_index = {cid: i for i, cid in enumerate(self._concept_ids)}
+        idx = self._concept_index.get(concept_id)
+        if idx is None:
+            return None
+        return self._embeddings[idx].detach().cpu()
+
+    def nearest_operator_concept(
+        self, query_vec: torch.Tensor,
+        operator_ids: Optional[list[str]] = None,
+    ) -> tuple[str, float]:
+        """
+        Find the nearest OPERATOR concept to query_vec in manifold space.
+        Returns (op_concept_id, lorentz_distance). No hardcoded verb lists —
+        routing is purely geometric.
+        """
+        self._ensure_built()
+        if operator_ids is None:
+            operator_ids = ["op_build", "op_can_you", "op_connect",
+                            "op_assess", "op_simulate"]
+        q = query_vec.float().to(self.device)
+        if q.dim() == 1:
+            q = q.unsqueeze(0)
+        best_id, best_dist = operator_ids[0], float("inf")
+        for op_id in operator_ids:
+            emb = self.get_embedding(op_id)
+            if emb is None:
+                continue
+            dist = float(lorentz_distance(
+                q, emb.to(self.device).unsqueeze(0), self.kappa
+            ).item())
+            if dist < best_dist:
+                best_dist, best_id = dist, op_id
+        return best_id, best_dist
+
+    def nearest_concept_to(
+        self, query_vec: torch.Tensor, k: int = 1,
+        exclude_operators: bool = True,
+    ) -> list[tuple[str, float]]:
+        """
+        k nearest KG concepts to an arbitrary 257-dim query vector.
+        Used by ManifoldExecutor to ground target_vec → concept_id.
+        """
+        self._ensure_built()
+        q = query_vec.float().to(self.device)
+        if q.dim() == 1:
+            q = q.unsqueeze(0)
+        dists = lorentz_distance(
+            q.expand(len(self._concept_ids), -1),
+            self._embeddings, self.kappa,
+        )
+        if exclude_operators:
+            for i, cid in enumerate(self._concept_ids):
+                if cid.startswith("op_"):
+                    dists[i] = float("inf")
+        sorted_idx = torch.argsort(dists)[:k]
+        return [(self._concept_ids[i], float(dists[i])) for i in sorted_idx]
+
+    def geodesic_from_vec(
+        self, src_vec: torch.Tensor, tgt_vec: torch.Tensor,
+        steps: int = 8, store: Optional[KGStore] = None,
+    ) -> "ManifoldResult":
+        """
+        Geodesic path between two arbitrary manifold vectors.
+        Used by vector-based routing — no string grounding needed.
+        """
+        self._ensure_built()
+        src = src_vec.float().to(self.device)
+        tgt = tgt_vec.float().to(self.device)
+        if src.dim() == 1:
+            src = src.unsqueeze(0)
+        if tgt.dim() == 1:
+            tgt = tgt.unsqueeze(0)
+
+        path_concepts, path_dists = [], []
+        for step in range(steps + 1):
+            t       = step / steps
+            tangent = log_map(src.squeeze(0), tgt.squeeze(0), self.kappa)
+            interp  = exp_map(src.squeeze(0), t * tangent, self.kappa)
+            interp  = project_to_manifold(interp.unsqueeze(0), self.kappa).squeeze(0)
+            nearest = self.nearest_concept_to(interp, k=1)
+            if nearest:
+                cid, dist = nearest[0]
+                if not path_concepts or path_concepts[-1] != cid:
+                    path_concepts.append(cid)
+                    path_dists.append(dist)
+
+        total_dist = float(lorentz_distance(src, tgt, self.kappa).item())
+        op = ManifoldOperation("GEODESIC", path_concepts, "CONNECT")
+        return ManifoldResult(
+            operation      = op,
+            concepts       = path_concepts,
+            distances      = path_dists,
+            reasoning_path = path_concepts,
+            total_distance = total_dist,
+            kg_verified    = True,
+        )
 
     def point_query(self, query_embedding: torch.Tensor,
                     k: int = 3, store: Optional[KGStore] = None) -> ManifoldResult:

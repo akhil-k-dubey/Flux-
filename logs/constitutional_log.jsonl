@@ -1,0 +1,183 @@
+{"ts": 1789591795.045487, "utterance": "build a carnot cycle", "neural_op": "Build", "confidence": 0.99, "constitutional_op": "Build", "divergence": 0.0, "tier": "green"}
+{"ts": 1789591795.0456958, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 1.0, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1789591795.0458305, "utterance": "hey there", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789591795.045932, "utterance": "sounds good", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789591795.0460224, "utterance": "do you know entropy", "neural_op": "Know", "confidence": 0.92, "constitutional_op": "Assess", "divergence": 0.92, "tier": "red"}
+{"ts": 1789591795.046116, "utterance": "build a carnot cycle", "neural_op": "Assess", "confidence": 0.95, "constitutional_op": "Build", "divergence": 0.95, "tier": "red"}
+{"ts": 1789591795.809338, "utterance": "hi there", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789591795.811708, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 0.9998, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1789591795.8139865, "utterance": "do you know thermodynamics", "neural_op": "Know", "confidence": 0.9243, "constitutional_op": "Assess", "divergence": 0.9243, "tier": "red"}
+{"ts": 1789591795.816407, "utterance": "can you build carnot cycle", "neural_op": "CanYou", "confidence": 1.0, "constitutional_op": "CanYou", "divergence": 0.0, "tier": "green"}
+{"ts": 1789591795.8206813, "utterance": "sounds good", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789591795.9656668, "utterance": "suppose entropy vanished", "neural_op": "Simulate", "confidence": 1.0, "constitutional_op": "Simulate", "divergence": 0.0, "tier": "green"}
+{"ts": 1789591953.3559256, "utterance": "Hello, flux how have you been", "neural_op": "Build", "confidence": 0.8882, "constitutional_op": "Greet", "divergence": 0.8882, "tier": "red"}
+{"ts": 1789617027.0289867, "utterance": "Hii, flux i was wondering do you understand about your architecture", "neural_op": "CanYou", "confidence": 0.5421, "constitutional_op": "Assess", "divergence": 0.5421, "tier": "amber"}
+{"ts": 1789617072.3748465, "utterance": "Can you understand my language", "neural_op": "Understand", "confidence": 0.9999, "constitutional_op": "Understand", "divergence": 0.0, "tier": "green"}
+{"ts": 1789617202.6184635, "utterance": "Do you know what we working on", "neural_op": "Know", "confidence": 0.9982, "constitutional_op": "Assess", "divergence": 0.9982, "tier": "red"}
+{"ts": 1789620150.798321, "utterance": "Hello, flux how have you been", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789620150.8035095, "utterance": "Hii, flux i was wondering do you understand about your architecture", "neural_op": "Understand", "confidence": 0.9093, "constitutional_op": "Assess", "divergence": 0.9093, "tier": "red"}
+{"ts": 1789620150.8062816, "utterance": "Can you understand my language", "neural_op": "Understand", "confidence": 0.9998, "constitutional_op": "Understand", "divergence": 0.0, "tier": "green"}
+{"ts": 1789620150.8099375, "utterance": "Do you know what we working on", "neural_op": "Know", "confidence": 0.9487, "constitutional_op": "Assess", "divergence": 0.9487, "tier": "red"}
+{"ts": 1789620150.8876967, "utterance": "What project am i working on", "neural_op": "Build", "confidence": 0.796, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789620370.227566, "utterance": "Hello, flux how have you been", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789620370.2319553, "utterance": "Hii, flux i was wondering do you understand about your architecture", "neural_op": "Understand", "confidence": 0.9093, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789620370.235337, "utterance": "Can you understand my language", "neural_op": "Understand", "confidence": 0.9999, "constitutional_op": "Understand", "divergence": 0.0, "tier": "green"}
+{"ts": 1789620370.2392116, "utterance": "Do you know what we working on", "neural_op": "Know", "confidence": 0.9487, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789620370.2425141, "utterance": "What project am i working on", "neural_op": "Build", "confidence": 0.633, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789620370.2450979, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 0.9998, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1789620370.247462, "utterance": "do you know thermodynamics", "neural_op": "Know", "confidence": 0.9243, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789620478.7365081, "utterance": "Hello, flux how have you been", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789620478.739919, "utterance": "Hii, flux i was wondering do you understand about your architecture", "neural_op": "Understand", "confidence": 0.9093, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789620478.7444682, "utterance": "Can you understand my language", "neural_op": "Understand", "confidence": 0.9999, "constitutional_op": "Understand", "divergence": 0.0, "tier": "green"}
+{"ts": 1789620478.7470732, "utterance": "Do you know what we working on", "neural_op": "Know", "confidence": 0.9487, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789620478.7490988, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 0.9998, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1789620478.751916, "utterance": "do you know thermodynamics", "neural_op": "Know", "confidence": 0.9243, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789624918.8091583, "utterance": "Can you understand my language", "neural_op": "Understand", "confidence": 0.9999, "constitutional_op": "Understand", "divergence": 0.0, "tier": "green"}
+{"ts": 1789626102.5413625, "utterance": "Hii, flux i was wondering do you understand about your architecture", "neural_op": "Understand", "confidence": 0.9093, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789626119.182375, "utterance": "Hello, flux how have you been", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789630724.6069078, "utterance": "Can you buid a holographic projection", "neural_op": "CanYou", "confidence": 1.0, "constitutional_op": "CanYou", "divergence": 0.0, "tier": "green"}
+{"ts": 1789641069.5293212, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 0.9998, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1789641069.532543, "utterance": "do you know thermodynamics", "neural_op": "Know", "confidence": 0.9243, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789641069.6476796, "utterance": "build carnot cycle", "neural_op": "Build", "confidence": 1.0, "constitutional_op": "Build", "divergence": 0.0, "tier": "green"}
+{"ts": 1789641069.6553864, "utterance": "Hello flux", "neural_op": "Greet", "confidence": 0.9998, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789641069.6580086, "utterance": "can you connect entropy to thermodynamics", "neural_op": "CanYou", "confidence": 1.0, "constitutional_op": "CanYou", "divergence": 0.0, "tier": "green"}
+{"ts": 1789641956.7042496, "utterance": "Hello, flux how have you been", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789641956.7300122, "utterance": "Hii, flux i was wondering do you understand about your architecture", "neural_op": "Understand", "confidence": 0.9225, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789641956.7355037, "utterance": "Can you understand my language", "neural_op": "Understand", "confidence": 0.9999, "constitutional_op": "Understand", "divergence": 0.0, "tier": "green"}
+{"ts": 1789641956.7382073, "utterance": "Do you know what we working on", "neural_op": "Know", "confidence": 0.9027, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789641956.7408278, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 0.9998, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1789641956.842641, "utterance": "build carnot cycle", "neural_op": "Build", "confidence": 1.0, "constitutional_op": "Build", "divergence": 0.0, "tier": "green"}
+{"ts": 1789641956.8449993, "utterance": "do you know thermodynamics", "neural_op": "Know", "confidence": 0.8562, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789641956.847057, "utterance": "can you connect entropy to thermodynamics", "neural_op": "CanYou", "confidence": 1.0, "constitutional_op": "CanYou", "divergence": 0.0, "tier": "green"}
+{"ts": 1789641956.8554575, "utterance": "what if entropy doubled", "neural_op": "Simulate", "confidence": 1.0, "constitutional_op": "Simulate", "divergence": 0.0, "tier": "green"}
+{"ts": 1789641956.8603156, "utterance": "hello", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789641956.8646586, "utterance": "yup go for it", "neural_op": "Greet", "confidence": 0.9995, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789641956.8687594, "utterance": "okay cancel that", "neural_op": "Sync", "confidence": 0.89, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789642047.7290413, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 1.0, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1789642047.8284776, "utterance": "build carnot cycle", "neural_op": "Build", "confidence": 0.9999, "constitutional_op": "Build", "divergence": 0.0, "tier": "green"}
+{"ts": 1789642047.8317063, "utterance": "do you know thermodynamics", "neural_op": "Know", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789642047.854048, "utterance": "hello flux how have you been", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789642047.8591132, "utterance": "hello", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789642047.8638384, "utterance": "yup go for it", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789642047.868279, "utterance": "okay cancel that", "neural_op": "Sync", "confidence": 0.9999, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789642047.872553, "utterance": "can you simulate a black hole", "neural_op": "CanYou", "confidence": 0.9999, "constitutional_op": "CanYou", "divergence": 0.0, "tier": "green"}
+{"ts": 1789642047.8819106, "utterance": "what if entropy doubled", "neural_op": "Simulate", "confidence": 0.9999, "constitutional_op": "Simulate", "divergence": 0.0, "tier": "green"}
+{"ts": 1789642612.7301588, "utterance": "do you know thermodynamics", "neural_op": "Assess", "confidence": 0.9999, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789642612.733386, "utterance": "do you know entropy", "neural_op": "Know", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789642612.737026, "utterance": "how well do you know entropy", "neural_op": "Assess", "confidence": 1.0, "constitutional_op": "Assess", "divergence": 0.0, "tier": "green"}
+{"ts": 1789642612.7399085, "utterance": "is entropy in your knowledge", "neural_op": "Know", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789642612.7426946, "utterance": "have you heard of carnot cycle", "neural_op": "Know", "confidence": 1.0, "constitutional_op": "Know", "divergence": 0.0, "tier": "green"}
+{"ts": 1789737726.9020135, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 1.0, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1789737727.025599, "utterance": "build carnot cycle", "neural_op": "Build", "confidence": 0.9999, "constitutional_op": "Build", "divergence": 0.0, "tier": "green"}
+{"ts": 1789737727.0285218, "utterance": "do you know thermodynamics", "neural_op": "Assess", "confidence": 0.9999, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789737727.0673413, "utterance": "hello flux how have you been", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789737727.0756745, "utterance": "yup go for it", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789737727.0866866, "utterance": "okay cancel that", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789737866.571611, "utterance": "Hello, flux how have you been", "neural_op": "Greet", "confidence": 0.9999, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789737866.5835383, "utterance": "Hii, flux i was wondering do you understand entropy", "neural_op": "Assess", "confidence": 0.9999, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789737866.592244, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 1.0, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1789737866.8681195, "utterance": "build carnot cycle", "neural_op": "Build", "confidence": 0.9999, "constitutional_op": "Build", "divergence": 0.0, "tier": "green"}
+{"ts": 1789737866.871739, "utterance": "do you know thermodynamics", "neural_op": "Assess", "confidence": 0.9999, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789737866.8774536, "utterance": "connect entropy to thermodynamics", "neural_op": "Connect", "confidence": 0.9999, "constitutional_op": "Connect", "divergence": 0.0, "tier": "green"}
+{"ts": 1789737866.8883955, "utterance": "what if entropy doubled", "neural_op": "Simulate", "confidence": 0.9998, "constitutional_op": "Simulate", "divergence": 0.0, "tier": "green"}
+{"ts": 1789737866.9161022, "utterance": "yup go for it", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789737866.9212573, "utterance": "never mind", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789737866.9263866, "utterance": "okay cancel that", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789737866.9332273, "utterance": "hello", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789737866.9395158, "utterance": "goodbye", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789963901.6399744, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 1.0, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1789963901.7280436, "utterance": "build carnot cycle", "neural_op": "Build", "confidence": 0.9999, "constitutional_op": "Build", "divergence": 0.0, "tier": "green"}
+{"ts": 1789963901.7303302, "utterance": "do you know thermodynamics", "neural_op": "Assess", "confidence": 0.9999, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789963901.7335167, "utterance": "connect entropy to thermodynamics", "neural_op": "Connect", "confidence": 0.9999, "constitutional_op": "Connect", "divergence": 0.0, "tier": "green"}
+{"ts": 1789963901.7397146, "utterance": "what if entropy doubled", "neural_op": "Simulate", "confidence": 0.9998, "constitutional_op": "Simulate", "divergence": 0.0, "tier": "green"}
+{"ts": 1789963901.7420359, "utterance": "hello flux how have you been", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789963901.7629309, "utterance": "yup go for it", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789963901.7657518, "utterance": "okay cancel that", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789963901.7672553, "utterance": "do you understand quantum mechanics", "neural_op": "Understand", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789963901.7691061, "utterance": "how well do you know entropy", "neural_op": "Assess", "confidence": 1.0, "constitutional_op": "Assess", "divergence": 0.0, "tier": "green"}
+{"ts": 1789963901.77126, "utterance": "can you simulate a black hole", "neural_op": "CanYou", "confidence": 0.9999, "constitutional_op": "CanYou", "divergence": 0.0, "tier": "green"}
+{"ts": 1789963901.7744153, "utterance": "never mind", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789963901.777947, "utterance": "hello", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789986375.553411, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 1.0, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1789986375.6619, "utterance": "build carnot cycle", "neural_op": "Build", "confidence": 0.9999, "constitutional_op": "Build", "divergence": 0.0, "tier": "green"}
+{"ts": 1789986375.663968, "utterance": "do you know thermodynamics", "neural_op": "Know", "confidence": 0.9998, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789986375.6667747, "utterance": "connect entropy to thermodynamics", "neural_op": "Connect", "confidence": 0.9999, "constitutional_op": "Connect", "divergence": 0.0, "tier": "green"}
+{"ts": 1789986375.6730134, "utterance": "what if entropy doubled", "neural_op": "Simulate", "confidence": 0.9999, "constitutional_op": "Simulate", "divergence": 0.0, "tier": "green"}
+{"ts": 1789986375.6752746, "utterance": "hello flux how have you been", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789986375.699722, "utterance": "yup go for it", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789986375.7024415, "utterance": "okay cancel that", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789986375.7041078, "utterance": "do you understand quantum mechanics", "neural_op": "Understand", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "amber"}
+{"ts": 1789986375.7061238, "utterance": "how well do you know entropy", "neural_op": "Assess", "confidence": 1.0, "constitutional_op": "Assess", "divergence": 0.0, "tier": "green"}
+{"ts": 1789986375.7088466, "utterance": "can you simulate a black hole", "neural_op": "CanYou", "confidence": 0.9999, "constitutional_op": "CanYou", "divergence": 0.0, "tier": "green"}
+{"ts": 1789986375.7125535, "utterance": "never mind", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789986375.715756, "utterance": "hello", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789990989.5722225, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 1.0, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1789990989.9303694, "utterance": "build carnot cycle", "neural_op": "Build", "confidence": 0.9999, "constitutional_op": "Build", "divergence": 0.0, "tier": "green"}
+{"ts": 1789990989.9367082, "utterance": "do you know thermodynamics", "neural_op": "Know", "confidence": 0.9998, "constitutional_op": "Know", "divergence": 0.0, "tier": "green"}
+{"ts": 1789990989.944104, "utterance": "connect entropy to thermodynamics", "neural_op": "Connect", "confidence": 0.9999, "constitutional_op": "Connect", "divergence": 0.0, "tier": "green"}
+{"ts": 1789990989.9601011, "utterance": "what if entropy doubled", "neural_op": "Simulate", "confidence": 0.9999, "constitutional_op": "Simulate", "divergence": 0.0, "tier": "green"}
+{"ts": 1789990989.968519, "utterance": "hello flux how have you been", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789990990.0171704, "utterance": "yup go for it", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789990990.0231464, "utterance": "do you understand quantum mechanics", "neural_op": "Understand", "confidence": 1.0, "constitutional_op": "Understand", "divergence": 0.0, "tier": "green"}
+{"ts": 1789990990.0340047, "utterance": "how well do you know entropy", "neural_op": "Assess", "confidence": 1.0, "constitutional_op": "Assess", "divergence": 0.0, "tier": "green"}
+{"ts": 1789990990.0438821, "utterance": "can you simulate a black hole", "neural_op": "CanYou", "confidence": 0.9999, "constitutional_op": "CanYou", "divergence": 0.0, "tier": "green"}
+{"ts": 1789990990.0540867, "utterance": "never mind", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789990990.0680864, "utterance": "hello", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789990990.073044, "utterance": "do you know linear algebra", "neural_op": "Know", "confidence": 1.0, "constitutional_op": "Know", "divergence": 0.0, "tier": "green"}
+{"ts": 1789991412.1552727, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 1.0, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1789991412.3137968, "utterance": "build carnot cycle", "neural_op": "Build", "confidence": 0.9999, "constitutional_op": "Build", "divergence": 0.0, "tier": "green"}
+{"ts": 1789991412.3188226, "utterance": "do you know thermodynamics", "neural_op": "Know", "confidence": 0.9998, "constitutional_op": "Know", "divergence": 0.0, "tier": "green"}
+{"ts": 1789991412.325173, "utterance": "connect entropy to thermodynamics", "neural_op": "Connect", "confidence": 0.9999, "constitutional_op": "Connect", "divergence": 0.0, "tier": "green"}
+{"ts": 1789991412.3377051, "utterance": "what if entropy doubled", "neural_op": "Simulate", "confidence": 0.9999, "constitutional_op": "Simulate", "divergence": 0.0, "tier": "green"}
+{"ts": 1789991412.3416016, "utterance": "hello flux how have you been", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789991412.3726153, "utterance": "yup go for it", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789991412.3780694, "utterance": "okay cancel that", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789991412.3814316, "utterance": "do you understand quantum mechanics", "neural_op": "Understand", "confidence": 1.0, "constitutional_op": "Understand", "divergence": 0.0, "tier": "green"}
+{"ts": 1789991412.384628, "utterance": "how well do you know entropy", "neural_op": "Assess", "confidence": 1.0, "constitutional_op": "Assess", "divergence": 0.0, "tier": "green"}
+{"ts": 1789991412.389198, "utterance": "can you simulate a black hole", "neural_op": "CanYou", "confidence": 0.9999, "constitutional_op": "CanYou", "divergence": 0.0, "tier": "green"}
+{"ts": 1789991412.3940032, "utterance": "never mind", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789991412.4000804, "utterance": "hello", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789991412.4067395, "utterance": "link entropy to information theory", "neural_op": "Connect", "confidence": 0.9999, "constitutional_op": "Connect", "divergence": 0.0, "tier": "green"}
+{"ts": 1789991412.4114506, "utterance": "what would happen if energy doubled", "neural_op": "Simulate", "confidence": 0.9999, "constitutional_op": "Simulate", "divergence": 0.0, "tier": "green"}
+{"ts": 1789991412.414469, "utterance": "do you grasp linear algebra", "neural_op": "Understand", "confidence": 1.0, "constitutional_op": "Understand", "divergence": 0.0, "tier": "green"}
+{"ts": 1789991412.4176152, "utterance": "can you build a carnot cycle", "neural_op": "CanYou", "confidence": 0.9999, "constitutional_op": "CanYou", "divergence": 0.0, "tier": "green"}
+{"ts": 1789992013.8940752, "utterance": "can you buid a holographic projection", "neural_op": "CanYou", "confidence": 0.9998, "constitutional_op": "CanYou", "divergence": 0.0, "tier": "green"}
+{"ts": 1789992061.994598, "utterance": "hello, flux how have you been", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1789992093.5797856, "utterance": "hii, flux i was wondering do you understand about your architecture", "neural_op": "Assess", "confidence": 1.0, "constitutional_op": "Assess", "divergence": 0.0, "tier": "green"}
+{"ts": 1789992124.2088413, "utterance": "can you understand my language", "neural_op": "Understand", "confidence": 1.0, "constitutional_op": "Understand", "divergence": 0.0, "tier": "green"}
+{"ts": 1789992153.3576765, "utterance": "hello, what is temperature", "neural_op": "Explain", "confidence": 1.0, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1789992187.6400323, "utterance": "how much connecting edges do you have", "neural_op": "Assess", "confidence": 1.0, "constitutional_op": "Assess", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006029.2240646, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 1.0, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006029.3291185, "utterance": "build carnot cycle", "neural_op": "Build", "confidence": 0.9999, "constitutional_op": "Build", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006029.3320777, "utterance": "do you know thermodynamics", "neural_op": "Know", "confidence": 1.0, "constitutional_op": "Know", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006029.33693, "utterance": "connect entropy to thermodynamics", "neural_op": "Connect", "confidence": 0.9999, "constitutional_op": "Connect", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006029.3459795, "utterance": "what if entropy doubled", "neural_op": "Simulate", "confidence": 0.9999, "constitutional_op": "Simulate", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006029.3488452, "utterance": "hello flux how have you been", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1790006029.370245, "utterance": "yup go for it", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1790006029.3738873, "utterance": "okay cancel that", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1790006029.3769298, "utterance": "yes proceed", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1790006029.3789992, "utterance": "do you understand quantum mechanics", "neural_op": "Understand", "confidence": 1.0, "constitutional_op": "Understand", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006029.3815415, "utterance": "how well do you know entropy", "neural_op": "Assess", "confidence": 1.0, "constitutional_op": "Assess", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006029.3847492, "utterance": "can you simulate a black hole", "neural_op": "CanYou", "confidence": 1.0, "constitutional_op": "CanYou", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006029.3881254, "utterance": "never mind", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1790006029.392493, "utterance": "hello", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1790006029.3947017, "utterance": "relate eigenvalues to linear algebra", "neural_op": "Connect", "confidence": 0.9998, "constitutional_op": "Connect", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006029.399132, "utterance": "path between entropy and information theory", "neural_op": "Connect", "confidence": 0.9999, "constitutional_op": "Connect", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006044.1991475, "utterance": "relate eigenvalues to linear algebra", "neural_op": "Connect", "confidence": 0.9998, "constitutional_op": "Connect", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006147.6607985, "utterance": "explain entropy", "neural_op": "Explain", "confidence": 1.0, "constitutional_op": "Explain", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006147.75638, "utterance": "build carnot cycle", "neural_op": "Build", "confidence": 0.9999, "constitutional_op": "Build", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006147.7592466, "utterance": "do you know thermodynamics", "neural_op": "Know", "confidence": 1.0, "constitutional_op": "Know", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006147.7631853, "utterance": "connect entropy to thermodynamics", "neural_op": "Connect", "confidence": 0.9999, "constitutional_op": "Connect", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006147.7718666, "utterance": "what if entropy doubled", "neural_op": "Simulate", "confidence": 0.9999, "constitutional_op": "Simulate", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006147.7752392, "utterance": "hello flux how have you been", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1790006147.799358, "utterance": "yup go for it", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1790006147.8029323, "utterance": "okay cancel that", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1790006147.8060212, "utterance": "yes proceed", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1790006147.8081844, "utterance": "do you understand quantum mechanics", "neural_op": "Understand", "confidence": 1.0, "constitutional_op": "Understand", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006147.81049, "utterance": "how well do you know entropy", "neural_op": "Assess", "confidence": 1.0, "constitutional_op": "Assess", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006147.8138053, "utterance": "can you simulate a black hole", "neural_op": "CanYou", "confidence": 1.0, "constitutional_op": "CanYou", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006147.8172843, "utterance": "never mind", "neural_op": "Sync", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1790006147.8218217, "utterance": "hello", "neural_op": "Greet", "confidence": 1.0, "constitutional_op": "uncertain", "divergence": 0.5, "tier": "green"}
+{"ts": 1790006147.826123, "utterance": "relate eigenvalues to linear algebra", "neural_op": "Connect", "confidence": 0.9998, "constitutional_op": "Connect", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006147.8304036, "utterance": "path between entropy and information theory", "neural_op": "Connect", "confidence": 0.9999, "constitutional_op": "Connect", "divergence": 0.0, "tier": "green"}
+{"ts": 1790006147.8327074, "utterance": "do you grasp gradient descent", "neural_op": "Understand", "confidence": 1.0, "constitutional_op": "Understand", "divergence": 0.0, "tier": "green"}
